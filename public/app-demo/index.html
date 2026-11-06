@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cutly AI</title>
+<link rel="stylesheet" href="inter.css">
+<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="demo-only.css?v=7">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><img src="cutly-logo.png" alt="">Cutly AI<span class="app-version" id="appVersion"></span></div>
+  <div class="spacer"></div>
+  <div class="history">
+    <button id="undo" class="iconbtn" title="Undo (Ctrl+Z)" aria-label="Undo"><svg viewBox="0 0 16 16"><path d="M6 3.5 2.5 7 6 10.5M3 7h6.5a3.5 3.5 0 0 1 0 7H8"/></svg></button>
+    <button id="redo" class="iconbtn" title="Redo (Ctrl+Y)" aria-label="Redo"><svg viewBox="0 0 16 16"><path d="M10 3.5 13.5 7 10 10.5M13 7H6.5a3.5 3.5 0 0 0 0 7H8"/></svg></button>
+  </div>
+  <div class="render-group">
+    <select id="renderFmt" title="Video file format"></select>
+    <button id="render" class="primary" title="Renders the finished video: one file that plays anywhere and opens in Premiere">Render video</button>
+  </div>
+  <div class="more" id="more">
+    <button id="moreBtn" class="iconbtn" title="More" aria-label="More"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="12.5" cy="8" r="1.2"/></svg></button>
+    <div class="dd-menu hidden" id="moreMenu">
+      <button id="export" class="menu-item" title="Downloads a .zip with everything Premiere needs">Export to Premiere</button>
+      <button id="retranscribe" class="menu-item" title="Writes the transcript again with the newest version (finds more hidden takes)">Transcribe again</button>
+      <button id="postText" class="menu-item" title="A title, description and hashtags from what's said in the edit">Post text</button>
+      <div class="menu-sep"></div>
+      <button id="saveProject" class="menu-item" title="One small file with the edit, transcript and AI chat, to open again later">Download project</button>
+      <button id="saveProjectVideo" class="menu-item" title="The same, with the video inside (as big as the video)">Download project + video</button>
+      <button id="openProject" class="menu-item">Open project file...</button>
+      <div class="menu-sep"></div>
+      <button id="deleteProject" class="menu-item danger">Delete project</button>
+    </div>
+  </div>
+</header>
+
+<!-- free up space: projects by size; remove a video (edit stays), download, delete -->
+<div class="modal hidden" id="storageDlg">
+  <div class="modal-box">
+    <div class="modal-head"><b>Free up space</b>
+      <button class="iconbtn" id="storageClose" title="Close" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+    <div class="st-msg" id="storageMsg"></div>
+    <div class="st-list" id="storageList"></div>
+  </div>
+</div>
+
+<main class="layout" id="layout">
+  <div class="splitter v" id="splitLeft" title="Drag to resize"></div>
+  <div class="splitter v" id="splitRight" title="Drag to resize"></div>
+  <div class="splitter h" id="splitTimeline" title="Drag to resize"></div>
+  <aside class="videos">
+    <div class="side-head">
+      <div class="side-title">Projects</div>
+      <div class="side-btns">
+      <button class="iconbtn side-new" id="newFolder" title="Add a whole folder of videos" aria-label="Add a folder"><svg viewBox="0 0 16 16"><path d="M2.5 4.5v7a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H8L6.5 3.5h-3a1 1 0 0 0-1 1z"/></svg></button>
+      <button class="iconbtn side-new" id="newProject" title="Upload a video or Cutly project file" aria-label="New project"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
+      </div>
+    </div>
+    <!-- adding videos: copying them into the browser can take a while for a folder -->
+    <div class="adding hidden" id="adding">
+      <div class="st-top"><span id="addingText">Adding videos</span><b id="addingPct"></b></div>
+      <div class="st-bar"><i id="addingBar"></i></div>
+    </div>
+    <div id="videoList"></div>
+    <div class="side-empty" id="projectsEmpty">No projects yet.</div>
+    <button class="storage hidden" id="storageBtn" title="Used / the space Chrome gives the app right now (it changes with your free disk space). Click to free up space.">
+      <div class="st-top"><span>Storage</span><b id="storageText"></b></div>
+      <div class="st-bar"><i id="storageBar"></i></div>
+    </button>
+  </aside>
+
+  <section class="stage">
+    <div class="empty" id="empty">
+      <div class="drop">
+        <svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+        <b id="emptyText">Start a new edit</b>
+        <div class="drop-btns"><button class="primary" id="emptyPick">Choose videos</button><button id="emptyFolder">Choose a folder</button></div>
+      </div>
+    </div>
+    <div class="analyzing hidden" id="analyzing">
+      <div class="spinner"></div>
+      <div id="analyzeText">Analyzing...</div>
+    </div>
+    <div class="player hidden" id="player">
+      <div class="frame" id="frame">
+        <video id="video" playsinline preload="auto"></video>
+        <video id="picA" playsinline preload="auto" muted></video>
+        <video id="picB" playsinline preload="auto" muted></video>
+        <canvas id="view"></canvas>
+        <div class="caption" id="caption"></div>
+        <!-- while the AI edits: dots + a light sweep over the picture -->
+        <div class="ai-working" id="aiWorkFrame">
+          <div class="aw-dots"></div><div class="aw-sweep"></div>
+          <div class="aw-label"><div class="aw-row"><b id="aiWorkTitle">AI is editing</b><span class="aw-pct" id="aiWorkPct"></span></div><div class="aw-bar" id="aiWorkBar"><i></i></div><span class="aw-step" id="aiWorkStep"></span></div>
+        </div>
+      </div>
+      <!-- next to the video, top right: the preview isn't the final render -->
+      <div class="preview-note" id="previewNote">
+        <button class="pn-close" id="previewNoteClose" title="Close" aria-label="Close"><svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+        <span>The preview in the web app is lower quality and may stutter. Download the video to your device to see the actual result.</span>
+      </div>
+      <div class="transport">
+        <button id="play" class="playbtn" title="Play / pause (Space)" aria-label="Play">
+          <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+          <span class="i-load"></span>
+        </button>
+        <span class="time" id="time">0:00 / 0:00</span>
+        <label class="switch" title="Off = watch the original, with nothing cut">
+          <input type="checkbox" id="previewEdit" checked><span class="knob"></span> Preview edit
+        </label>
+        <span class="preview-making hidden" id="previewMaking" title="Making a light copy of the video, so the preview plays smoothly. Only once per video."></span>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel hidden" id="panel">
+    <nav class="tabs">
+      <button data-tab="ai" class="on">Ask AI</button>
+      <button data-tab="transcript">Transcript</button>
+      <button data-tab="captions">Captions</button>
+      <button data-tab="auto">Cuts</button>
+      <button data-tab="settings">Presets</button>
+    </nav>
+
+    <!-- Ask AI: comments pinned to moments, sent to the AI in one batch -->
+    <div class="tab ai on" id="tab-ai">
+      <div class="ai-head">
+        <span>Chat</span>
+        <span class="ai-count" id="aiCount"></span>
+        <button class="ai-clear hidden" id="aiClear" title="Remove finished comments and the AI's answers">Clear chat</button>
+      </div>
+      <div class="ai-scroll" id="aiScroll">
+        <!-- a new video: the user sets up the edit before the AI touches it -->
+        <div class="setup hidden" id="aiSetup">
+          <div class="setup-title">Set up your edit</div>
+          <div class="su-tiles">
+            <label class="su-tile"><input type="checkbox" id="suFirst"><svg viewBox="0 0 20 20"><circle cx="5.5" cy="14.5" r="2.5"/><circle cx="14.5" cy="14.5" r="2.5"/><path d="M7.3 12.7 15.5 3M12.7 12.7 4.5 3"/></svg><span>Cut mistakes</span><i class="su-check"></i></label>
+            <label class="su-tile"><input type="checkbox" id="suZooms"><svg viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5"/><path d="m12.2 12.2 4.3 4.3M8.5 6.3v4.4M6.3 8.5h4.4"/></svg><span>Zooms</span><i class="su-check"></i></label>
+            <label class="su-tile"><input type="checkbox" id="suSfx"><svg viewBox="0 0 20 20"><path d="M3.5 7.5h3l4-3.5v12l-4-3.5h-3z"/><path d="M13.5 7a4 4 0 0 1 0 6M15.8 4.8a7 7 0 0 1 0 10.4"/></svg><span>Sound effects</span><i class="su-check"></i></label>
+            <label class="su-tile"><input type="checkbox" id="suCaps"><svg viewBox="0 0 20 20"><rect x="2.5" y="4.5" width="15" height="11" rx="2.5"/><path d="M5.5 11.5h5M12.5 11.5h2M5.5 8.5h2M9.5 8.5h5"/></svg><span>Captions</span><i class="su-check"></i></label>
+            <label class="su-tile su-caps-only"><input type="checkbox" id="suHl"><svg viewBox="0 0 20 20"><path d="m11.5 3.5 5 5-7 7H4.5v-5z"/><path d="M3 17.5h14"/></svg><span>Highlight words</span><i class="su-check"></i></label>
+          </div>
+          <div class="su-caps-only">
+            <div class="setup-label">Caption style</div>
+            <div class="tpl-grid small" id="suTemplates"></div>
+          </div>
+          <div class="field su-len">
+            <div class="field-top"><span>Max video length</span><b id="suLenV"></b></div>
+            <input type="range" id="suLen" min="0" max="180" step="1">
+          </div>
+          <div class="setup-label">Notes for the AI <em>optional</em></div>
+          <textarea id="suBrief" rows="2" maxlength="2000" placeholder="e.g. keep the price part, cut the intro"></textarea>
+        </div>
+        <div class="ai-list chat" id="aiList"></div>
+      </div>
+      <div class="ai-empty" id="aiEmpty">
+        <svg viewBox="0 0 64 56"><path class="b1" d="M6 14a6 6 0 0 1 6-6h28a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H18l-12 10z"/><path class="b2" d="M20 8a6 6 0 0 1 6-6h26a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6h-2v10l-10-10H26a6 6 0 0 1-6-6z"/><circle cx="31" cy="17" r="2"/><circle cx="39" cy="17" r="2"/><circle cx="47" cy="17" r="2"/></svg>
+        <b>No comments yet</b>
+        <span>Play the video, pause where you want a change and write it below.</span>
+      </div>
+      <div class="ai-foot">
+        <!-- the transcript a few seconds before and after the moment you're commenting on -->
+        <div class="peek hidden" id="aiPeek">
+          <div class="peek-head"><span>Transcript</span><span class="peek-tip">Drag over words to select</span></div>
+          <div class="peek-text" id="aiPeekText"></div>
+        </div>
+        <div class="ai-compose">
+          <span class="ai-stamp" id="aiStamp" title="Your comment is pinned to this moment (or the part you selected)">0:00.0</span>
+          <button class="ai-cut hidden" id="aiCut" title="Cut the selected part out"><svg viewBox="0 0 16 16"><circle cx="4.5" cy="11.5" r="2"/><circle cx="11.5" cy="11.5" r="2"/><path d="M5.8 10 12 2.5M10.2 10 4 2.5"/></svg>Cut</button>
+          <button class="ai-peek-btn" id="aiPeekBtn" title="Show the transcript around this moment" aria-label="Transcript"><svg viewBox="0 0 16 16"><path d="M3 4.5h10M3 8h10M3 11.5h6"/></svg></button>
+          <textarea id="aiText" rows="1" maxlength="500" placeholder="Write a change..."></textarea>
+          <button class="ai-send" id="aiAdd" title="Add comment (Enter)" aria-label="Add comment"><svg viewBox="0 0 16 16"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button>
+        </div>
+        <button class="primary ai-run" id="aiRun" disabled>Run AI</button>
+      </div>
+    </div>
+
+    <div class="tab" id="tab-transcript">
+      <div class="tr-bar">
+        <div class="tr-how">Drag over words to select. Double-click a word to fix its spelling.</div>
+        <div class="tr-keys">
+          <span><kbd>Del</kbd>Cut</span><span><kbd>R</kbd>Undo cut</span><span><kbd>H</kbd>Highlight</span><span><kbd>Z</kbd>Zoom</span>
+        </div>
+      </div>
+      <div class="transcript" id="transcript"></div>
+    </div>
+
+    <div class="tab cap" id="tab-captions">
+      <label class="switch cap-toggle">
+        <span class="cap-toggle-text">Show captions</span>
+        <input type="checkbox" id="capEnabled"><span class="knob"></span>
+      </label>
+
+      <div class="cap-label">Style</div>
+      <div class="tpl-grid" id="capTemplates"></div>
+
+      <div class="field">
+        <div class="field-top"><span>Size</span><b id="capSizeV"></b></div>
+        <input type="range" id="capSize" min="20" max="140" step="1">
+      </div>
+      <div class="field">
+        <div class="field-top"><span>Position</span><b id="capYV"></b></div>
+        <input type="range" id="capY" min="5" max="95" step="0.5">
+        <div class="field-ends"><span>Top</span><span>Bottom</span></div>
+      </div>
+
+      <details class="advanced">
+        <summary>Advanced settings<svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></summary>
+
+        <div class="adv-group">
+          <div class="adv-title">Text</div>
+          <div class="adv-row"><span>Font</span><select id="capFont"></select></div>
+          <label class="switch adv-row"><span class="grow-label">All caps</span><input type="checkbox" id="capUpper"><span class="knob"></span></label>
+          <div class="adv-row"><span>Text color</span><input type="color" id="capText"></div>
+        </div>
+
+        <div class="adv-group">
+          <div class="adv-title">Background</div>
+          <div class="adv-row"><span>Behind the text</span>
+            <select id="capStyle">
+              <option value="box">Box</option>
+              <option value="outline">Outline</option>
+              <option value="plain">Nothing</option>
+            </select>
+          </div>
+          <div class="box-only">
+            <div class="adv-row"><span>Box color</span><input type="color" id="capBox"></div>
+            <div class="field"><div class="field-top"><span>Box see-through</span><b id="capBoxOpV"></b></div><input type="range" id="capBoxOp" min="0" max="100" step="1"></div>
+            <div class="field"><div class="field-top"><span>Round corners</span><b id="capRadiusV"></b></div><input type="range" id="capRadius" min="0" max="60" step="1"></div>
+            <div class="field"><div class="field-top"><span>Space around text</span><b id="capPadXV"></b></div><input type="range" id="capPadX" min="0" max="60" step="1"></div>
+          </div>
+          <div class="outline-only">
+            <div class="adv-row"><span>Outline color</span><input type="color" id="capOutline"></div>
+            <div class="field"><div class="field-top"><span>Outline thickness</span><b id="capOutlineWV"></b></div><input type="range" id="capOutlineW" min="0" max="20" step="0.5"></div>
+            <div class="field"><div class="field-top"><span>Shadow</span><b id="capShadowV"></b></div><input type="range" id="capShadow" min="0" max="20" step="1"></div>
+          </div>
+        </div>
+
+        <div class="adv-group">
+          <div class="adv-title">Layout</div>
+          <div class="field"><div class="field-top"><span>Max width</span><b id="capWidthV"></b></div><input type="range" id="capWidth" min="30" max="100" step="1"></div>
+          <div class="field"><div class="field-top"><span>Words at a time</span><b id="capWordsV"></b></div><input type="range" id="capWords" min="1" max="8" step="1"></div>
+          <div class="field"><div class="field-top"><span>Letters per line</span><b id="capCharsV"></b></div><input type="range" id="capChars" min="8" max="40" step="1"></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="tab cap" id="tab-auto">
+      <section class="set-card">
+        <div class="card-head"><b>Video length</b></div>
+        <div class="field">
+          <div class="field-top"><span>Keep videos under</span><b id="maxLenV"></b></div>
+          <input type="range" id="maxLen" min="0" max="180" step="1">
+        </div>
+      </section>
+
+      <section class="set-card">
+        <div class="card-head"><b>Cut style</b></div>
+        <select id="cutStyle" class="hidden"><option value="normal">Normal</option><option value="j">J cuts</option><option value="l">L</option></select>
+        <div class="seg" id="cutStyleSeg"><button data-v="normal">Normal cuts</button><button data-v="j">J cuts</button></div>
+        <div class="field jl-only">
+          <div class="field-top"><span title="How long your last words keep playing under the next clip.">Overlap</span><b id="jlSecV"></b></div>
+          <input type="range" id="jlSec" min="0.1" max="1" step="0.05">
+        </div>
+        <select id="jlWhere" class="hidden"><option value="transitions">t</option><option value="all">all</option></select>
+      </section>
+
+      <section class="set-card">
+        <div class="card-head"><b>Zoom on every cut</b></div>
+        <select id="autoZoom" class="hidden">
+          <option value="settle">Ease out</option><option value="drift">Smooth in / out</option>
+          <option value="punch">Punch</option><option value="off">Off</option>
+        </select>
+        <div class="seg" id="autoZoomSeg">
+          <button data-v="settle">Ease out</button><button data-v="punch">Punch</button><button data-v="off">Off</button>
+        </div>
+        <p class="mode-desc" id="autoZoomDesc"></p>
+        <div class="settle-only">
+          <div class="field"><div class="field-top"><span>Starts at</span><b id="settleScaleV"></b></div><input type="range" id="settleScale" min="100" max="130" step="1"></div>
+          <div class="field"><div class="field-top"><span>Zooms back out over</span><b id="settleLenV"></b></div><input type="range" id="settleLen" min="0.5" max="4" step="0.1"></div>
+        </div>
+        <div class="punch-only">
+          <div class="field"><div class="field-top"><span>How close</span><b id="punchScaleV"></b></div><input type="range" id="punchScale" min="100" max="150" step="1"></div>
+        </div>
+        <div class="drift-only hidden-fields">
+          <input type="number" id="moveLen"><input type="number" id="driftRate"><input type="number" id="driftMin"><input type="number" id="driftMax">
+        </div>
+      </section>
+
+      <section class="set-card">
+        <div class="card-head"><b>Pauses</b></div>
+        <div class="field">
+          <div class="field-top"><span>Cut pauses longer than</span><b id="silMinV"></b></div>
+          <input type="range" id="silMin" min="0.1" max="2" step="0.05">
+        </div>
+        <div class="field">
+          <div class="field-top"><span title="Room left before and after words, so cuts never clip them.">Air around speech</span><b id="padV"></b></div>
+          <input type="range" id="pad" min="0" max="0.3" step="0.01">
+        </div>
+        <label class="switch set-row"><span class="grow-label">Cut filler words (e.g. um / uh)</span><input type="checkbox" id="cutFillers"><span class="knob"></span></label>
+      </section>
+
+      <div class="redo-box">
+        <button id="rerunAuto">Redo auto cuts</button>
+        <span>Replaces all cuts, including your hand cuts.</span>
+      </div>
+    </div>
+
+    <div class="tab cap" id="tab-settings">
+      <section class="set-card">
+        <div class="card-head"><b>Preset</b></div>
+        <div class="preset-row">
+          <div class="preset-pick"><select id="creator"></select></div>
+          <button class="icon-sq" id="creatorNew" title="New preset" aria-label="New preset"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg></button>
+          <button class="icon-sq danger" id="creatorDelete" title="Delete preset" aria-label="Delete preset"><svg viewBox="0 0 16 16"><path d="M3.5 4.5h9M6.5 4.5V3h3v1.5M5 4.5l.6 8.5h4.8l.6-8.5"/></svg></button>
+        </div>
+        <div class="sub-label">AI edit</div>
+        <label class="switch set-row"><span class="grow-label">Cut retakes and mistakes</span><input type="checkbox" id="aiFirst"><span class="knob"></span></label>
+        <label class="switch set-row"><span class="grow-label">Zooms on key moments</span><input type="checkbox" id="aiZooms"><span class="knob"></span></label>
+        <label class="switch set-row"><span class="grow-label">Sound effects</span><input type="checkbox" id="aiSfx"><span class="knob"></span></label>
+        <label class="switch set-row"><span class="grow-label">Highlight key words</span><input type="checkbox" id="aiHl"><span class="knob"></span></label>
+        <label class="switch set-row" title="Spots the AI isn't sure about are asked here, instead of guessing."><span class="grow-label">Ask me when unsure</span><input type="checkbox" id="askUnsure"><span class="knob"></span></label>
+        <label class="switch set-row" title="Say &quot;scratch that&quot; or &quot;cut that&quot; with a pause around it while filming: the take before it is cut."><span class="grow-label">Voice commands</span><input type="checkbox" id="voiceCmd"><span class="knob"></span></label>
+        <label class="switch set-row" title="Swear words are muted and starred in the captions. Not in the Premiere export yet."><span class="grow-label">Mute swear words</span><input type="checkbox" id="bleepOn"><span class="knob"></span></label>
+        <div class="preset-sum" id="presetSummary"></div>
+        <div class="preset-actions">
+          <button id="presetSave" class="primary" title="Saves this video's captions, cuts, zooms and AI options into the preset">Save from this video</button>
+          <button id="presetApply" title="Changes this video's settings to the preset's">Use on this video</button>
+        </div>
+        <div class="card-sep"></div>
+        <button class="redo-ai" id="aiRedo">Edit again with AI</button>
+      </section>
+    </div>
+
+  </aside>
+
+  <section class="timeline-wrap hidden" id="timelineWrap">
+    <div class="ai-working thin"><div class="aw-dots"></div><div class="aw-sweep"></div></div>
+    <div class="selbar" id="selbar">
+      <div class="lengths" id="lengths"></div>
+      <div class="pro-note hidden" id="proNote">Pro mode is view only for now. Edit in Basic mode.</div>
+      <button class="check-btn hidden" id="checkBtn" title=""></button>
+      <div class="viewtoggle" title="Basic: the edit. Turn off Preview edit to see the cut parts. Pro: the edit track by track.">
+        <button data-view="basic" class="on">Basic</button>
+        <button data-view="pro">Pro</button>
+      </div>
+    </div>
+    <div class="timeline-scroll" id="timelineScroll">
+      <canvas id="timeline" height="120" draggable="false"></canvas>
+      <!-- an invisible box around the playhead: a press here always drags it -->
+      <div class="play-grip hidden" id="playGrip" draggable="false"></div>
+    </div>
+    <div class="timeline-scroll hidden" id="proScroll">
+      <canvas id="proTimeline"></canvas>
+    </div>
+  </section>
+</main>
+
+<div class="toast hidden" id="toast"></div>
+<!-- what you can do with a selected part (pops up after a selection, or on right-click) -->
+<div class="pop hidden" id="pop"></div>
+<div class="sel-menu hidden" id="ctxMenu" role="menu">
+  <div class="sm-head" id="ctxHead"></div>
+  <button data-c="cutclip"><span>Cut this clip</span></button>
+  <button data-c="comment"><span>Comment for AI here</span></button>
+  <div class="sm-sep"></div>
+  <button data-c="push"><span>Add zoom in</span></button>
+  <button data-c="punch"><span>Add punch zoom</span></button>
+  <div class="sm-sep"></div>
+  <button data-c="sound"><span>Add sound</span><kbd>›</kbd></button>
+</div>
+<div class="sel-menu sound-pick hidden" id="soundPick">
+  <input type="text" class="search" id="spSearch" placeholder="Search sounds" spellcheck="false">
+  <div class="sp-list" id="spList"></div>
+</div>
+<div class="sel-menu hidden" id="selMenu" role="menu">
+  <div class="sm-head" id="selMenuHead"></div>
+  <button data-sm="cut"><span>Cut</span><kbd>Del</kbd></button>
+  <button data-sm="restore"><span>Undo cut</span><kbd>R</kbd></button>
+  <div class="sm-sep"></div>
+  <button data-sm="push"><span>Zoom in</span></button>
+  <button data-sm="pull"><span>Zoom out</span></button>
+  <button data-sm="punch"><span>Punch zoom</span><kbd>Z</kbd></button>
+  <div class="sm-sep"></div>
+  <button data-sm="play"><span>Play this part</span></button>
+  <button data-sm="comment"><span>Comment for the AI</span></button>
+</div>
+<script src="demo.js?v=7"></script>
+</body>
+</html>

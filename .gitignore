@@ -1,0 +1,13 @@
+# nothing private belongs in this repo (it is public); these keep accidents out
+.env
+.env.*
+.dev.vars
+*.pem
+*.key
+secrets*
+node_modules/
+__pycache__/
+*.pyc
+Thumbs.db
+.DS_Store
+*.log

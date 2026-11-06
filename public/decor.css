@@ -1,0 +1,71 @@
+/* Barely visible decoration in the empty space around the page. Near-white grays only, nothing moves.
+   Each section holds a full-width layer behind its content. To remove all of it, unlink this file. */
+.page-clip { overflow-x: clip; }
+.block { position: relative; isolation: isolate; }
+.deco { position: absolute; z-index: -1; top: 0; bottom: 0; left: calc(50% - 50vw); width: 100vw; overflow-x: clip; pointer-events: none; }
+.deco i { position: absolute; display: block; }
+
+/* Soft shapes. The blur sits on the outer element and the shape on its inner layer, so cut-out shapes keep their soft edges. */
+.deco-shape { --tone: #f0f2f6; --blur: 40px; --cut: polygon(6% 34%, 26% 8%, 52% 18%, 74% 0, 100% 24%, 86% 50%, 98% 80%, 66% 100%, 44% 78%, 16% 94%, 0 62%); min-width: 520px; min-height: 420px; filter: blur(var(--blur)); }
+.deco-shape::before { content: ""; position: absolute; inset: 0; background: var(--tone); clip-path: var(--cut); }
+
+/* The shapes: uneven outlines with lobes and dents, so none of them reads as a neat oval */
+.s-bean { --cut: polygon(0 48%, 14% 12%, 40% 0, 58% 26%, 82% 10%, 100% 44%, 78% 62%, 92% 92%, 56% 100%, 38% 70%, 12% 86%); }
+.s-pill { --cut: polygon(0 22%, 34% 0, 62% 16%, 100% 6%, 90% 44%, 100% 82%, 64% 72%, 40% 100%, 8% 78%, 18% 48%); }
+.s-arch { --cut: polygon(10% 100%, 0 56%, 18% 18%, 46% 0, 70% 22%, 96% 12%, 100% 60%, 76% 74%, 84% 100%, 44% 84%); }
+.s-tri { --cut: polygon(48% 0, 66% 30%, 100% 54%, 78% 68%, 96% 100%, 50% 84%, 22% 100%, 0 70%, 24% 46%); }
+.s-diamond { --cut: polygon(42% 0, 70% 14%, 100% 44%, 74% 58%, 60% 100%, 34% 82%, 0 66%, 20% 38%); }
+.s-ring { --cut: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 0, 30% 32%, 26% 66%, 56% 74%, 72% 52%, 62% 26%, 30% 32%); }
+
+/* How noticeable each one is */
+.t-faint { --tone: #f4f5f9; }
+.t-mid { --tone: #f0f2f6; }
+.t-strong { --tone: #edeff4; }
+.soft { --blur: 50px; }
+.sharp { --blur: 36px; }
+
+/* Small patches of dots that fade out at their edges */
+.deco-dots { background-image: radial-gradient(rgba(11, 14, 20, .1) 1px, transparent 1.4px); background-size: 18px 18px; -webkit-mask-image: radial-gradient(closest-side, #000, transparent); mask-image: radial-gradient(closest-side, #000, transparent); }
+
+/* Thin concentric rings that fade outward */
+.deco-rings { border-radius: 50%; background-image: repeating-radial-gradient(circle, transparent 0 63px, rgba(11, 14, 20, .05) 63px 64px); -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent); mask-image: radial-gradient(closest-side, #000 30%, transparent); }
+
+/* A few faint plus marks */
+.deco-plus { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cpath d='M48 43v10M43 48h10' stroke='%230b0e14' stroke-opacity='.13' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: 96px 96px; -webkit-mask-image: radial-gradient(closest-side, #000 40%, transparent); mask-image: radial-gradient(closest-side, #000 40%, transparent); }
+
+/* Ruler ticks, like the top of a video timeline: small marks with a taller one every fifth */
+.deco-ticks { height: 16px; background-image: repeating-linear-gradient(90deg, rgba(11, 14, 20, .1) 0 1px, transparent 1px 60px), repeating-linear-gradient(90deg, rgba(11, 14, 20, .06) 0 1px, transparent 1px 12px); background-size: 100% 100%, 100% 7px; background-repeat: no-repeat; background-position: 0 0, 0 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }
+
+/* Where each one sits */
+.hero-wash .deco { left: 0; width: 100%; }
+.d-hero-a { top: 70px; left: -180px; width: 620px; height: 440px; }
+.d-hero-b { top: 70px; right: -70px; width: 320px; height: 320px; rotate: 16deg; }
+.d-hero-c { top: 410px; left: -130px; width: 440px; height: 240px; rotate: -18deg; }
+.d-hero-dots { top: 120px; right: 4%; width: 240px; height: 200px; }
+.d-hero-plus { top: 300px; right: 7%; width: 200px; height: 190px; }
+.d-showcase-a { top: 0; right: -200px; width: 560px; height: 420px; }
+.d-showcase-b { top: 40%; left: -150px; width: 340px; height: 320px; rotate: 22deg; }
+.d-tools-rings { top: -60px; left: -270px; width: 560px; height: 560px; }
+.d-tools-a { top: 34%; right: -110px; width: 320px; height: 320px; rotate: 12deg; }
+.d-tools-b { bottom: 2%; left: -120px; width: 400px; height: 220px; rotate: 14deg; }
+.d-reviews-ticks { top: 34px; left: 50%; width: min(900px, 76%); translate: -50% 0; }
+.d-reviews-a { top: 16%; left: -170px; width: 420px; height: 360px; }
+.d-reviews-b { bottom: 6%; right: -90px; width: 320px; height: 320px; rotate: -32deg; }
+.d-why-a { top: 90px; left: -220px; width: 560px; height: 480px; }
+.d-why-plus { top: 8px; right: 6%; width: 240px; height: 190px; }
+.d-why-b { top: 46%; right: -190px; width: 420px; height: 420px; }
+.d-why-c { bottom: 40px; left: -170px; width: 760px; height: 560px; }
+.d-pricing-rings { top: 18%; right: -300px; width: 640px; height: 640px; }
+.d-pricing-a { bottom: 6%; left: -200px; width: 540px; height: 420px; }
+.d-pricing-b { top: 2%; right: -110px; width: 420px; height: 250px; rotate: 24deg; }
+.d-pricing-c { top: 12%; left: -90px; width: 240px; height: 240px; rotate: -14deg; }
+.d-faq-dots { top: 16%; left: 5%; width: 230px; height: 280px; }
+.d-faq-a { bottom: 0; right: -160px; width: 520px; height: 400px; }
+.d-faq-b { bottom: 4%; left: -90px; width: 280px; height: 280px; rotate: 18deg; }
+.d-start-a { top: 14%; left: -150px; width: 360px; height: 220px; rotate: -24deg; }
+
+/* Phones: only some of the soft shapes, since there's no empty space at the sides for the rest */
+@media (max-width: 900px) {
+  .deco .deco-dots, .deco .deco-rings, .deco .deco-plus, .deco .deco-ticks, .deco .wide-only { display: none; }
+  .deco-shape { min-width: 0; min-height: 0; max-width: 80vw; }
+}

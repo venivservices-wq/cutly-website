@@ -1,0 +1,31 @@
+/* Only what the demo adds on top of the real app's stylesheet */
+@font-face { font-family: "TikTok Sans Bold"; src: url("fonts/TikTokSans-Bold.ttf") format("truetype"); font-display: swap; }
+html, body { pointer-events: none; user-select: none; }
+html { background: #0a0a0a; }
+/* Stays dark until demo.js has set the window up, so the app's empty screen never flashes */
+body:not(.demo-ready) { visibility: hidden; }
+.demo-cursor { position: fixed; left: 0; top: 0; z-index: 90; opacity: 0; transition: transform .65s cubic-bezier(.22, .61, .36, 1), opacity .3s; }
+.demo-cursor.on { opacity: 1; }
+.demo-cursor svg { display: block; margin: -2px 0 0 -2px; transform-origin: 2px 2px; transition: transform .12s; }
+.demo-cursor.clicking svg { transform: scale(.84); }
+.stage, .panel, .timeline-wrap { transition: opacity .28s ease; }
+.demo-swap { opacity: 0; }
+#timelineScroll { overflow: hidden; }
+/* Login window: projects and chat closed, so the video and timeline get all the room */
+.demo-still .layout { --left-w: 0px; --right-w: 0px; --timeline-h: 244px; }
+.demo-still #proScroll { overflow: hidden; }
+.demo-still .videos, .demo-still .panel { visibility: hidden; width: 0; padding: 0; border: 0; overflow: hidden; }
+/* No lines or shade changes in the dashboard itself, so its rounded corners stay clean */
+.demo-still .topbar, .demo-still .timeline-wrap, .demo-still .selbar, .demo-still .frame { border: 0; }
+body.demo-still { padding: 16px 20px 18px; }
+body.demo-still, .demo-still .stage, .demo-still .topbar, .demo-still .timeline-wrap { background: var(--bg); }
+.demo-press { filter: brightness(1.2); transform: scale(.97); transition: transform .1s, filter .1s; }
+.tr-keys kbd.demo-lit { color: #0a0a0a; background: #f2f2f3; }
+/* The picture: a still without captions, then the Wistia video, then the canvas its frames are drawn on. Both fade in after the edit. */
+.demo-video { position: absolute; inset: 0; overflow: hidden; }
+.demo-video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.demo-video wistia-player { position: absolute; inset: 0; display: block; width: 100%; height: 100%; transition: opacity .4s; }
+.demo-video.raw wistia-player { opacity: 0; }
+#view { transition: opacity .4s; }
+.demo-video.raw ~ #view { opacity: 0; }
+.demo-still #view, #caption { display: none; }

@@ -1,0 +1,10 @@
+# Cloudflare Pages reads this file. Security headers for every page.
+# The Content-Security-Policy is REPORT-ONLY: it blocks nothing until a real click-through (Wistia's hosts, fonts) shows nothing legitimate is listed.
+# Then rename it to Content-Security-Policy and tighten img-src / media-src. See research/website-security.md in the app project.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://fast.wistia.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https:; media-src 'self' blob: https:; connect-src 'self' https://fast.wistia.com; frame-src 'self'; frame-ancestors 'self'; base-uri 'none'; object-src 'none'

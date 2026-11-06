@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cutly AI: Photo and Video Creation with AI</title>
+  <meta name="description" content="Cutly AI helps anyone create standout photos and videos with AI.">
+  <link rel="stylesheet" href="inter.css">
+  <link rel="stylesheet" href="styles.css?v=61">
+  <link rel="stylesheet" href="demo.css?v=14">
+  <link rel="stylesheet" href="feature-ui.css?v=7">
+  <link rel="stylesheet" href="decor.css?v=7">
+</head>
+<body>
+
+<header class="site-header" id="top">
+  <div class="page header-row">
+    <a class="logo" href="#top" aria-label="Cutly AI home">
+      <img src="assets/cutly-logo.png" alt="" width="29" height="24">
+      <span>Cutly AI</span>
+    </a>
+    <nav class="main-nav" id="mainNav"></nav>
+    <div class="header-actions">
+      <button class="btn btn-soft" id="openLogin" type="button">Log in</button>
+    </div>
+    <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <div class="page-clip">
+  <div class="hero-wash">
+    <div class="deco" aria-hidden="true"><i class="deco-shape t-mid soft d-hero-a"></i><i class="deco-shape s-tri t-faint d-hero-b wide-only"></i><i class="deco-shape s-pill t-strong d-hero-c wide-only"></i><i class="deco-dots d-hero-dots"></i><i class="deco-plus d-hero-plus"></i></div>
+    <section class="hero page">
+      <h1>Edit Your Videos <em>Like a Professional</em> at a Fraction of the Cost.</h1>
+      <p class="hero-sub">Make content people stop to watch in just minutes.</p>
+      <div class="hero-cta" id="try">
+        <a class="btn btn-lg btn-primary" href="#pricing">Start today</a>
+      </div>
+    </section>
+
+    <section class="demo" id="demo">
+      <div class="ve-shell"><div class="ve-scaler" id="veScaler" aria-hidden="true"><iframe class="ve-frame" id="veFrame" src="app-demo/index.html" title="Cutly AI editor demo" tabindex="-1" scrolling="no" loading="lazy"></iframe></div><button class="ve-open" id="veOpen" type="button" aria-label="Log in to try the Cutly AI editor"></button></div>
+    </section>
+  </div>
+
+  <section class="block page fade-in" id="showcase">
+    <div class="deco" aria-hidden="true"><i class="deco-shape s-bean t-mid soft d-showcase-a"></i><i class="deco-shape s-arch t-faint d-showcase-b wide-only"></i></div>
+    <div class="showcase-panel">
+      <div class="center-head">
+        <h2>See What You Can Create.</h2>
+      </div>
+      <div class="showcase" id="showcaseList"></div>
+    </div>
+  </section>
+
+  <section class="block page fade-in" id="tools">
+    <div class="deco" aria-hidden="true"><i class="deco-rings d-tools-rings"></i><i class="deco-shape s-diamond t-strong sharp d-tools-a"></i><i class="deco-shape s-pill t-faint d-tools-b wide-only"></i></div>
+    <div id="toolList"></div>
+  </section>
+
+  <div class="ice-wash">
+    <section class="block page fade-in" id="reviews">
+    <div class="deco" aria-hidden="true"><i class="deco-ticks d-reviews-ticks"></i><i class="deco-shape s-bean t-strong soft d-reviews-a"></i><i class="deco-shape s-tri t-strong d-reviews-b wide-only"></i></div>
+      <div class="center-head">
+        <h2>What Creators Say</h2>
+      </div>
+      <div class="reviews" id="reviewList"></div>
+    </section>
+  </div>
+
+  <section class="block page fade-in" id="why">
+    <div class="deco" aria-hidden="true"><i class="deco-shape t-mid soft d-why-a"></i><i class="deco-plus d-why-plus"></i><i class="deco-shape s-bean t-strong d-why-c wide-only"></i><i class="deco-shape s-ring t-faint d-why-b wide-only"></i></div>
+    <div class="center-head">
+      <h2>Why Creators Choose Cutly</h2>    </div>
+    <div class="why" id="whyGrid"></div>
+    <div class="why-end"><a class="btn btn-lg btn-primary" href="#pricing">Start today</a></div>
+  </section>
+
+  <section class="block page fade-in" id="pricing">
+    <div class="deco" aria-hidden="true"><i class="deco-rings d-pricing-rings"></i><i class="deco-shape s-bean t-mid soft d-pricing-a"></i><i class="deco-shape s-pill t-mid soft d-pricing-b wide-only"></i><i class="deco-shape s-diamond t-faint d-pricing-c wide-only"></i></div>
+    <div class="center-head">
+      <h2>Choose Your Plan</h2>
+    </div>
+    <div class="plans" id="planList"></div>
+    <p class="plan-foot">Every plan works out to $0.50 per video.</p>
+  </section>
+
+  <section class="block page fade-in" id="faq">
+    <div class="deco" aria-hidden="true"><i class="deco-dots d-faq-dots"></i><i class="deco-shape soft t-mid d-faq-a"></i><i class="deco-shape s-arch t-strong sharp d-faq-b wide-only"></i></div>
+    <div class="center-head">
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq" id="faqList"></div>
+  </section>
+
+  <section class="block page fade-in" id="start">
+    <div class="deco" aria-hidden="true"><i class="deco-shape s-pill t-mid d-start-a wide-only"></i></div>
+    <div class="cta-band">
+      <div class="cta-glow" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2>Want to know more?<span>Get in touch.</span></h2>
+      <a class="btn btn-lg cta-main" href="#">Contact us<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
+    </div>
+  </section>
+</main>
+
+  </div>
+<footer class="site-footer">
+  <div class="footer-glow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="page footer-grid" id="footerGrid"></div>
+  <div class="page legal" id="legalLinks"></div>
+  <div class="wordmark" aria-hidden="true">Cutly AI</div>
+</footer>
+
+<div class="float-cta" id="floatCta">
+  <img class="float-icon" src="assets/cutly-logo.png" alt="" width="24" height="20">
+  <p>Edit your next video in minutes</p>
+  <a href="#pricing">Start today<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
+</div>
+
+<div class="auth" id="auth" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+  <div class="auth-box">
+    <div class="auth-left" aria-hidden="true"><div class="auth-scaler" id="authScaler"><iframe class="ve-frame" id="authFrame" title="Cutly AI editor demo" tabindex="-1" scrolling="no"></iframe></div></div>
+    <div class="auth-right">
+      <button class="auth-close" id="authClose" type="button" aria-label="Close"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      <img class="auth-logo" src="assets/cutly-logo.png" alt="" width="44" height="36">
+      <h2 id="authTitle">Welcome to Cutly AI</h2>
+      <div class="auth-options">
+        <button class="auth-btn primary" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.2H12v4.3h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2.1-1.9 3.3-4.7 3.3-8.1z"/><path fill="#34A853" d="M12 23c3 0 5.4-1 7.2-2.6l-3.5-2.7c-1 .7-2.2 1-3.7 1-2.8 0-5.2-1.9-6.1-4.5H2.3v2.8A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.9 14.2a6.6 6.6 0 0 1 0-4.3V7H2.3a11 11 0 0 0 0 9.9l3.6-2.7z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .5 4.1 1.6l3.1-3.1A11 11 0 0 0 2.3 7l3.6 2.8C6.8 7.3 9.2 5.4 12 5.4z"/></svg>
+          <span>Continue with Google</span>
+        </button>
+        <button class="auth-btn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span>Continue with email</span>
+        </button>
+        <button class="auth-btn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.7 3.8v3a7 7 0 0 1-3.7-1.2v6.2a6 6 0 1 1-5.2-6v3.1a3 3 0 1 0 2.2 2.9V3h3z"/></svg>
+          <span>Continue with TikTok</span>
+        </button>
+        <button class="auth-btn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#1877F2"/><path fill="#fff" d="M15.2 12.6l.4-2.7H13V8.2c0-.8.4-1.5 1.6-1.5h1.2V4.4s-1.1-.2-2.1-.2c-2.2 0-3.6 1.3-3.6 3.7v2h-2.4v2.7h2.4V23h3v-10.4h2.1z"/></svg>
+          <span>Continue with Facebook</span>
+        </button>
+      </div>
+      <p class="auth-legal">By continuing, you accept our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="scenes.js?v=7"></script>
+<script src="content.js?v=21"></script>
+<script src="feature-ui.js?v=7"></script>
+<script src="script.js?v=25"></script>
+<script src="demo.js?v=7"></script>
+</body>
+</html>
