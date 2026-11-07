@@ -81,5 +81,13 @@
   new IntersectionObserver((entries) => {
     onScreen = entries[0].isIntersecting;
     tell();
-  }, { threshold: 0.3 }).observe(scaler);
+  }, { threshold: 0.05 }).observe(scaler);
+  // Backup in case the observer is late or the frame was still loading: look at the position directly
+  frame.addEventListener('load', tell);
+  setInterval(() => {
+    const r = scaler.getBoundingClientRect();
+    // plays as soon as a strip of it shows above the fold (a big window shows only the top of it at first)
+    const seen = r.top < innerHeight - 60 && r.bottom > 60 && document.visibilityState === 'visible';
+    if (seen !== onScreen) { onScreen = seen; tell(); }
+  }, 500);
 })();
