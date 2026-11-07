@@ -1,6 +1,7 @@
-// Plays a scripted session on the real editor UI: a cursor sets up an edit, the AI cuts it,
-// the user plays it, asks for a change, edits the words and renders. Then it loops.
-// The timeline and caption drawing follow app.js in the Video Editor, so they look the same.
+// Plays a scripted session on the real editor UI (copied from the app by tools/build.py), the way the app works today,
+// all in the open editor with its timeline open: the cursor asks the AI to edit the open video, the AI edits it, the
+// user plays the result, asks for a change, cuts words in the transcript and exports. Then the next project opens.
+// The timeline, chat and screens follow app.js in the Video Editor (Version 250), so they look the same.
 (function () {
   const $ = (id) => document.getElementById(id);
   const fmt = (s) => {
@@ -9,25 +10,46 @@
   };
   const credits = (n) => `${n} credit${n === 1 ? '' : 's'}`;
   const PRICES = { edit: 2, ask: 1 };
-  const AI_STEPS = ['Watching your video', 'Finding retakes and mistakes', 'Cutting pauses', 'Placing zooms and sounds', 'Checking every cut'];
-  const NOTE = 'use the wow sound for the hook';
+  const START_CREDITS = 48;
+  const WORK_WORDS = ['Thinking', 'Working', 'Placing', 'Timing', 'Polishing'];
+  // The chat's answers are fixed lines in the app too (cloud.READY_LINES), never AI text
+  const READY = ['Your video is ready to preview.', 'Editing complete! You can take a look!', 'Your latest edit is waiting for you.', "I've finished working on your video. Have a look!"];
   const COMMENT = 'Zoom in when she says chopping up clips';
-  const PAUSE_AT = 8.6;
+  const COMMENT_2 = 'Add a whoosh sound here';
+  const PAUSE_AT = 8.6;    // edited seconds: where the first comment is written
+  const SECOND_AT = 12;    // ...and the second
   const REPLAY_FROM = 6.6;
-  const REPLAY_TO = 10;
+  const REPLAY_TO = 13;
   const WISTIA_ID = 'xyco9e53i1';
 
   // The finished video is 40.4s. Its parts sit in a longer raw take, in source seconds.
   const DURATION = 63.2;
   const KEPT = [[3, 8.6], [11, 17], [19.5, 26.3], [28.8, 33.6], [36, 43.4], [46, 53], [56.2, 59]];
+  // What the AI adds (source seconds, inside the kept parts): a zoom on every key line, a sound on every beat, pictures on top
   const ZOOMS = [
-    { start: 4.2, end: 6.8, type: 'push', scale: 118 },
-    { start: 22.2, end: 24.8, type: 'push', scale: 118 },
-    { start: 38.4, end: 41, type: 'push', scale: 115 },
-    { start: 48.4, end: 51, type: 'push', scale: 115 }
+    { start: 3.6, end: 5.4, type: 'push', scale: 115 },
+    { start: 6.4, end: 8.4, type: 'push', scale: 125 },
+    { start: 11.2, end: 12.4, type: 'punch', scale: 112 },
+    { start: 14.4, end: 16.6, type: 'push', scale: 120 },
+    { start: 20.2, end: 22, type: 'punch', scale: 112 },
+    { start: 23.4, end: 26, type: 'push', scale: 118 },
+    { start: 32, end: 33.4, type: 'punch', scale: 110 },
+    { start: 36.6, end: 38.6, type: 'punch', scale: 115 },
+    { start: 39.8, end: 42.6, type: 'push', scale: 122 },
+    { start: 47, end: 49.4, type: 'push', scale: 118 },
+    { start: 50.6, end: 52.6, type: 'punch', scale: 112 },
+    { start: 56.6, end: 58.6, type: 'push', scale: 125 }
   ];
-  const NEW_ZOOM = { start: 12.6, end: 15, type: 'push', scale: 118 };
-  const SOUNDS = [4, 11.6, 22.4, 29.4, 37, 47, 56.8];
+  const NEW_ZOOM = { start: 12.6, end: 14.2, type: 'push', scale: 118 };   // the one asked for in the chat ("chopping up clips")
+  const SOUNDS = [3.4, 6.2, 8.1, 11.4, 13.1, 15.6, 22.4, 25.2, 29, 31.2, 33, 36.4, 39, 41.8, 46.4, 48.8, 51.6, 56.6, 58.2];
+  const NEW_SOUND = 19.9;   // the one asked for in the chat (edited 0:12.0)
+  const SOUND_NAMES = ['Wow', 'Cute pop', 'Ding', 'Huh', 'Glitter', 'Cash', 'Swoosh', 'Click', 'Bling'];
+  const soundName = (sec, i) => (S.whoosh && sec === S.whoosh ? 'Whoosh' : SOUND_NAMES[i % SOUND_NAMES.length]);
+  // Pictures over the video (Track 1): [source start, end, name]
+  const OVERLAYS = [[3.2, 5.6, 'Hook text'], [14.6, 16.9, 'Product shot'], [24, 26.2, 'Screenshot'], [29.2, 32.4, 'Logo'], [39.6, 42.8, 'B-roll'], [47, 50.2, 'Price tag'], [56.4, 58.9, 'Follow me']];
+  // What the AI suggests adding next (Ask AI chat): [kind's text, edited seconds]
+  const SUGGESTIONS = [['Add hook text at', 0], ['Add a zoom-in at', 19]];
+  const SUG_ZOOM = { start: 29.4, end: 31.6, type: 'push', scale: 120 };   // what the zoom suggestion adds (edited 0:19.0)
   // What's said in the video: [seconds, word]
   const SPOKEN = [[0.4, "Editing"], [0.85, "your"], [1.13, "own"], [1.35, "videos"], [1.75, "is"], [1.92, "probably"], [2.42, "the"], [2.65, "exact"], [2.98, "reason"], [3.38, "you"], [3.6, "aren't"], [4.01, "posting"], [4.47, "consistently."], [5.28, "Doing"], [5.65, "it"], [5.83, "yourself"], [6.39, "takes"], [6.76, "hours"], [7.13, "of"], [7.31, "chopping"], [7.86, "up"], [8.05, "clips,"], [8.48, "and"], [8.68, "paying"], [9.04, "a"], [9.14, "freelancer"], [9.7, "is"], [9.86, "way"], [10.06, "too"], [10.27, "expensive"], [10.78, "when"], [11.03, "you"], [11.23, "are"], [11.44, "trying"], [11.8, "to"], [11.95, "grow."], [12.26, "Just"], [12.59, "throw"], [12.99, "your"], [13.32, "raw"], [13.59, "footage"], [14.12, "into"], [14.46, "Cutly"], [14.86, "instead."], [15.46, "It"], [15.64, "is"], [15.83, "an"], [16.01, "AI"], [16.2, "video"], [16.57, "editor"], [17.0, "that"], [17.31, "does"], [17.62, "the"], [17.86, "entire"], [18.29, "job"], [18.54, "for"], [18.79, "you"], [19.03, "in"], [19.22, "seconds."], [19.77, "You"], [19.99, "need"], [20.26, "zero"], [20.53, "actual"], [20.91, "editing"], [21.35, "skills"], [21.73, "because"], [22.16, "the"], [22.38, "AI"], [22.54, "handles"], [22.98, "all"], [23.19, "the"], [23.41, "annoying"], [23.9, "parts"], [24.23, "automatically."], [25.05, "It"], [25.24, "gives"], [25.63, "you"], [25.89, "perfect"], [26.41, "auto"], [26.73, "cuts,"], [27.12, "adds"], [27.44, "captions,"], [28.09, "throws"], [28.63, "in"], [28.86, "dynamic"], [29.47, "zooms,"], [30.01, "and"], [30.2, "even"], [30.43, "layers"], [30.75, "in"], [30.89, "sound"], [31.17, "effects"], [31.55, "without"], [31.92, "you"], [32.1, "having"], [32.43, "to"], [32.57, "do"], [32.88, "anything."], [33.93, "It"], [34.12, "is"], [34.31, "ridiculously"], [35.14, "cheaper"], [35.65, "than"], [35.97, "hiring"], [36.41, "a"], [36.54, "real"], [36.86, "person."], [37.37, "Get"], [37.6, "your"], [37.89, "weekend"], [38.35, "back"], [38.64, "and"], [38.87, "let"], [39.1, "the"], [39.33, "AI"], [39.5, "do"], [39.68, "the"], [39.91, "heavy"], [40.25, "lifting."]];
   const TAKES_CUT = ['So', 'um', 'Editing', 'your', 'own'];
@@ -50,7 +72,7 @@
     return out;
   })();
 
-  const S = { edited: false, zooms: [], sfx: [], kept: [[0, DURATION]], head: 0, pxPerSec: 1, extraCut: 0 };
+  const S = { edited: false, zooms: [], sfx: [], overlays: [], kept: [[0, DURATION]], zoomAt: 0.32, sel: null, drag: null, whoosh: 0, head: 0, pxPerSec: 1, extraCut: 0, credits: START_CREDITS };
   // The same sample footage in each, so moving to the next project continues the loop without a jump
   const PROJECTS = ['Cutly promo', 'Cutly promo 2', 'Cutly promo 3'];
   let activeProject = 0;
@@ -77,199 +99,278 @@
     return DURATION;
   }
 
-  /* The timeline, as drawTimelineBase in the app */
-  const LANE = 36;
-  const RULER = 18;
+  /* The Basic timeline, as drawTimelineBase in the app: a ruler, lanes for the tracks (Track 1 pictures, Track 2 zooms,
+     the clips, Track 3 sounds), each clip = its picture as a strip of frames with its sound under it */
+  const TL = { RULER: 20, GAPY: 6, LANE: 22, CLIPH: 84, CLIPMAX: 128, SPLIT: 5 };
+  const TL_PAD = 0.2;
+  const TRACKS = [{ id: 'o1' }, { id: 'z1' }, { id: 'v', video: true }, { id: 's1' }];
   const canvas = $('timeline');
   const base = document.createElement('canvas');
-  const cssColor = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#0a0a0a';
+  const thumb = new Image();
+  thumb.src = 'video-thumb.jpg';
+  thumb.onload = () => drawTimeline();
+
+  function layout(clipH) {
+    const lanes = {};
+    const order = [];
+    let y = TL.RULER + TL.GAPY;
+    let clipY = y;
+    for (const t of TRACKS) {
+      const l = { id: t.id, video: !!t.video, y, h: t.video ? clipH : TL.LANE };
+      lanes[t.id] = l;
+      order.push(l);
+      if (t.video) clipY = y;
+      y += l.h + TL.GAPY;
+    }
+    return { lanes, order, clipY, contentEnd: y, clipH };
+  }
+  // The zoom, as the app's slider sets it: S.zoomAt (0-1) along a log scale from "fits the width" (45 px a second at least)
+  // to the most the canvas can show; the app opens a third of the way along (0.32)
+  function zoomPx(width, len) {
+    const dpr = window.devicePixelRatio || 1;
+    const lo = Math.max(45, (width - 66) / (Math.max(1, len) * (1 + TL_PAD)));
+    const hi = Math.max(lo * 2, Math.min(2000, (30000 / dpr - 200) / (Math.max(1, len) * (1 + TL_PAD))));
+    return lo * Math.pow(hi / lo, S.zoomAt);
+  }
+  const axisLength = () => (S.edited ? editedLength() - S.extraCut : DURATION);
+  const xToSrc = (px) => (S.edited ? tlToSrc(px / S.pxPerSec) : px / S.pxPerSec);
+  const srcToX = (sec) => (S.edited ? srcToTl(sec) : sec) * S.pxPerSec;
 
   function drawTimeline() {
     const wrap = $('timelineScroll');
-    canvas.style.width = '0';   // so the old drawing can't hold the area open while measuring
-    if (!wrap.clientWidth) return;
-    const len = editedLength();
-    S.pxPerSec = Math.max(4, (wrap.clientWidth - 2 - 32) / len);
+    if (!wrap.clientWidth || document.body.classList.contains('tl-closed') && !document.body.classList.contains('ai-busy')) return;
+    const len = axisLength();
+    S.pxPerSec = zoomPx(wrap.clientWidth, len);
+    if ($('tlZoomBar')) $('tlZoomBar').value = Math.round(S.zoomAt * 100);
     const dpr = window.devicePixelRatio || 1;
-    const w = Math.ceil(len * S.pxPerSec);
-    const h = Math.max(70, Math.floor(wrap.clientHeight - 14));
+    const room = Math.floor(wrap.clientHeight - 20);
+    const spare = room - (layout(TL.CLIPH).contentEnd + TL.LANE + TL.GAPY * 2);
+    const lay = layout(Math.max(TL.CLIPH, Math.min(TL.CLIPMAX, TL.CLIPH + spare)));
+    const w = Math.ceil(len * (1 + TL_PAD) * S.pxPerSec);
+    const h = Math.max(lay.contentEnd + TL.LANE + TL.GAPY * 2, room);
     for (const c of [canvas, base]) { c.width = w * dpr; c.height = h * dpr; }
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
     const g = base.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.fillStyle = cssColor('--track');
+    g.fillStyle = '#040404';
     g.fillRect(0, 0, w, h);
-    const x = (sec) => srcToTl(sec) * S.pxPerSec;
+    const { RULER, GAPY, SPLIT } = TL;
+    const { clipY, clipH } = lay;
+    const SFXH = TL.LANE;
+    const ZH = TL.LANE;
+    const sndH = Math.max(20, Math.round((clipH - SPLIT) * 0.3));
+    const picH = clipH - SPLIT - sndH;
+    const sndY = clipY + picH + SPLIT;
+    const xEnd = len * S.pxPerSec;
+    const toEnd = (x0, wdt, least) => Math.max(Math.min(least, wdt), Math.min(wdt, xEnd - x0));
 
-    const blocks = [];
-    let at = 0;
-    for (const [a, b] of S.kept) {
-      blocks.push([at * S.pxPerSec, (at + b - a) * S.pxPerSec]);
-      at += b - a;
+    for (const l of lay.order) {
+      if (l.video) continue;
+      g.beginPath();
+      g.roundRect(0, l.y, w, l.h, 4);
+      g.fillStyle = 'rgba(255,255,255,0.035)';
+      g.fill();
     }
+
+    // clips: the edited view = one block per kept clip, 6px apart; the original = one block
     const GAPW = 3;
-    blocks.forEach(([a, b], n) => {
-      const first = n === 0;
-      const last = n === blocks.length - 1;
-      const x0 = a + (first ? 1 : GAPW);
-      const x1 = b - (last ? 1 : GAPW);
-      g.beginPath();
-      g.roundRect(x0, LANE + 3, Math.max(2, x1 - x0), h - LANE - RULER - 6, 5);
-      g.fillStyle = n % 2 ? 'rgba(255,255,255,0.085)' : 'rgba(255,255,255,0.045)';
-      g.fill();
-      g.strokeStyle = 'rgba(255,255,255,0.12)';
-      g.lineWidth = 1;
-      g.stroke();
-      if (!first) {
-        g.fillStyle = cssColor('--bg');
-        g.fillRect(a - GAPW + 1, LANE, GAPW * 2 - 2, h - LANE - RULER);
+    const blocks = [];
+    if (S.edited) {
+      let at = 0;
+      for (const [a, b] of S.kept) { blocks.push([at * S.pxPerSec, (at + b - a) * S.pxPerSec]); at += b - a; }
+      blocks[blocks.length - 1][1] -= S.extraCut * S.pxPerSec;
+    } else blocks.push([0, DURATION * S.pxPerSec]);
+    const spans = blocks.map(([a, b], n) => [a + (n === 0 ? 0 : GAPW), b - (n === blocks.length - 1 ? 0 : GAPW)]);
+    g.imageSmoothingEnabled = true;
+    g.imageSmoothingQuality = 'high';
+    spans.forEach(([x0, x1]) => {
+      const cw = Math.max(2, x1 - x0);
+      g.save();
+      g.beginPath(); g.roundRect(x0, sndY, cw, sndH, 4);
+      g.fillStyle = 'rgba(255,255,255,0.07)'; g.fill();
+      g.beginPath(); g.roundRect(x0, clipY, cw, picH, 4); g.clip();
+      g.fillStyle = 'rgba(255,255,255,0.07)'; g.fillRect(x0, clipY, cw, picH);
+      if (thumb.complete && thumb.naturalWidth) {   // the picture: frames at their own shape, left to right
+        const dw = thumb.naturalWidth * picH / thumb.naturalHeight;
+        for (let px = x0; px < x1; px += dw) g.drawImage(thumb, px, clipY, dw, picH);
       }
+      g.restore();
     });
-    const inGap = (px) => blocks.length > 1 && !blocks.some(([a, b]) => px >= a + GAPW + 1 && px + 2 <= b - GAPW - 1);
-
-    const mid = LANE + (h - LANE - RULER) / 2;
-    const amp = (h - LANE - RULER) / 2 - 6;
+    // the sound: separate mirrored bars on a dark green block, brighter where it's louder
     const per = WAVE.length / DURATION;
-    const BAR = 2;
-    const GAP = 1;
-    for (let px = 0; px < w; px += BAR + GAP) {
-      if (inGap(px)) continue;
-      const i0 = Math.floor(tlToSrc(px / S.pxPerSec) * per);
-      const i1 = Math.max(i0 + 1, Math.floor(tlToSrc((px + BAR + GAP) / S.pxPerSec) * per));
-      let peak = 0;
-      for (let i = i0; i < i1 && i < WAVE.length; i++) peak = Math.max(peak, WAVE[i]);
-      const hh = Math.max(1, peak * amp);
-      g.fillStyle = 'rgba(226,228,233,0.72)';
-      g.beginPath();
-      g.roundRect(px, mid - hh, BAR, hh * 2, 1);
-      g.fill();
-    }
+    const mid = sndY + sndH / 2;
+    const ampW = sndH / 2 - 2;
+    spans.forEach(([x0, x1]) => {
+      const cw = Math.max(2, x1 - x0);
+      g.save();
+      g.beginPath(); g.roundRect(x0, sndY, cw, sndH, 4); g.clip();
+      g.fillStyle = '#0c2a22'; g.fillRect(x0, sndY, cw, sndH);
+      for (let px = x0 + 3; px + 2 < x1 - 2; px += 4) {
+        const i0 = Math.floor(xToSrc(px) * per);
+        const i1 = Math.max(i0 + 1, Math.floor(xToSrc(px + 4) * per));
+        let peak = 0;
+        for (let i = i0; i < i1 && i < WAVE.length; i++) peak = Math.max(peak, WAVE[i]);
+        const v = Math.pow(Math.min(1, peak * 1.15), 0.8);
+        const hh = Math.max(1, v * ampW);
+        g.fillStyle = `rgba(76,193,150,${(0.3 + 0.7 * Math.min(1, v * 1.4)).toFixed(2)})`;
+        g.fillRect(px, mid - hh, 2, hh * 2);
+      }
+      g.restore();
+    });
 
-    g.fillStyle = cssColor('--bg');
-    g.fillRect(0, h - RULER, w, RULER);
-    g.fillStyle = 'rgba(255,255,255,0.06)';
-    g.fillRect(0, h - RULER, w, 1);
-    g.fillStyle = 'rgba(255,255,255,0.6)';
-    for (const [a] of blocks.slice(1)) {
-      g.beginPath();
-      g.moveTo(a - 4, h - RULER);
-      g.lineTo(a + 4, h - RULER);
-      g.lineTo(a, h - RULER + 5);
-      g.closePath();
-      g.fill();
-    }
-
-    g.fillStyle = cssColor('--bg');
-    g.fillRect(0, 0, w, LANE);
-    g.fillStyle = 'rgba(255,255,255,0.06)';
-    g.fillRect(0, LANE - 1, w, 1);
-
+    // zooms: yellow chips in their own track, as long as the zoom
     g.font = '600 11px Inter, Segoe UI';
     g.textBaseline = 'middle';
-    let labelEnd = -1;
     for (const z of [...S.zooms].sort((p, q) => p.start - q.start)) {
-      const x0 = x(z.start) + 1;
-      const wz = Math.max(4, x(z.end) - x(z.start) - 2);
-      const y0 = 5;
-      const hz = LANE - 10;
-      g.beginPath();
-      g.roundRect(x0, y0, wz, hz, 7);
-      g.fillStyle = 'rgba(245,165,36,0.14)';
-      g.fill();
-      g.strokeStyle = 'rgba(245,165,36,0.7)';
-      g.lineWidth = 1;
-      g.stroke();
+      const x0 = srcToX(z.start) + 1;
+      const wz = toEnd(x0, Math.max(8, srcToX(z.end) - srcToX(z.start) - 2), 8);
+      const y0 = lay.lanes.z1.y;
+      const hot = S.drag === z;   // held / just added: bright, like the app's chip while it is dragged
+      g.beginPath(); g.roundRect(x0, y0, wz, ZH, 4);
+      g.fillStyle = hot ? '#facc15' : 'rgba(250,204,21,0.18)'; g.fill();
+      const ink = hot ? '#422006' : '#facc15';
       const label = `${Math.round(z.scale)}%`;
-      const lw = 30 + g.measureText(label).width + 9;
-      const cx = x0 + 15;
-      const ay = y0 + hz / 2;
-      if (wz >= 24 && x0 >= labelEnd) {
-        const R = 5;
-        g.strokeStyle = '#ffcf7a';
-        g.lineWidth = 1.5;
-        g.lineCap = 'round';
-        g.beginPath();
-        g.arc(cx - 1, ay - 1, R, 0, Math.PI * 2);
-        g.moveTo(cx - 1 + R * 0.72, ay - 1 + R * 0.72);
-        g.lineTo(cx + 5.5, ay + 5.5);
-        if (z.type !== 'punch') { g.moveTo(cx - 3.5, ay - 1); g.lineTo(cx + 1.5, ay - 1); }
-        if (z.type === 'push') { g.moveTo(cx - 1, ay - 3.5); g.lineTo(cx - 1, ay + 1.5); }
-        g.stroke();
-        g.lineCap = 'butt';
-        if (z.type === 'punch') {
-          g.beginPath();
-          g.arc(cx - 1, ay - 1, 1.6, 0, Math.PI * 2);
-          g.fillStyle = '#ffcf7a';
-          g.fill();
-        }
-        if (lw <= wz) {
-          g.fillStyle = '#ffd89a';
-          g.fillText(label, x0 + 27, ay + 0.5);
-          labelEnd = x0 + lw;
-        } else labelEnd = x0 + 24;
+      const tw = g.measureText(label).width;
+      if (wz < 24 + tw + 8 && wz >= tw + 12) {
+        g.fillStyle = ink; g.fillText(label, x0 + (wz - tw) / 2, y0 + ZH / 2 + 0.5);
+      } else if (wz >= 24) {
+        const cx = x0 + 12;
+        const cy = y0 + ZH / 2;
+        const R = 4.4;
+        g.strokeStyle = ink; g.lineWidth = 1.5; g.lineCap = 'round';
+        g.beginPath(); g.arc(cx - 1, cy - 1, R, 0, Math.PI * 2);
+        g.moveTo(cx - 1 + R * 0.72, cy - 1 + R * 0.72); g.lineTo(cx + 4.2, cy + 4.2);
+        if (z.type !== 'punch') { g.moveTo(cx - 3.4, cy - 1); g.lineTo(cx + 1.4, cy - 1); }
+        if (z.type === 'push') { g.moveTo(cx - 1, cy - 3.4); g.lineTo(cx - 1, cy + 1.4); }
+        g.stroke(); g.lineCap = 'butt';
+        if (z.type === 'punch') { g.beginPath(); g.arc(cx - 1, cy - 1, 1.5, 0, Math.PI * 2); g.fillStyle = ink; g.fill(); }
+        if (wz >= 24 + tw + 8) { g.fillStyle = ink; g.fillText(label, x0 + 22, cy + 0.5); }
       }
     }
 
-    for (const sec of S.sfx) {
-      const sx = Math.round(x(sec)) + 0.5;
-      const B = 20;
-      const by = LANE + 5;
-      const bx = sx - B / 2;
-      g.fillStyle = 'rgba(179,136,255,0.45)';
-      g.fillRect(sx - 0.5, by + B, 1, h - RULER - 10 - by - B);
-      g.beginPath();
-      g.roundRect(bx, by, B, B, 6);
-      g.fillStyle = '#2a2238';
-      g.fill();
-      g.strokeStyle = 'rgba(179,136,255,0.75)';
-      g.lineWidth = 1;
-      g.stroke();
-      const cx = bx + 6.5;
-      const cy = by + B / 2;
-      g.beginPath();
-      g.moveTo(cx - 2.5, cy - 2);
-      g.lineTo(cx, cy - 2);
-      g.lineTo(cx + 3, cy - 4.5);
-      g.lineTo(cx + 3, cy + 4.5);
-      g.lineTo(cx, cy + 2);
-      g.lineTo(cx - 2.5, cy + 2);
-      g.closePath();
-      g.fillStyle = '#d9c6ff';
-      g.fill();
-      g.strokeStyle = '#d9c6ff';
-      g.lineWidth = 1.3;
-      g.lineCap = 'round';
-      g.beginPath();
-      g.arc(cx + 3.5, cy, 3, -0.8, 0.8);
-      g.stroke();
-      g.beginPath();
-      g.arc(cx + 3.5, cy, 5.5, -0.8, 0.8);
-      g.stroke();
-      g.lineCap = 'butt';
+    // overlays (pictures over the video): blue-violet chips in the top track, as long as they show
+    for (const [a, b, name] of S.overlays) {
+      const x0 = srcToX(a) + 1;
+      const wo = toEnd(x0, Math.max(8, srcToX(b) - srcToX(a) - 2), 8);
+      const y0 = lay.lanes.o1.y;
+      g.beginPath(); g.roundRect(x0, y0, wo, TL.LANE, 4);
+      g.fillStyle = 'rgba(139,92,246,0.32)'; g.fill();
+      const ink = '#c3a6ff';
+      const cx = x0 + 12;
+      const cy = y0 + TL.LANE / 2;
+      g.save(); g.beginPath(); g.rect(x0, y0, wo - 4, TL.LANE); g.clip();
+      if (wo >= 22) {   // a small picture icon: frame, sun, hill
+        g.strokeStyle = ink; g.lineWidth = 1.3; g.lineJoin = 'round';
+        g.beginPath(); g.roundRect(cx - 5, cy - 4.5, 10, 9, 2); g.stroke();
+        g.beginPath(); g.moveTo(cx - 4.5, cy + 4); g.lineTo(cx - 1, cy + 0.5); g.lineTo(cx + 1.5, cy + 3); g.lineTo(cx + 5, cy); g.stroke();
+        g.beginPath(); g.arc(cx - 1.6, cy - 1.6, 1.1, 0, Math.PI * 2); g.fillStyle = ink; g.fill();
+      }
+      if (wo >= 40) { g.fillStyle = ink; g.fillText(name, x0 + 23, cy + 0.5); }
+      g.restore();
+    }
+
+    // sound effects: a soft green pill with a mini waveform and the name, a line from it through the clip at the moment
+    const sfxXs = S.sfx.map((sec) => Math.round(srcToX(sec)) + 0.5).sort((p, q) => p - q);
+    S.sfx.forEach((sec, i) => {
+      const sx = Math.round(srcToX(sec)) + 0.5;
+      const name = soundName(sec, i);
+      // a pill never runs into the next sound: it gets shorter instead (and the name is clipped to it)
+      const next = sfxXs.find((x) => x > sx + 0.5);
+      const room = next === undefined ? Infinity : Math.max(SFXH, next - sx - 3);
+      const cw = Math.min(room, toEnd(sx - SFXH / 2, Math.min(150, 32 + g.measureText(name).width + 14), SFXH));
+      const by = lay.lanes.s1.y;
+      const bx = sx - SFXH / 2;
+      g.fillStyle = 'rgba(74,222,128,0.8)';
+      g.fillRect(sx - 0.75, clipY + clipH, 1.5, by - clipY - clipH);
+      g.beginPath(); g.arc(sx, clipY + clipH - 0.5, 2.6, 0, Math.PI * 2); g.fill();
+      const hot = S.drag === 'sound' && sec === S.whoosh;
+      g.beginPath(); g.roundRect(bx, by, cw, SFXH, 4);
+      g.fillStyle = hot ? '#4ade80' : 'rgba(34,197,94,0.2)'; g.fill();
+      const cy = by + SFXH / 2;
+      g.fillStyle = hot ? '#052e16' : '#6ee7a0';
+      [[0, 4], [4, 10], [8, 6], [12, 2.5]].forEach(([dx, hh]) => { g.beginPath(); g.roundRect(bx + 11 + dx, cy - hh / 2, 2, hh, 1); g.fill(); });
+      g.save(); g.beginPath(); g.rect(bx, by, cw - 8, SFXH); g.clip();
+      g.fillText(name, bx + 32, cy + 0.5); g.restore();
+    });
+    if (S.sel !== null && spans[S.sel]) {
+      const [sx, ex] = spans[S.sel];
+      const sw = ex - sx;
+      const top = clipY - 3;
+      const hgt = clipH + 6;
+      g.fillStyle = 'rgba(0,0,0,0.62)';
+      g.fillRect(0, clipY, Math.max(0, sx), clipH);
+      g.fillRect(sx + sw, clipY, Math.max(0, w - sx - sw), clipH);
+      g.strokeStyle = '#ffffff'; g.lineWidth = 2.5;
+      g.beginPath(); g.roundRect(sx, top, sw, hgt, 5); g.stroke();
+      g.fillStyle = '#ffffff';
+      for (const gx of [sx, sx + sw]) { g.beginPath(); g.roundRect(gx - 3, clipY + clipH / 2 - 12, 6, 24, 3); g.fill(); }
+      const [a, b] = S.kept[S.sel];
+      const label = `${(b - a).toFixed(1)}s`;
+      g.font = '600 11px Inter, Segoe UI';
+      const lw = g.measureText(label).width + 16;
+      const zoomY = clipY - GAPY - ZH;
+      g.beginPath(); g.roundRect(sx, zoomY, lw, ZH, 7); g.fillStyle = '#ffffff'; g.fill();
+      g.fillStyle = '#0a0a0a'; g.fillText(label, sx + 8, zoomY + ZH / 2 + 0.5);
+      S.selBox = { x0: sx, x1: ex, y: clipY + clipH / 2 };
     }
     g.textBaseline = 'alphabetic';
 
+    // ruler on top: a few clear time labels, small ticks
+    g.fillStyle = '#040404'; g.fillRect(0, 0, w, RULER);
     const step = S.pxPerSec > 60 ? 1 : S.pxPerSec > 15 ? 5 : 10;
     const minor = step / 5;
-    g.font = '500 10px Inter, Segoe UI';
+    g.font = '500 11px Inter, Segoe UI';
     g.textBaseline = 'middle';
-    for (let k = 0; k * minor < len; k++) {
+    for (let k = 0; k * minor < len * (1 + TL_PAD); k++) {
       const t = k * minor;
       const major = k % 5 === 0;
       const tx = t * S.pxPerSec;
-      g.fillStyle = major ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.1)';
-      g.fillRect(Math.round(tx), h - RULER + 1, 1, major ? 6 : 3);
-      if (major) {
-        g.fillStyle = '#6c6c71';
-        g.fillText(fmt(Math.round(t * 1000) / 1000).replace(/\.\d$/, ''), tx + 4, h - RULER / 2 + 2);
-      }
+      g.fillStyle = major ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
+      g.fillRect(Math.round(tx), RULER - (major ? 7 : 4), 1, major ? 7 : 4);
+      if (major) { g.fillStyle = '#8a8a8a'; g.fillText(fmt(Math.round(t * 1000) / 1000).replace(/\.\d$/, ''), tx + 5, RULER / 2 - 1); }
     }
     g.textBaseline = 'alphabetic';
+    S.lay = lay;
+    placeGutter();
     drawPlayhead();
   }
 
+  // The track controls in the left gutter: a grip, a + and the track's name; the gray + below the last track
+  const GRIP_SVG = '<svg viewBox="0 0 8 14" aria-hidden="true"><circle cx="2" cy="3" r="1"/><circle cx="6" cy="3" r="1"/><circle cx="2" cy="7" r="1"/><circle cx="6" cy="7" r="1"/><circle cx="2" cy="11" r="1"/><circle cx="6" cy="11" r="1"/></svg>';
+  const PLUS_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>';
+  function placeGutter() {
+    const box = $('tlCtls');
+    const sc = $('timelineScroll');
+    if (!box || !S.lay) return;
+    if (!box.dataset.built) {
+      box.dataset.built = '1';
+      box.innerHTML = '';
+      let num = 0;
+      for (const t of TRACKS) {
+        if (t.video) continue;
+        num++;
+        const c = document.createElement('div');
+        c.className = 'tl-ctl';
+        c.dataset.id = t.id;
+        c.innerHTML = `<button class="tl-grip" type="button" tabindex="-1">${GRIP_SVG}</button><button class="tl-add gen" type="button" tabindex="-1">${PLUS_SVG}</button><span class="tl-name">Track ${num}</span>`;
+        box.appendChild(c);
+      }
+      const n = document.createElement('button');
+      n.id = 'tlNewTrack';
+      n.className = 'tl-newtrack';
+      n.type = 'button';
+      n.tabIndex = -1;
+      n.innerHTML = PLUS_SVG;
+      box.appendChild(n);
+    }
+    const top = sc.offsetTop - sc.scrollTop;
+    for (const c of box.querySelectorAll('.tl-ctl')) c.style.top = top + S.lay.lanes[c.dataset.id].y + 'px';
+    $('tlNewTrack').style.top = top + S.lay.contentEnd + 'px';
+  }
+
   function drawPlayhead() {
+    if (!canvas.width) return;
     const dpr = window.devicePixelRatio || 1;
     const g = canvas.getContext('2d');
     g.setTransform(1, 0, 0, 1, 0, 0);
@@ -277,10 +378,13 @@
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const px = S.head * S.pxPerSec;
     const H = canvas.height / dpr;
+    // while it plays, a timeline wider than its window turns a whole page when the playhead reaches the right edge
+    const sc = $('timelineScroll');
+    if (S.playing && (px > sc.scrollLeft + sc.clientWidth - 6 || px < sc.scrollLeft)) sc.scrollLeft = Math.max(0, px - 8);
     g.fillStyle = '#ffffff';
-    g.fillRect(px - 0.75, 0, 1.5, H);
+    g.fillRect(px - 1, 0, 2, H);
     g.beginPath();
-    g.roundRect(px - 5, 0, 10, 9, [0, 0, 4, 4]);
+    g.roundRect(px - 6, 0, 12, 15, [0, 0, 5, 5]);
     g.fill();
   }
 
@@ -292,7 +396,6 @@
     const x = Math.min(1, Math.max(0, t));
     return x * x * x * (x * (6 * x - 15) + 10);
   };
-  // A push that doesn't end on a cut: in and back out, both eased, with a soft turn at the top
   function zoomAt(t) {
     if (!S.edited) return 1;
     const src = tlToSrc(t);
@@ -337,7 +440,6 @@
     if (el.requestVideoFrameCallback) {
       el.requestVideoFrameCallback(onFrame);
     } else {
-      // Browsers without a frame clock: draw on every screen refresh instead
       (function onRefresh() {
         if (el !== S.video) return;
         if (!el.paused) drawFrame(el, el.currentTime);
@@ -430,58 +532,51 @@
     el.classList.remove('demo-press');
     await sleep(110);
   }
-  async function type(el, text) {
+  async function type(el, text, after) {
     for (let i = 1; i <= text.length; i++) {
       el.value = text.slice(0, i);
+      if (after) after();
       await sleep(38);
     }
   }
 
+  /* The screens, as the app switches them (showStage): the New project page, or a project in the editor */
+  function showStage(which) {
+    $('newPage').classList.remove('hidden');
+    $('needVideo').classList.add('hidden');
+    $('empty').classList.toggle('hidden', which !== 'empty');
+    $('analyzing').classList.add('hidden');
+    for (const id of ['player', 'panel', 'timelineWrap']) $(id).classList.toggle('hidden', which !== 'player');
+    document.body.classList.toggle('no-project', which !== 'player');
+  }
+  function setCredits(n) {
+    S.credits = n;
+    for (const id of ['npCredits', 'drCredits']) {
+      const el = $(id);
+      if (!el) continue;
+      el.classList.remove('hidden');
+      el.dataset.level = 'ok';
+      el.textContent = credits(n) + ' left';
+    }
+  }
+
   /* Setting up the real elements */
-  function buildProjects() {
+  // The project list: the open one is "Uploaded" until the AI edits it, then "AI is editing", then "Edited", like the app's tags
+  function buildProjects(state) {
     const list = $('videoList');
     list.innerHTML = '';
     PROJECTS.forEach((name, i) => {
       const el = document.createElement('div');
-      el.className = 'video-item' + (i === activeProject ? ' on' : '');
-      el.innerHTML = `<div class="thumb"><img src="video-thumb.jpg" alt=""></div><div class="item-text"><div class="name"><span>${name}</span><em></em></div><div class="state">${fmt(DURATION).slice(0, -2)}<span class="ready-tag" data-s="ready">Ready</span></div></div>`;
+      const mine = i === activeProject;
+      el.className = 'video-item' + (mine && state ? ' on' : '');
+      const busy = mine && state === 'busy';
+      const tag = mine && state === 'new' ? '<span class="ready-tag" data-s="new">Uploaded</span>' : '<span class="ready-tag" data-s="ready">Edited</span>';
+      el.innerHTML = `<div class="thumb"><img src="video-thumb.jpg" alt=""></div><div class="item-text"><div class="name"><span>${name}</span><em>${busy ? '' : fmt(DURATION).replace(/\.\d$/, '')}</em></div>`
+        + (busy ? '<div class="state" data-s="busy">AI is editing</div>' : `<div class="state" data-s="ready">${tag}</div>`) + '</div>'
+        + '<button class="item-del item-more" aria-label="More" tabindex="-1"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="12.5" cy="8" r="1.2"/></svg></button>';
       list.appendChild(el);
     });
     $('projectsEmpty').classList.add('hidden');
-  }
-  function buildRenderSelect() {
-    const sel = $('renderFmt');
-    sel.classList.add('hidden');
-    if (sel.nextElementSibling && sel.nextElementSibling.classList.contains('dd')) return;
-    const dd = document.createElement('div');
-    dd.className = 'dd';
-    dd.innerHTML = '<button type="button" class="dd-btn"><span>MP4 - 1080p</span><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></button>';
-    sel.after(dd);
-  }
-  function buildTemplates() {
-    const grid = $('suTemplates');
-    grid.innerHTML = '';
-    [
-      { id: 'clean', color: '#111111', box: true },
-      { id: 'shadow', color: '#ffffff' }
-    ].forEach((t, i) => {
-      const b = document.createElement('button');
-      b.className = 'tpl' + (i === 0 ? ' on' : '');
-      b.innerHTML = '<span class="tpl-view"><span class="tpl-text">Your caption</span></span>';
-      const txt = b.querySelector('.tpl-text');
-      txt.style.fontFamily = '"TikTok Sans Bold", "Segoe UI", sans-serif';
-      txt.style.color = t.color;
-      if (t.box) {
-        txt.style.background = '#ffffff';
-        txt.style.padding = '5px 9px';
-        txt.style.borderRadius = '5px';
-      } else {
-        txt.style.webkitTextStroke = '3.15px #000000';
-        txt.style.paintOrder = 'stroke fill';
-        txt.style.filter = 'drop-shadow(1.8px 1.8px 0 #000000)';
-      }
-      grid.appendChild(b);
-    });
   }
   function buildTranscript() {
     const box = $('transcript');
@@ -495,159 +590,235 @@
       box.appendChild(document.createTextNode(' '));
     };
     TAKES_CUT.forEach((w) => add(w, 'cut'));
-    SPOKEN.forEach(([, w], i) => add(w, /^Cutly\b/.test(w) ? 'hl' : '', i >= DRAG_FROM && i < DRAG_FROM + DRAG_WORDS));
+    SPOKEN.forEach(([, w], i) => add(w, '', i >= DRAG_FROM && i < DRAG_FROM + DRAG_WORDS));
   }
   function setPlayIcon(state) { $('play').dataset.state = state; }
   function setLengths() {
-    $('lengths').innerHTML = S.edited
-      ? `Original ${fmt(DURATION)}<span class="dot">·</span><span class="edited">Edited ${fmt(editedLength() - S.extraCut)}</span>`
-      : `Original ${fmt(DURATION)}`;
+    $('lengths').innerHTML = `<b class="len-now" id="lenNow">0:00.0</b><span class="len-of">/ ${fmt(axisLength())}</span>`;
   }
   function setTime(t) {
-    const len = S.edited ? editedLength() - S.extraCut : DURATION;
-    $('time').textContent = `${fmt(t)} / ${fmt(len)}`;
+    $('time').textContent = `${fmt(t)} / ${fmt(axisLength())}`;
     $('aiStamp').textContent = fmt(t);
+    if ($('lenNow')) $('lenNow').textContent = fmt(t);
   }
   function showTab(name) {
     document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === name));
     document.querySelectorAll('#panel .tab').forEach((t) => t.classList.toggle('on', t.id === 'tab-' + name));
   }
+  const AI_MARK = '<span class="ai-mark" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M7 2l1.5 4.5L13 8l-4.5 1.5L7 14l-1.5-4.5L1 8l4.5-1.5zM12.5 1l.6 1.9 1.9.6-1.9.6-.6 1.9-.6-1.9-1.9-.6 1.9-.6z"/></svg></span>';
+  const TICK = '<svg class="ai-tick" viewBox="0 0 16 16" aria-label="Done"><path d="M3.5 8.5l3 3 6-7"/></svg>';
   function addMessage(kind, text, stamp) {
     const el = document.createElement('div');
     if (kind === 'me') {
       el.className = 'msg me';
-      el.innerHTML = '<div class="bubble"><div class="ai-text"></div></div><div class="msg-meta"><button class="ai-stamp"></button></div>';
+      el.innerHTML = '<div class="bubble"><div class="ai-text"></div></div><div class="msg-meta"><button class="ai-stamp" type="button" tabindex="-1"></button></div>';
       el.querySelector('.ai-text').textContent = text;
       el.querySelector('.ai-stamp').textContent = stamp;
-    } else if (kind === 'typing') {
+    } else if (kind === 'working') {
       el.className = 'msg ai';
-      el.innerHTML = '<div class="ai-say"><span class="typing"><i></i><i></i><i></i></span></div>';
+      el.innerHTML = '<div class="ai-progress"><span class="typing"><i></i><i></i><i></i></span><span class="ai-progress-word"></span></div>';
+      el.querySelector('.ai-progress-word').textContent = WORK_WORDS[0];
     } else {
       el.className = 'msg ai';
-      el.innerHTML = '<div class="ai-say"></div>';
+      el.innerHTML = `${AI_MARK}<div class="ai-card"><div class="ai-say"></div></div>`;
       el.querySelector('.ai-say').textContent = text;
     }
     $('aiList').appendChild(el);
     $('aiEmpty').classList.add('hidden');
+    chatToEnd();
     return el;
   }
-  function setRun(html, opts) {
-    const run = $('aiRun');
-    run.innerHTML = html;
-    run.disabled = !!(opts && opts.disabled);
-    run.classList.toggle('running', !!(opts && opts.running));
+  // the chat's own box scrolls to the newest message, now and once the layout has settled (scrollIntoView would scroll the
+  // website around the demo too)
+  function chatToEnd() {
+    const box = $('aiScroll');
+    if (!box) return;
+    box.scrollTop = box.scrollHeight;
+    requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+    setTimeout(() => { box.scrollTop = box.scrollHeight; }, 450);   // after the suggestions have slid open (the chat got shorter)
   }
-  const RUNNING = '<span class="ai-spin"></span><span>AI is editing</span>';
+  function showSuggestions(on, list = SUGGESTIONS) {
+    const box = $('aiSugs');
+    if (!box) return;
+    $('aiSugsIn').innerHTML = !on ? '' : '<div class="ai-sugs-title">Suggestions</div>' + list.map(([text, at]) =>
+      `<div class="ai-sug"><span class="ai-sug-text"><span>${text}</span> <span class="ai-stamp">${fmt(at)}</span></span><button class="ai-sug-plus" type="button" aria-label="Add" tabindex="-1">${PLUS_SVG}</button></div>`).join('');
+    box.classList.toggle('sugs-off', !on);
+  }
+  // The button under the chat, as the app labels it
+  // (state "edit": a video the AI hasn't edited yet - the button edits it, the comment box stays hidden: .ai-foot.pre-edit)
+  function setRun(state, n) {
+    const run = $('aiRun');
+    document.querySelector('.ai-foot').classList.toggle('pre-edit', state === 'edit' || state === 'running' && !S.edited);
+    run.classList.toggle('idle', state === 'idle');
+    run.classList.toggle('running', state === 'running');
+    run.disabled = state !== 'ready' && state !== 'edit';
+    if (state === 'running') run.innerHTML = '<span class="ai-spin"></span><span>AI is editing</span>';
+    else if (state === 'edit') run.textContent = `Edit with AI · ${credits(PRICES.edit)}`;
+    else run.textContent = state === 'ready' ? `Run AI on ${n} comment${n > 1 ? 's' : ''} · ${credits(PRICES.ask * n)}` : 'Add a comment to run the AI';
+  }
+  function setTimeline(open) {
+    document.body.classList.toggle('tl-closed', !open);
+    $('tlToggleText').textContent = 'Open timeline';
+    if (open) { drawTimeline(); requestAnimationFrame(drawTimeline); }   // now, and again once the layout has settled
+  }
+  // The Export video window, filled the way the app fills it
+  function fillExport() {
+    $('xpName').value = PROJECTS[activeProject] + ' - edit';
+    const seg = (id, names, on) => {
+      $(id).innerHTML = names.map((n, i) => `<button type="button" tabindex="-1" aria-pressed="${i === on}"${i === on ? ' class="on"' : ''}>${n}</button>`).join('');
+    };
+    seg('xpSize', ['720p', '1080p', 'Original'], 1);
+    seg('xpQuality', ['30 MB', 'High', 'Best'], 0);
+    $('xpCaptions').checked = true;
+    $('xpSummary').innerHTML = `<b>~24 MB</b>1080 × 1920 · ${fmt(axisLength()).replace(/\.\d$/, '')}`;
+  }
+
+  // The chat so far: the video was edited by the AI once and two changes were asked for and done
+  const HISTORY = [['ai', 'Your video is ready to preview.'], ['me', 'Cut the part where I stumble', 2.4], ['me', 'Make the captions a bit bigger', 5.1], ['ai', 'Editing complete! You can take a look!']];
+  function edited() {
+    Object.assign(S, { edited: true, kept: KEPT.map((k) => k.slice()), zooms: ZOOMS.slice(), sfx: SOUNDS.slice(), overlays: OVERLAYS.slice(),
+      zoomAt: 0.32, sel: null, drag: null, whoosh: 0, head: 0, extraCut: 0 });
+  }
 
   function reset() {
-    Object.assign(S, { edited: false, zooms: [], sfx: [], kept: [[0, DURATION]], head: 0, extraCut: 0 });
-    document.body.classList.remove('no-project', 'ai-busy');
-    ['player', 'panel', 'timelineWrap'].forEach((id) => $(id).classList.remove('hidden'));
-    ['empty', 'analyzing', 'projectsEmpty', 'toast'].forEach((id) => $(id).classList.add('hidden'));
-    $('storageBtn').classList.add('hidden');
+    edited();
+    document.body.classList.remove('ai-busy', 'first-edit');
+    ['projectsEmpty', 'toast', 'exportDlg'].forEach((id) => $(id).classList.add('hidden'));
+    // the demo stays in the open editor: a project the AI has edited once, its timeline open, its chat so far
+    showStage('player');
+    buildProjects('ready');
+    setCredits(START_CREDITS);
     $('previewEdit').checked = true;
     showTab('ai');
-    $('aiSetup').classList.remove('hidden');
-    document.querySelector('.ai-foot').classList.add('pre-edit');
+    $('aiDisclaimer').classList.remove('hidden');
     $('aiEmpty').classList.add('hidden');
     $('aiList').innerHTML = '';
+    for (const [kind, text, at] of HISTORY) {
+      const el = addMessage(kind, text, fmt(at));
+      if (kind === 'me') { el.classList.add('done'); el.querySelector('.msg-meta').insertAdjacentHTML('beforeend', TICK); }
+    }
+    showSuggestions(true);
+    chatToEnd();
     $('aiCount').textContent = '';
     $('aiText').value = '';
-    $('suBrief').value = '';
-    $('suLen').value = 60;
-    $('suLenV').textContent = '60s';
-    ['suFirst', 'suZooms', 'suSfx', 'suCaps', 'suHl'].forEach((id) => { $(id).checked = false; });
-    document.querySelectorAll('.su-caps-only').forEach((el) => el.classList.add('hidden'));
-    $('render').textContent = 'Render video';
+    $('render').textContent = 'Export video';
     $('render').disabled = false;
-    setRun(`Edit with AI · ${credits(PRICES.edit)}`);
+    setRun('idle');
     setPlayIcon('play');
+    $('timelineScroll').scrollLeft = 0;
+    setTimeline(true);
     setLengths();
     setTime(0);
     buildTranscript();
-    $('demoVideo').classList.add('raw');   // before the edit: the still without captions
+    $('demoVideo').classList.remove('raw');   // the edited video, with its captions
     S.playing = false;
     videoCall((v) => { v.pause(); v.currentTime = 0; });
-    drawTimeline();
   }
 
-  // Runs one edit from setup to render, then opens the next project, which is where the next run starts
-  async function story() {
-    /* Set up the edit */
-    for (const id of ['suFirst', 'suZooms', 'suSfx', 'suCaps']) {
-      await click($(id).closest('label'), 480);
-      $(id).checked = true;
-      if (id === 'suCaps') document.querySelectorAll('.su-caps-only').forEach((el) => el.classList.remove('hidden'));
-      await sleep(130);
-    }
-    await click($('suBrief'));
-    await type($('suBrief'), NOTE);
-    await sleep(350);
-    await click($('aiRun'));
-
-    /* The AI edits */
-    setRun(RUNNING, { disabled: true, running: true });
-    document.body.classList.add('ai-busy');
-    cursor.classList.remove('on');
-    $('aiWorkTitle').textContent = 'AI is editing';
-    await tween(5600, (p) => {
-      $('aiWorkPct').textContent = Math.round(p * 100) + '%';
-      $('aiWorkBar').firstElementChild.style.width = Math.round(p * 100) + '%';
-      $('aiWorkStep').textContent = AI_STEPS[Math.min(Math.floor(p * AI_STEPS.length), AI_STEPS.length - 1)] + '...';
-    });
-    document.body.classList.remove('ai-busy');
-    $('demoVideo').classList.remove('raw');   // the edit is done: the video with its captions
-    S.edited = true;
-    S.kept = KEPT;
-    S.zooms = ZOOMS.slice();
-    S.sfx = SOUNDS.slice();
-    $('aiSetup').classList.add('hidden');
-    document.querySelector('.ai-foot').classList.remove('pre-edit');
-    addMessage('ai', "Done. I cut the retakes and long pauses, then added zooms, sounds and captions. It's now 0:40.");
-    setRun('Run AI', { disabled: true });
-    setLengths();
-    setTime(0);
-    drawTimeline();
-    cursor.classList.add('on');
-    await sleep(1400);
-
-    /* Play the result */
+  // Plays the edit from one moment to another on the timeline (the video, the playhead and the time follow)
+  async function playTo(from, to) {
     await click($('play'));
     setPlayIcon('pause');
     playVideo();
-    await tween(PAUSE_AT * 1000, (p) => {
-      const t = p * PAUSE_AT;
-      S.head = t;
-      setTime(t);
+    await tween((to - from) * 1000, (p) => {
+      S.head = from + p * (to - from);
+      setTime(S.head);
       drawPlayhead();
     });
     pauseVideo();
     await click($('play'), 450);
     setPlayIcon('play');
-    await sleep(400);
+    await sleep(350);
+  }
+  /* Working on the timeline with the cursor: points are canvas pixels (x along the time, y down the tracks) */
+  function canvasPoint(x, y) {
+    const r = canvas.getBoundingClientRect();
+    return [r.left + x, r.top + y];
+  }
+  async function cursorTo(x, y, ms) {
+    const [px, py] = canvasPoint(x, y);
+    cursor.style.transition = `transform ${ms}ms cubic-bezier(.22,.61,.36,1), opacity .3s`;
+    cursor.style.transform = `translate(${px}px, ${py}px)`;
+    await sleep(ms + 40);
+  }
+  // The cursor held down while something follows it: draw(p) moves the thing, follow(p) says where the cursor is
+  async function drag(ms, draw, follow) {
+    cursor.classList.add('clicking');
+    cursor.style.transition = 'opacity .3s';
+    await sleep(120);
+    await tween(ms, (p) => {
+      const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;   // eased like a hand
+      draw(e);
+      drawTimeline();
+      const [x, y] = canvasPoint(...follow(e));
+      cursor.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    await sleep(120);
+    cursor.classList.remove('clicking');
+  }
+  async function pressAt(x, y, ms) {
+    await cursorTo(x, y, ms || 600);
+    cursor.classList.add('clicking');
+    await sleep(130);
+    cursor.classList.remove('clicking');
+    await sleep(110);
+  }
+  // Glides the timeline sideways so a moment shows, like scrolling it by hand
+  async function scrollTimelineTo(left, ms) {
+    const sc = $('timelineScroll');
+    const from = sc.scrollLeft;
+    const to = Math.max(0, Math.min(sc.scrollWidth - sc.clientWidth, left));
+    await tween(ms || 700, (p) => { sc.scrollLeft = from + (to - from) * (1 - Math.pow(1 - p, 3)); placeGutter(); });
+  }
 
-    /* Ask for a change */
+  // Writes a comment pinned to the playhead's moment and adds it to the chat
+  async function comment(text, open) {
     await click($('aiText'));
-    await type($('aiText'), COMMENT);
+    await type($('aiText'), text);
     await sleep(250);
     await click($('aiAdd'), 420);
     $('aiText').value = '';
-    const bubble = addMessage('me', COMMENT, fmt(PAUSE_AT));
-    $('aiCount').textContent = '1';
-    setRun(`Run AI on 1 comment · ${credits(PRICES.ask)}`);
+    showSuggestions(false);
+    const bubble = addMessage('me', text, fmt(S.head));
+    $('aiCount').textContent = String(open);
+    setRun('ready', open);
     await sleep(450);
+    return bubble;
+  }
+
+  // One project in the open editor: watch, comment, run the AI, cut words, export. Then the next project opens.
+  async function story() {
+    await sleep(900);
+
+    /* Watch, and write what to change at two moments */
+    await playTo(0, PAUSE_AT);
+    const first = await comment(COMMENT, 1);
+    await playTo(PAUSE_AT, SECOND_AT);
+    const second = await comment(COMMENT_2, 2);
+
+    /* Run the AI on both comments */
     await click($('aiRun'));
-    setRun(RUNNING, { disabled: true, running: true });
-    const typing = addMessage('typing');
-    await sleep(1800);
-    typing.remove();
-    bubble.classList.add('done');
-    bubble.querySelector('.msg-meta').insertAdjacentHTML('beforeend', '<span class="ai-done">· Done</span>');
+    setCredits(S.credits - PRICES.ask * 2);
+    setRun('running');
+    const working = addMessage('working');
+    await tween(2600, (p) => {
+      working.querySelector('.ai-progress-word').textContent = WORK_WORDS[Math.min(WORK_WORDS.length - 1, Math.floor(p * WORK_WORDS.length))];
+    });
+    working.remove();
+    for (const bubble of [first, second]) {
+      bubble.classList.add('done');
+      bubble.querySelector('.msg-meta').insertAdjacentHTML('beforeend', TICK);
+    }
     $('aiCount').textContent = '';
-    addMessage('ai', 'Added a zoom in on "chopping up clips" at 0:07.');
-    setRun('Run AI', { disabled: true });
+    addMessage('ai', READY[(activeProject + 3) % READY.length]);
+    setRun('idle');
     S.zooms = ZOOMS.concat(NEW_ZOOM);
+    S.sfx = SOUNDS.concat(NEW_SOUND);
+    S.whoosh = NEW_SOUND;
     drawTimeline();
+    showSuggestions(true);
+
+    /* Watch the change */
     videoCall((v) => { v.currentTime = REPLAY_FROM; });
     S.head = REPLAY_FROM;
     setTime(REPLAY_FROM);
@@ -664,61 +835,144 @@
     setPlayIcon('play');
     await sleep(500);
 
+    /* Nudge the new whoosh a little later: grab it and drag it along its track */
+    const lanes = () => S.lay.lanes;
+    const pillX = () => srcToX(S.whoosh) + 28;
+    await cursorTo(pillX(), lanes().s1.y + TL.LANE / 2, 700);
+    const from = S.whoosh;
+    const sfxAt = S.sfx.indexOf(S.whoosh);
+    S.drag = 'sound';
+    await drag(900, (p) => { S.whoosh = S.sfx[sfxAt] = from + 0.45 * p; }, () => [pillX(), lanes().s1.y + TL.LANE / 2]);
+    S.drag = null;
+    drawTimeline();
+    await sleep(400);
+
+    /* Scroll to the last clip, pick it and trim its end: the part dragged over is cut */
+    const clip = S.kept.length - 1;
+    const clipX = () => srcToTl(S.kept[clip][0]) * S.pxPerSec;
+    const clipMid = () => (srcToTl(S.kept[clip][0]) + (S.kept[clip][1] - S.kept[clip][0]) / 2) * S.pxPerSec;
+    const clipY = () => S.lay.clipY + S.lay.clipH / 2;
+    // the clip's end (where the trim happens) always in view, its start too when the timeline is wide enough
+    const view = $('timelineScroll').clientWidth - canvas.offsetLeft;
+    const clipEnd = () => (srcToTl(S.kept[clip][0]) + S.kept[clip][1] - S.kept[clip][0]) * S.pxPerSec;
+    await scrollTimelineTo(Math.max(clipX() - 24, clipEnd() - view + 70), 900);
+    await pressAt(clipMid(), clipY(), 650);
+    S.sel = clip;
+    drawTimeline();
+    await sleep(600);
+    const edgeX = () => (srcToTl(S.kept[clip][0]) + S.kept[clip][1] - S.kept[clip][0]) * S.pxPerSec - 3;
+    await cursorTo(edgeX(), clipY(), 500);
+    const end0 = S.kept[clip][1];
+    await drag(1000, (p) => { S.kept[clip][1] = end0 - 0.7 * p; }, () => [edgeX(), clipY()]);
+    setLengths();
+    setTime(S.head);
+    await sleep(700);
+    await pressAt(edgeX() + 60, S.lay.contentEnd + 8, 500);   // a click on the empty area lets go of the clip
+    S.sel = null;
+    drawTimeline();
+    await sleep(400);
+
+    /* Take the AI's suggestion: one click on + and the zoom is on the timeline */
+    showTab('ai');
+    const sugs = [...document.querySelectorAll('#aiSugsIn .ai-sug-plus')];
+    await click(sugs[sugs.length - 1], 700);
+    showSuggestions(true, SUGGESTIONS.slice(0, 1));
+    const added = { ...SUG_ZOOM };
+    S.zooms.push(added);
+    S.drag = added;   // bright for a moment, so it's clear what just landed
+    drawTimeline();
+    await scrollTimelineTo(srcToX(added.start) - 160, 800);
+    await sleep(900);
+    S.drag = null;
+    drawTimeline();
+    await sleep(500);
+
+    /* Zoom the timeline out with the slider to see the whole edit, then play it from the start */
+    const bar = $('tlZoomBar');
+    const knob = () => {
+      const r = bar.getBoundingClientRect();
+      const c = canvas.getBoundingClientRect();
+      return [r.left - c.left + r.width * S.zoomAt, r.top - c.top + r.height / 2];
+    };
+    await cursorTo(...knob(), 800);
+    const sc = $('timelineScroll');
+    const left0 = sc.scrollLeft;
+    await drag(1100, (p) => { S.zoomAt = 0.32 * (1 - p); sc.scrollLeft = left0 * (1 - p); }, knob);
+    await sleep(500);
+    videoCall((v) => { v.currentTime = 0; });
+    S.head = 0;
+    setTime(0);
+    drawPlayhead();
+    await playTo(0, 6);
+
     /* Edit the words */
     const tabTranscript = document.querySelector('.tabs button[data-tab="transcript"]');
     await click(tabTranscript);
     showTab('transcript');
     await sleep(800);
-    const drag = [...document.querySelectorAll('[data-drag]')];
-    await moveTo(drag[0]);
-    for (const word of drag) {
+    const picked = [...document.querySelectorAll('[data-drag]')];
+    await moveTo(picked[0]);
+    for (const word of picked) {
       await moveTo(word, 260);
       word.classList.add('sel');
     }
     await sleep(500);
     const del = document.querySelector('.tr-keys kbd');
-    del.classList.add('demo-lit');
-    await sleep(240);
-    del.classList.remove('demo-lit');
-    drag.forEach((w) => { w.classList.remove('sel'); w.classList.add('cut'); });
+    if (del) {
+      del.classList.add('demo-lit');
+      await sleep(240);
+      del.classList.remove('demo-lit');
+    }
+    picked.forEach((w) => { w.classList.remove('sel'); w.classList.add('cut'); });
     S.extraCut = 1;
     setLengths();
     setTime(REPLAY_TO);
+    drawTimeline();
     await sleep(1300);
 
-    /* Render */
+    /* Export */
     const render = $('render');
     await click(render);
+    fillExport();
+    $('exportDlg').classList.remove('hidden');
+    await sleep(900);
+    await click($('xpGo'), 600);
+    $('exportDlg').classList.add('hidden');
     render.disabled = true;
     document.body.classList.add('ai-busy');
-    $('aiWorkTitle').textContent = 'Rendering';
+    $('aiWorkTitle').textContent = 'Exporting';
+    $('aiWorkBar').classList.remove('busy');
+    $('aiWorkTime').textContent = '';
     $('aiWorkStep').textContent = "You can switch tabs. Don't close this page.";
-    await tween(2400, (p) => {
+    await tween(2600, (p) => {
       const pct = Math.round(p * 100);
-      render.textContent = `Rendering ${pct}%`;
+      render.textContent = `Exporting ${pct}%`;
       $('aiWorkPct').textContent = pct + '%';
       $('aiWorkBar').firstElementChild.style.width = pct + '%';
+      const ring = $('aiWorkRing');
+      ring.classList.add('det');
+      ring.querySelector('.a').style.strokeDasharray = `${Math.round(p * 157)} 157`;
     });
     document.body.classList.remove('ai-busy');
-    render.textContent = 'Render video';
+    $('aiWorkPct').textContent = '';
+    $('aiWorkBar').firstElementChild.style.width = '0%';
+    render.textContent = 'Export video';
     render.disabled = false;
     const toast = $('toast');
-    toast.textContent = `Rendered "${PROJECTS[activeProject]} - edit.mp4" (24 MB). It's in your downloads.`;
+    toast.textContent = `Exported "${PROJECTS[activeProject]} - edit.mp4" (24 MB). It's in Downloads.`;
     toast.classList.remove('hidden');
-    await sleep(2200);
+    await sleep(2400);
     toast.classList.add('hidden');
 
-    /* Open the next project */
-    activeProject = (activeProject + 1) % PROJECTS.length;
-    const items = [...document.querySelectorAll('.video-item')];
-    await click(items[activeProject], 800);
-    items.forEach((el, i) => el.classList.toggle('on', i === activeProject));
+    /* Start the next project */
+    await click($('videoList').children[(activeProject + 1) % PROJECTS.length], 800);   // the next project opens, uploaded and not edited yet
     const swapping = document.querySelectorAll('.stage, .panel, .timeline-wrap');
     swapping.forEach((el) => el.classList.add('demo-swap'));
     await sleep(280);
+    activeProject = (activeProject + 1) % PROJECTS.length;
     reset();
     swapping.forEach((el) => el.classList.remove('demo-swap'));
-    await sleep(600);
+    await sleep(700);
   }
 
   /* Start */
@@ -726,9 +980,6 @@
   cursor.className = 'demo-cursor';
   cursor.innerHTML = '<svg viewBox="0 0 20 24" width="20" height="24" aria-hidden="true"><path d="M2 2v17.5l5-4.6 3.3 7.3 3.2-1.4-3.3-7.2H17z" fill="#fff" stroke="#0a0a0a" stroke-width="1.5" stroke-linejoin="round"/></svg>';
   document.body.appendChild(cursor);
-  buildProjects();
-  buildRenderSelect();
-  buildTemplates();
   buildVideo();
   reset();
   document.body.classList.add('demo-ready');
@@ -751,12 +1002,12 @@
   const COLORS = {
     caption: ['rgba(155,105,235,0.30)', 'rgba(175,135,245,0.85)'],
     video: ['rgba(70,140,200,0.30)', 'rgba(95,160,215,0.85)'],
-    voice: ['rgba(56,160,210,0.28)', 'rgba(80,180,225,0.85)'],
+    voice: ['rgba(60,190,150,0.26)', 'rgba(80,205,165,0.85)'],
     sound: ['rgba(70,180,120,0.30)', 'rgba(95,200,140,0.85)'],
     text: '#e8e8ea'
   };
-  const SOUND_NAMES = ['WOW', 'Cute pop', 'HUH', 'Glitter', 'AWH', 'Cute pop', 'WOW'];
   const proRowY = (k) => PRO_ROWS.slice(0, k + 1).reduce((y, r, i) => y + r.gap + (i < k ? PRO.row : 0), PRO.ruler);
+  const cssColor = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#0a0a0a';
 
   function drawPro() {
     const wrap = $('proScroll');
@@ -862,7 +1113,7 @@
       const per = WAVE.length / DURATION;
       const mid = y + PRO.row / 2;
       const amp = PRO.row / 2 - 6;
-      g.fillStyle = 'rgba(170,225,250,0.8)';
+      g.fillStyle = 'rgba(160,235,205,0.8)';
       for (let p = Math.ceil(x0); p < x1; p++) {
         const srcT = a - pre + (p - x0) / px;
         const i = Math.floor(srcT * per);
@@ -875,32 +1126,164 @@
       at += len;
     });
 
-    // A3 sound effects
+    // A3 sound effects (never past the end of the video)
     S.sfx.forEach((sec, i) => {
       const t = srcToTl(sec);
-      block(4, t, t + 1.6, COLORS.sound, SOUND_NAMES[i % SOUND_NAMES.length]);
+      block(4, t, Math.min(total, t + 0.7), COLORS.sound, soundName(sec, i));   // short hits, so many sounds never overlap
     });
 
     g.fillStyle = '#ffffff';
     g.fillRect(PRO.label + S.head * px, 0, 1.5, h);
   }
 
+  // One look as a sample of "Hello there!", the way the app's picker draws it (always in TikTok Sans SemiBold)
+  function lookSample(base, values, px) {
+    const c = { ...base, ...values };
+    const size = px * c.font_scale;
+    const em = (n) => (n / 45).toFixed(3) + 'em';
+    const said = c.max_words > 1 ? ['Hello', 'there!'] : ['Hello there!'];
+    const word = (t, on) => {
+      const w = document.createElement('span');
+      w.textContent = c.uppercase ? t.toUpperCase() : t;
+      w.style.display = 'inline-block';
+      if (on && c.active_mode === 'color') w.style.color = c.active_color;
+      if (on && c.active_mode === 'box') { w.style.background = c.active_end_color ? `linear-gradient(90deg, ${c.active_color}, ${c.active_end_color})` : c.active_color; w.style.color = c.active_text_color; w.style.padding = '0 .25em'; w.style.borderRadius = em(c.box_radius); }
+      if (on && c.active_scale > 1) w.style.fontSize = c.active_scale + 'em';
+      return w;
+    };
+    const inner = document.createElement('span');
+    inner.className = 'inner';
+    inner.style.color = c.text_color;
+    said.forEach((t, i) => { if (i) inner.append(' '); inner.append(word(t, c.active_mode !== 'off' && i === said.length - 1)); });
+    if (c.style === 'box') {
+      inner.style.background = c.box_end_color ? `linear-gradient(90deg, ${c.box_color}, ${c.box_end_color})` : c.box_color;
+      inner.style.padding = `${em(c.box_pad_y)} ${em(c.box_pad_x)}`;
+      inner.style.borderRadius = em(c.box_radius);
+    }
+    if (c.style === 'outline') { inner.style.webkitTextStroke = (c.outline_width * size / 45 * 2).toFixed(1) + 'px ' + c.outline_color; inner.style.paintOrder = 'stroke fill'; }
+    const shadows = [];
+    if (c.glow) shadows.push(`0 0 ${c.glow * size / 45}px ${c.glow_color}`, `0 0 ${c.glow * size / 45}px ${c.glow_color}`);
+    if (c.shadow) shadows.push(`0 ${c.shadow * size / 45}px 0 ${c.shadow_color || '#000'}`);
+    if (shadows.length) inner.style.textShadow = shadows.join(', ');
+    const sample = document.createElement('div');
+    sample.className = 'cs-sample';
+    sample.style.cssText = `font: 600 ${size}px/1 "TikTok Sans SemiBold", Inter, sans-serif`;
+    const row = document.createElement('div');
+    row.className = 'row-line';
+    row.append(inner);
+    sample.append(row);
+    return { sample, tilt: c.tilt };
+  }
+  function buildLooks(data) {
+    const cats = ['All', 'Simple', 'Colorful', 'Active', 'Hook'];
+    $('capPicker').classList.add('open');
+    $('capPicker').setAttribute('aria-hidden', 'false');
+    $('csPills').innerHTML = cats.map((c, i) => `<button${c === 'Simple' ? ' class="on"' : ''}>${c}</button>`).join('');
+    data.looks = data.looks.filter((t) => t.cats.includes('simple'));   // the Simple tab
+    $('csCount').textContent = `${data.looks.length} styles`;
+    $('csList').innerHTML = '';
+    for (const t of data.looks) {
+      const v = { ...data.base, ...t.values };
+      const card = document.createElement('div');
+      card.className = 'cs-card' + (t.id === 'clean' ? ' on' : '');
+      card.innerHTML = '<div class="cs-card-view cs-look"></div><div class="cs-card-foot"><span class="cs-card-name"></span><span class="cs-swatches"></span></div>';
+      card.querySelector('.cs-card-name').textContent = t.name;
+      const colors = [v.text_color, v.active_mode !== 'off' && v.active_color, v.style === 'box' && v.box_color, v.box_end_color, v.style === 'outline' && v.outline_width && v.outline_color, v.glow && v.glow_color];
+      for (const color of [...new Set(colors.filter(Boolean))].slice(0, 3)) { const dot = document.createElement('i'); dot.style.background = color; card.querySelector('.cs-swatches').appendChild(dot); }
+      $('csList').appendChild(card);
+      const host = card.querySelector('.cs-card-view');
+      const { sample, tilt } = lookSample(data.base, t.values, 26);
+      host.replaceChildren(sample);
+      const fit = Math.min(1, (host.clientWidth - 28) / sample.offsetWidth, (host.clientHeight - 24) / sample.offsetHeight);
+      sample.style.transform = `translate(-50%, -50%) scale(${fit}) rotate(${tilt}deg)`;
+    }
+  }
+  // ?feature=<name>: the real editor frozen on one moment, for the features list on the home page (the page crops to the part it shows)
+  const FEATURE = (location.search.match(/[?&]feature=([a-z]+)/) || [])[1];
+  if (FEATURE) {
+    document.body.classList.add('demo-feature');
+    document.body.dataset.feature = FEATURE;
+    $('demoStill').src = 'video-still.jpg';
+    $('demoVideo').classList.remove('raw');
+    reset();
+    const tab = { transcript: 'transcript', ai: 'ai' }[FEATURE];
+    if (tab) showTab(tab);
+    S.head = { zooms: 12.2, sfx: 19.9 }[FEATURE] || PAUSE_AT;
+    setTime(S.head);
+    setTimeline(true);
+    if (FEATURE !== 'ai') showSuggestions(false);
+    if (FEATURE === 'ai') {
+      $('aiDisclaimer').classList.add('hidden');
+      $('aiList').firstElementChild.style.display = 'none';   // the first line, so both comments and the answer fit
+      $('aiScroll').scrollTop = 0;
+    }
+    if (FEATURE === 'cuts') {
+      // zoomed out so two cuts show (the first and second clip, the second and third), the playhead on the first
+      S.zoomAt = 0.28;
+      S.head = KEPT[0][1] - KEPT[0][0];
+      setTime(S.head);
+      setTimeline(true);
+      $('timelineScroll').scrollLeft = Math.max(0, S.head * S.pxPerSec - 190);
+      drawTimeline();
+      requestAnimationFrame(() => { $('timelineScroll').scrollLeft = Math.max(0, S.head * S.pxPerSec - 190); drawTimeline(); drawPlayhead(); });
+    }
+    // a panel card shows just the card it is about (siblings hidden)
+    const only = (id) => { const card = $(id).closest('.ps-card'); [...card.parentElement.children].forEach((e) => { if (e !== card) e.style.display = 'none'; }); card.style.margin = '0 16px'; };
+    if (FEATURE === 'zooms') {
+      // the zoom's settings panel, as the app builds it for a zoom chip (type, level, length; the delete button)
+      const pop = $('pop');
+      pop.className = 'pop pop-zoom';
+      pop.innerHTML = `<div class="pop-head zp-head"><button class="pop-when zp-when" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg><span class="zt">0:12.2 – 0:13.8</span><i class="zd">1.6s</i></button>
+        <button class="row-del" aria-label="Delete zoom"><svg viewBox="0 0 16 16"><path class="bin" d="M2.75 4.25h10.5M6.25 4.25V3c0-.55.45-1 1-1h1.5c.55 0 1 .45 1 1v1.25M4 4.25l.6 8.35c.06.8.72 1.4 1.5 1.4h3.8c.78 0 1.44-.6 1.5-1.4L12 4.25M6.75 6.75v4.5M9.25 6.75v4.5"/></svg></button></div>
+        <div class="zp-seg" role="radiogroup" aria-label="Type">${[['push', 'Zoom in'], ['pull', 'Zoom out'], ['punch', 'Punch']].map(([v, l]) => `<button data-v="${v}" class="${v === 'push' ? 'on' : ''}" type="button">${l}</button>`).join('')}</div>
+        <div class="zp-tile field zscale"><div class="field-top"><span>Level</span><label class="zp-lvl"><input type="number" value="125"><span>%</span></label></div><input type="range" min="100" max="150" step="1" value="125" style="--p:50%"></div>
+        <div class="zp-tile zp-row zlen"><span class="zp-label">Length</span><div class="zp-input"><button class="zp-step" type="button">−</button><label class="zp-num"><input type="number" value="1.6"><span>s</span></label><button class="zp-step" type="button">+</button></div></div>`;
+    }
+    if (FEATURE === 'sfx') {
+      // the Pro view: every track, with the sound effects on the bottom one
+      document.querySelectorAll('.viewtoggle button').forEach((b) => b.classList.toggle('on', b.dataset.view === 'pro'));
+      document.body.classList.add('view-pro');
+      $('timelineScroll').classList.add('hidden');
+      $('proScroll').classList.remove('hidden');
+      drawPro();
+    }
+    if (FEATURE === 'presets') {
+      showTab('settings');
+      $('creator').innerHTML = '<option>UGC ad</option>';
+      $('presetTitle').value = 'UGC ad';
+      ['pcEnabled', 'pa_ai_first_edit', 'pa_ai_zooms', 'pa_ai_sfx', 'pa_ai_highlights'].forEach((id) => { $(id).checked = true; });
+      only('pa_ai_first_edit');
+    }
+    if (FEATURE === 'captions') {
+      // the Captions style window, with the app's own list of looks (caption-looks.json, made by tools/build.py)
+      fetch('caption-looks.json').then((r) => r.json()).then(buildLooks);
+    }
+    return;
+  }
+
   // ?still: a single finished frame with no animation (used in the login window)
   if (location.search.includes('still')) {
     document.body.classList.add('demo-still');
     $('demoStill').src = 'video-still.jpg';
+    showStage('player');
+    buildProjects('ready');
     S.edited = true;
     S.kept = KEPT;
     S.zooms = ZOOMS.concat(NEW_ZOOM);
-    S.sfx = SOUNDS.slice();
+    S.sfx = SOUNDS.concat(NEW_SOUND);
+    S.whoosh = NEW_SOUND;
+    S.overlays = OVERLAYS.slice();
     S.head = PAUSE_AT;
-    $('aiSetup').classList.add('hidden');
-    document.querySelector('.ai-foot').classList.remove('pre-edit');
-    addMessage('ai', "Done. I cut the retakes and long pauses, then added zooms, sounds and captions. It's now 0:40.");
-    setRun('Run AI', { disabled: true });
+    $('render').disabled = false;
+    $('aiDisclaimer').classList.remove('hidden');
+    addMessage('ai', READY[0]);
+    setRun('idle');
     setLengths();
     setTime(PAUSE_AT);
+    setTimeline(true);
+    // the Pro view, switched on the way the app's setView does it
     document.querySelectorAll('.viewtoggle button').forEach((b) => b.classList.toggle('on', b.dataset.view === 'pro'));
+    document.body.classList.add('view-pro');
     $('timelineScroll').classList.add('hidden');
     $('proScroll').classList.remove('hidden');
     drawPro();
@@ -914,14 +1297,14 @@
 
   loadWistia();
   let started = false;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The demo is a product film the visitor chose to open the page for, so it plays even with the system's reduced-motion setting on
   addEventListener('message', (e) => {
     // Only the page that frames us may control the demo
     if (e.source !== window.parent || (location.origin !== 'null' && e.origin !== location.origin)) return;
     if (e.data !== 'demo-play' && e.data !== 'demo-pause') return;
     paused = e.data === 'demo-pause';
     if (S.playing) videoCall((v) => (paused ? v.pause() : v.play()));
-    if (!paused && !started && !reduced) {
+    if (!paused && !started) {
       started = true;
       (async () => {
         cursor.style.transition = 'none';

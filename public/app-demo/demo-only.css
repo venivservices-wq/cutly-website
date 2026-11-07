@@ -2,9 +2,18 @@
 @font-face { font-family: "TikTok Sans Bold"; src: url("fonts/TikTokSans-Bold.ttf") format("truetype"); font-display: swap; }
 html, body { pointer-events: none; user-select: none; }
 html { background: #0a0a0a; }
+/* The demo is always the desktop editor: the app's phone pieces (its mobile.css shows them under 821 px) never show */
+.m-only, #mProjects { display: none !important; }
 /* Stays dark until demo.js has set the window up, so the app's empty screen never flashes */
 body:not(.demo-ready) { visibility: hidden; }
-.demo-cursor { position: fixed; left: 0; top: 0; z-index: 90; opacity: 0; transition: transform .65s cubic-bezier(.22, .61, .36, 1), opacity .3s; }
+/* The sidebar a little wider than the app's default 210 px (the user can drag it wider in the app too), so every row
+   fits on one line: the project's length beside its name, "Plan and Billing" beside the credits pill */
+.layout { --left-w: 270px; }
+.side-nav [data-nav="plan"] > span, [data-nav="plan"] > span { white-space: nowrap; }
+.video-item .name em { flex: none; }
+/* The app's version badge belongs to the app, not the website */
+.app-version { display: none !important; }
+.demo-cursor { position: fixed; left: 0; top: 0; z-index: 120; opacity: 0; transition: transform .65s cubic-bezier(.22, .61, .36, 1), opacity .3s; }
 .demo-cursor.on { opacity: 1; }
 .demo-cursor svg { display: block; margin: -2px 0 0 -2px; transform-origin: 2px 2px; transition: transform .12s; }
 .demo-cursor.clicking svg { transform: scale(.84); }
@@ -13,7 +22,7 @@ body:not(.demo-ready) { visibility: hidden; }
 #timelineScroll { overflow: hidden; }
 /* Login window: projects and chat closed, so the video and timeline get all the room */
 .demo-still .layout { --left-w: 0px; --right-w: 0px; --timeline-h: 244px; }
-.demo-still #proScroll { overflow: hidden; }
+.demo-still #proScroll { overflow: hidden !important; }
 .demo-still .videos, .demo-still .panel { visibility: hidden; width: 0; padding: 0; border: 0; overflow: hidden; }
 /* No lines or shade changes in the dashboard itself, so its rounded corners stay clean */
 .demo-still .topbar, .demo-still .timeline-wrap, .demo-still .selbar, .demo-still .frame { border: 0; }
@@ -28,4 +37,39 @@ body.demo-still, .demo-still .stage, .demo-still .topbar, .demo-still .timeline-
 .demo-video.raw wistia-player { opacity: 0; }
 #view { transition: opacity .4s; }
 .demo-video.raw ~ #view { opacity: 0; }
-.demo-still #view, #caption { display: none; }
+.demo-still #view, .demo-feature #view { display: none; }
+.demo-still #caption { display: none; }
+
+/* Features list (?feature=...): one part of the real editor laid out to fill the whole frame, at its own size, not a cut-out of the big screen */
+body.demo-feature { padding: 0 !important; overflow: hidden; background: #0a0a0a; }
+.demo-feature .topbar, .demo-feature .videos, .demo-feature .selbar, .demo-feature #tlCtls, .demo-feature .tabs-bar, .demo-feature .tabs, .demo-feature .ai-foot, .demo-feature .transport, .demo-feature #aiDisclaimer { display: none !important; }
+.demo-feature .layout { display: block !important; width: 100vw; height: 100vh; --left-w: 0px; }
+.demo-feature *, .demo-feature *::-webkit-scrollbar { scrollbar-width: none; }
+.demo-feature *::-webkit-scrollbar { display: none; }
+/* timeline cards */
+body[data-feature="cuts"] .stage, body[data-feature="cuts"] #panel, body[data-feature="sfx"] .stage, body[data-feature="sfx"] #panel { display: none !important; }
+body[data-feature="cuts"] .timeline-wrap, body[data-feature="sfx"] .timeline-wrap { position: fixed !important; inset: 0; height: auto !important; display: flex !important; padding: 42px 0 0 !important; background: #0a0a0a !important; }
+.demo-feature #timelineScroll, .demo-feature #proScroll { margin: 0 !important; background: #0a0a0a !important; }
+/* panel cards */
+body[data-feature="zooms"] .stage, body[data-feature="zooms"] .timeline-wrap, body[data-feature="zooms"] #panel, body[data-feature="captions"] .stage, body[data-feature="captions"] .timeline-wrap, body[data-feature="ai"] .stage, body[data-feature="transcript"] .stage, body[data-feature="presets"] .stage,
+body[data-feature="ai"] .timeline-wrap, body[data-feature="transcript"] .timeline-wrap, body[data-feature="presets"] .timeline-wrap, body[data-feature="zooms"] .timeline-wrap { display: none !important; }
+body[data-feature="captions"] #panel, body[data-feature="ai"] #panel, body[data-feature="transcript"] #panel, body[data-feature="presets"] #panel, body[data-feature="zooms"] #panel { position: fixed !important; inset: 0; width: auto !important; height: auto !important; border: 0 !important; padding: 8px 0 0 !important; overflow: hidden; background: #0a0a0a !important; }
+/* the Captions style window card: no header or buttons, the cards a bit lower so two rows show */
+body[data-feature="captions"] .cs { inset: 0; border-radius: 0; box-shadow: none; }
+body[data-feature="captions"] .cs-head, body[data-feature="captions"] .cs-foot, body[data-feature="captions"] .cs-count { display: none; }
+body[data-feature="captions"] .cs-card-view { height: 70px; }
+body[data-feature="captions"] .cs-card-foot { height: 30px; }
+/* the zoom card: the zoom's own settings panel, in the middle */
+body[data-feature="zooms"] #pop { opacity: 1 !important; animation: none !important; transition: none !important; visibility: visible !important; display: block !important; position: fixed !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; width: 320px; margin: 0; }
+/* the captions card: only the style window, opaque, no fade */
+body[data-feature="captions"] #panel > .tab { display: none !important; }
+body[data-feature="captions"] .cs { transition: none !important; background: #151515; }
+@font-face { font-family: "TikTok Sans SemiBold"; src: url("fonts/TikTokSans-SemiBold.ttf") format("truetype"); font-display: block; }
+body[data-feature="captions"] .cs-pills { flex-wrap: nowrap; gap: 5px; padding: 10px 14px 0; }
+body[data-feature="captions"] .cs-pills button { flex: 1; padding: 0 6px; }
+body[data-feature="captions"] .cs-pills { flex-wrap: nowrap !important; }
+body[data-feature="captions"] .cs-pills button { flex: 1 1 0 !important; min-width: 0; padding: 0 4px !important; }
+body[data-feature="captions"] .cs { padding-top: 12px; }
+body[data-feature="captions"] .cs-search { margin-top: 0; flex: none; }
+body[data-feature="captions"] .cs-pills { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 5px !important; padding: 0 14px 12px !important; }
+body[data-feature="captions"] .cs-pills button { width: 100%; flex: none !important; }

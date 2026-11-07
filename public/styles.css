@@ -132,10 +132,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Corners nest: panel 28 minus the 10 gap gives 18 here, and the card inside stays tighter still */
 .tool-shot { aspect-ratio: 16 / 10; margin: 10px 10px 10px 0; border-radius: 18px; opacity: 0; transition: opacity var(--tool-ease); }
 .tool.open .tool-shot { opacity: 1; }
-.tool-shot .fui-card { border-radius: 6px; }
 .tool-preview { position: fixed; top: 0; left: 0; z-index: 25; width: 240px; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden; background: #0a0a0a; pointer-events: none; opacity: 0; scale: .9; transition: opacity .2s, scale .2s; }
 .tool-preview.show { opacity: 1; scale: 1; }
-.tool-preview .fui { transform: scale(.6); }
 
 /* Client videos */
 .showcase-panel { padding: clamp(32px, 4.5vw, 56px); border-radius: 20px; background: var(--panel); }
@@ -337,14 +335,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* Floating prompt */
 /* Floating call to action: a compact dark bar with the site's squared corners and a white button */
-.float-cta { position: fixed; left: 50%; bottom: 24px; z-index: 30; display: flex; align-items: center; gap: 14px; padding: 6px 6px 6px 16px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 16px; background: #000; color: #fff; transform: translate(-50%, 140%); opacity: 0; transition: transform .35s, opacity .35s; white-space: nowrap; }
-.float-cta.show { transform: translate(-50%, 0); opacity: 1; }
-.float-icon { display: block; width: 22px; height: auto; }
-.float-cta p { font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, .75); }
-.float-cta a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 11px; background: #fff; color: var(--ink); font-size: 14px; font-weight: 600; transition: background .2s; }
-.float-cta a:hover { background: #e9edf4; }
-.float-cta a svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
-.float-cta a:hover svg { transform: translateX(2px); }
 
 /* Scroll-in */
 .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .7s, transform .7s; }
@@ -423,8 +413,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   #showcase .center-head { margin-bottom: 20px; padding-inline: 20px; }
   .showcase { display: flex; gap: 16px; overflow-x: auto; padding-inline: 20px; scroll-snap-type: x mandatory; scroll-padding-inline: 20px; scrollbar-width: none; }
   .showcase-card { flex: 0 0 74%; scroll-snap-align: start; }
-  .float-cta { bottom: 14px; padding-left: 14px; }
-  .float-cta p { display: none; }
 }
 @media (max-width: 350px) {
   .site-header .logo span { display: none; }

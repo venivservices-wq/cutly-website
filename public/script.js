@@ -97,6 +97,7 @@
       head.addEventListener('mouseenter', () => {
         if (tool.classList.contains('open')) return;
         preview.innerHTML = featureUi(S.tools[i].ui);
+        fitFeatureUi(preview);
         preview.classList.add('show');
       });
       head.addEventListener('mousemove', (e) => { preview.style.translate = `${e.clientX + 28}px ${e.clientY - 80}px`; });
@@ -208,14 +209,9 @@
       `<div><h4>${c.title}</h4><ul>${c.links.map(([label, href]) => `<li><a href="${href}">${label}</a></li>`).join('')}</ul></div>`).join('');
   $('legalLinks').innerHTML = `<span>&copy; ${new Date().getFullYear()} Cutly AI</span><nav>${S.legal.map((l) => `<a href="#">${l}</a>`).join('')}</nav>`;
 
-  /* Floating call to action appears once the editor demo has scrolled away */
-  const floatCta = $('floatCta');
-  const demoShell = document.querySelector('.ve-shell');
+  /* The header gets its scrolled look once the page moves */
   const siteHeader = document.querySelector('.site-header');
-  const pricing = $('pricing');
   const onScroll = () => {
-    // Shows once the editor demo has scrolled off the top, and hides again once pricing comes into view
-    floatCta.classList.toggle('show', demoShell.getBoundingClientRect().bottom < 0 && pricing.getBoundingClientRect().top > innerHeight);
     siteHeader.classList.toggle('scrolled', scrollY > 8);
   };
   addEventListener('scroll', onScroll, { passive: true });

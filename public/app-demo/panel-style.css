@@ -1,0 +1,150 @@
+/* ======================================================================
+   PANEL STYLE: the look of the right-hand panels (taken from the Captions tab).
+   Every NEW panel is built from these pieces, nothing else. See PANEL-STYLE.md.
+
+   <div class="tab ps-panel" id="tab-x">
+     <section class="ps-card">
+       <div class="ps-head"><span class="ps-ico"><svg ...hand-drawn...></svg></span>Title</div>
+       <div class="ps-label">Small label</div>
+       <div class="ps-seg"> <button class="on">One</button> <button>Two</button> </div>
+       <div class="ps-pair"> <div><div class="ps-label">A</div><label class="ps-field">...</label></div> ... </div>
+       <div class="ps-rows">
+         <div class="ps-row"><span class="ps-name">Name</span> <control> </div>
+         <label class="switch ps-row"><span class="ps-name">Name</span><input type="checkbox"><span class="knob"></span></label>
+       </div>
+       <p class="ps-note">One short sentence.</p>
+     </section>
+     <div class="ps-action"><button>Do it</button><span>What it does.</span></div>
+   </div>
+   ====================================================================== */
+
+.ps-panel {
+  /* colours: a card on the black panel, controls on the card, white = the chosen one */
+  --ps-card: rgba(255,255,255,0.04);
+  --ps-ctl: rgba(255,255,255,0.07);
+  --ps-hover: rgba(255,255,255,0.10);
+  --ps-press: rgba(255,255,255,0.16);
+  --ps-on: #f2f2f2;
+  --ps-on-text: #0a0a0a;
+  --ps-text: #ededed;
+  --ps-text-2: rgba(255,255,255,0.5);
+  --ps-text-3: rgba(255,255,255,0.4);
+  /* shapes */
+  --ps-r-card: 16px;
+  --ps-r-ctl: 12px;
+  --ps-r-ico: 9px;
+  --ps-h: 48px;           /* the height of every field, row and button in a card */
+  padding: 16px 16px 32px;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  color: var(--ps-text);
+}
+
+/* a section = a card with its own background; the options sit inside it */
+.ps-card { margin: 0 0 10px; padding: 18px 16px; border: 0; border-radius: var(--ps-r-card); background: var(--ps-card); font-size: 14px; letter-spacing: -0.01em; }
+
+/* heading: a small hand-drawn icon in a soft square + the title */
+.ps-head { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--ps-text); }
+.ps-ico { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: var(--ps-r-ico); background: var(--ps-ctl); }
+.ps-ico svg { width: 17px; height: 17px; fill: none; stroke: #f0f0f0; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ps-ico svg .dot { fill: #f0f0f0; stroke: none; }
+
+/* small muted label above a control */
+.ps-label { margin: 0 0 8px; font-size: 13px; line-height: 1.45; color: var(--ps-text-2); }
+.ps-note { margin: 2px 2px 14px; font-size: 13.5px; line-height: 1.5; color: var(--ps-text-2); }
+
+/* choose one: equal soft buttons, the chosen one is white */
+.ps-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; margin: 0 0 14px; }
+.ps-seg button { height: var(--ps-h); padding: 0 10px; border: 0; border-radius: var(--ps-r-ctl); background: var(--ps-ctl); color: rgba(255,255,255,0.75); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.12s, color 0.12s; }
+.ps-seg button:hover { background: var(--ps-hover); color: #fff; }
+.ps-seg button.on, .ps-seg button.on:hover { background: var(--ps-on); color: var(--ps-on-text); font-weight: 600; }
+.ps-seg button:focus-visible { outline: 2px solid rgba(255,255,255,0.85); outline-offset: 2px; }
+
+/* two fields side by side, each with its label above */
+.ps-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 14px; }
+
+/* a typed value: a small prefix, the number, a unit */
+.ps-field { display: flex; align-items: center; gap: 10px; height: var(--ps-h); padding: 0 14px; border-radius: var(--ps-r-ctl); background: var(--ps-ctl); border: 1px solid transparent; cursor: text; transition: background 0.12s, border-color 0.12s; }
+.ps-field:hover { background: var(--ps-hover); }
+.ps-field:focus-within { background: var(--ps-hover); border-color: rgba(255,255,255,0.3); }
+.ps-pre { flex: none; min-width: 14px; font-size: 14px; font-weight: 600; color: var(--ps-text-3); }
+.ps-field input { flex: 1; min-width: 0; width: 100%; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ps-text); font: inherit; font-size: 15px; font-weight: 600; }
+.ps-unit { flex: none; font-size: 13px; color: var(--ps-text-3); }
+
+/* a line of options: the name on the left, the control (switch, dropdown, stepper) on the right */
+.ps-rows { display: flex; flex-direction: column; gap: 8px; margin: 0 0 8px; }
+.ps-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--ps-h); padding: 0 8px 0 14px; border-radius: var(--ps-r-ctl); background: var(--ps-ctl); font-size: 14px; font-weight: 500; color: #f2f2f2; letter-spacing: -0.01em; }
+.ps-row.switch { padding-right: 14px; cursor: pointer; transition: background 0.12s; }
+.ps-row.switch:hover { background: var(--ps-hover); }
+.ps-name { flex: 1; min-width: 0; color: #f2f2f2; }
+
+/* a number you step with - and +: put it inside a .ps-row */
+.ps-stepper { display: flex; align-items: center; flex: none; }
+.ps-stepper b { min-width: 60px; text-align: center; font-size: 14px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+.ps-stepper button { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 10px; background: var(--ps-press); color: #fff; cursor: pointer; transition: background 0.12s; }
+.ps-stepper button:hover { background: rgba(255,255,255,0.24); }
+.ps-stepper button svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+
+/* the one big action at the bottom of a panel: light, like Run AI */
+.ps-action { position: sticky; bottom: 0; margin: 22px 0 0; padding: 14px 0 6px; display: flex; flex-direction: column; gap: 10px; text-align: center; background: linear-gradient(180deg, rgba(0,0,0,0), #000 18px); }
+.ps-action button { height: 58px; border: 0; border-radius: 14px; background: var(--ps-on); color: var(--ps-on-text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.ps-action button:hover { background: #dcdcdc; }
+.ps-action > span { font-size: 12.5px; color: var(--ps-text-3); }
+
+.ps-panel [hidden] { display: none; }
+
+/* a preset / item picker bar: a dropdown that fills the row + two square buttons */
+.ps-presetbar { display: flex; gap: 8px; margin: 0 0 8px; }
+.ps-presetbar .preset-pick { flex: 1; min-width: 0; }
+.ps-presetbar .dd, .ps-pickwrap .dd { width: 100%; }
+.ps-presetbar .dd-btn { height: var(--ps-h); border: 0; border-radius: var(--ps-r-ctl); background: var(--ps-ctl); }
+.ps-pickwrap { flex: none; width: 150px; }
+.ps-pickwrap .dd-btn { height: 36px; border: 0; border-radius: 10px; background: var(--ps-press); }
+.ps-sq { display: grid; place-items: center; flex: none; width: var(--ps-h); height: var(--ps-h); padding: 0; border: 0; border-radius: var(--ps-r-ctl); background: var(--ps-ctl); color: #fff; cursor: pointer; transition: background 0.12s; }
+.ps-sq:hover { background: var(--ps-hover); }
+.ps-sq:disabled { opacity: 0.35; cursor: default; }
+.ps-sq svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ps-sq.danger { color: #f27478; }
+/* a full-width quiet button inside a card */
+.ps-btn { width: 100%; height: var(--ps-h); border: 0; border-radius: var(--ps-r-ctl); background: var(--ps-ctl); color: #f2f2f2; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.12s; }
+.ps-btn:hover { background: var(--ps-hover); }
+.ps-btn:disabled { opacity: 0.4; cursor: default; }
+.ps-rows + .ps-btn, .ps-presetbar + .ps-btn { margin-top: 8px; }
+.ps-label + .ps-seg { margin-bottom: 14px; }
+.ps-panel .ps-presetbar .dd { height: var(--ps-h); }
+.ps-panel .ps-presetbar .dd-btn { height: var(--ps-h); min-height: var(--ps-h); padding: 0 14px; font-size: 14px; }
+.ps-panel .ps-pickwrap .dd, .ps-panel .ps-pickwrap .dd-btn { height: 36px; min-height: 36px; }
+.ps-panel .ps-row .ps-pickwrap .dd, .ps-panel .ps-row .ps-pickwrap .dd .dd-btn { height: 36px !important; min-height: 36px !important; }
+
+.ps-card .cs-quick { margin: 0 0 16px; }
+.ps-color { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 6px; border-radius: 10px; background: var(--ps-press); cursor: pointer; }
+.ps-color:hover { background: rgba(255,255,255,0.24); }
+.ps-color input[type="color"] { width: 24px; height: 24px; padding: 2px; border: 0; border-radius: 7px; background: rgba(255,255,255,0.3); cursor: pointer; }
+.ps-color input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.ps-color input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 5px; }
+.ps-color b { font-size: 12.5px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+/* a card that opens and closes: click its heading (add with psFold in app.js) */
+.ps-card.fold > .ps-head { cursor: pointer; user-select: none; margin-bottom: 16px; }
+.ps-card.fold.closed > .ps-head { margin-bottom: 0; }
+.ps-card.fold.closed > :not(.ps-head) { display: none; }
+.ps-chev { margin-left: auto; width: 16px; height: 16px; fill: none; stroke: var(--ps-text-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.15s; }
+.ps-card.fold.closed .ps-chev { transform: rotate(-90deg); }
+.ps-card.fold > .ps-head:hover .ps-chev { stroke: #fff; }
+
+/* the big action: a sparkle, then one line "Use on this video \u00b7 2 credits" (the same button as Run AI) */
+.ps-action button { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.ps-action button::before { content: ""; width: 18px; height: 18px; flex: none; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5l1.4 3.6 3.6 1.4-3.6 1.4L8 11.5 6.6 7.9 3 6.5l3.6-1.4zM12.5 10.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5l1.4 3.6 3.6 1.4-3.6 1.4L8 11.5 6.6 7.9 3 6.5l3.6-1.4zM12.5 10.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.ps-pill.hidden { display: none; }
+/* a small note in a card heading, where a change costs credits */
+.ps-pill { margin-left: auto; padding: 3px 9px; border-radius: 8px; background: var(--ps-press); font-size: 12px; font-weight: 600; color: #f2f2f2; }
+.ps-pill:not(.hidden) + .ps-chev { margin-left: 10px; }
+
+.ps-card > .ps-seg + .ps-rows, .ps-card > .ps-note + .ps-rows { margin-top: 0; }
+.ps-card > .ps-rows + .ps-label { margin-top: 18px; }
+.ps-action button:disabled { opacity: 0.35; cursor: default; }
+
+/* the same dropdown inside panels */
+.ps-panel .dd .dd-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 0 12px 0 14px; border: 0; color: #f2f2f2; font-size: 14px; font-weight: 600; text-align: left; }
+.ps-panel .dd .dd-btn span { flex: 1; min-width: 0; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-panel .dd .dd-btn svg { flex: none; width: 16px; height: 16px; stroke: rgba(255,255,255,0.6); stroke-width: 1.7; }
+.ps-panel .dd.open .dd-btn svg { stroke: #fff; }
