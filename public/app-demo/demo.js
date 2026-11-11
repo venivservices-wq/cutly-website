@@ -14,12 +14,13 @@
   const WORK_WORDS = ['Thinking', 'Working', 'Placing', 'Timing', 'Polishing'];
   // The chat's answers are fixed lines in the app too (cloud.READY_LINES), never AI text
   const READY = ['Your video is ready to preview.', 'Editing complete! You can take a look!', 'Your latest edit is waiting for you.', "I've finished working on your video. Have a look!"];
-  const COMMENT = 'Zoom in when she says chopping up clips';
+  const COMMENT = 'Zoom in here';
   const COMMENT_2 = 'Add a whoosh sound here';
+  const FIRST_AT = 1.1;    // edited seconds: the video stops here for the first comment (1 second in)
   const PAUSE_AT = 8.6;    // edited seconds: where the first comment is written
-  const SECOND_AT = 12;    // ...and the second
+  const SECOND_AT = 3.3;   // ...and here for the second
   const REPLAY_FROM = 6.6;
-  const REPLAY_TO = 13;
+  const REPLAY_TO = 4.6;
   const WISTIA_ID = 'xyco9e53i1';
 
   // The finished video is 40.4s. Its parts sit in a longer raw take, in source seconds.
@@ -42,8 +43,9 @@
   ];
   const NEW_ZOOM = { start: 12.6, end: 14.2, type: 'push', scale: 118 };   // the one asked for in the chat ("chopping up clips")
   const SOUNDS = [3.4, 6.2, 8.1, 11.4, 13.1, 15.6, 22.4, 25.2, 29, 31.2, 33, 36.4, 39, 41.8, 46.4, 48.8, 51.6, 56.6, 58.2];
-  const NEW_SOUND = 19.9;   // the one asked for in the chat (edited 0:12.0)
+  const NEW_SOUND = 6.2;    // the whoosh asked for in the second comment (edited 0:03.2); it replaces the pop that was there
   const SOUND_NAMES = ['Wow', 'Cute pop', 'Ding', 'Huh', 'Glitter', 'Cash', 'Swoosh', 'Click', 'Bling'];
+  const ZOOM_ASKED = 0;     // the first zoom is the one the first comment asks for: it only appears after the AI ran
   const soundName = (sec, i) => (S.whoosh && sec === S.whoosh ? 'Whoosh' : SOUND_NAMES[i % SOUND_NAMES.length]);
   // Pictures over the video (Track 1): [source start, end, name]
   const OVERLAYS = [[3.2, 5.6, 'Hook text'], [14.6, 16.9, 'Product shot'], [24, 26.2, 'Screenshot'], [29.2, 32.4, 'Logo'], [39.6, 42.8, 'B-roll'], [47, 50.2, 'Price tag'], [56.4, 58.9, 'Follow me']];
@@ -674,9 +676,11 @@
   }
 
   // The chat so far: the video was edited by the AI once and two changes were asked for and done
-  const HISTORY = [['ai', 'Your video is ready to preview.'], ['me', 'Cut the part where I stumble', 2.4], ['me', 'Make the captions a bit bigger', 5.1], ['ai', 'Editing complete! You can take a look!']];
+  const HISTORY_FULL = [['ai', 'Your video is ready to preview.'], ['me', 'Cut the part where I stumble', 2.4], ['me', 'Make the captions a bit bigger', 5.1], ['ai', 'Editing complete! You can take a look!']];
+  const HERO = !/[?&]feature=/.test(location.search);   // the website's big demo; the feature pictures keep the full chat, zooms and suggestions
+  const HISTORY = HERO ? [['ai', 'Your video is ready to preview.']] : HISTORY_FULL;
   function edited() {
-    Object.assign(S, { edited: true, kept: KEPT.map((k) => k.slice()), zooms: ZOOMS.slice(), sfx: SOUNDS.slice(), overlays: OVERLAYS.slice(),
+    Object.assign(S, { edited: true, kept: KEPT.map((k) => k.slice()), zooms: HERO ? ZOOMS.filter((z, i) => i !== ZOOM_ASKED) : ZOOMS.slice(), sfx: HERO ? SOUNDS.filter((x) => x !== NEW_SOUND) : SOUNDS.slice(), overlays: OVERLAYS.slice(),
       zoomAt: 0.32, sel: null, drag: null, whoosh: 0, head: 0, extraCut: 0 });
   }
 
@@ -697,7 +701,7 @@
       const el = addMessage(kind, text, fmt(at));
       if (kind === 'me') { el.classList.add('done'); el.querySelector('.msg-meta').insertAdjacentHTML('beforeend', TICK); }
     }
-    showSuggestions(true);
+    showSuggestions(!HERO);
     chatToEnd();
     $('aiCount').textContent = '';
     $('aiText').value = '';
@@ -786,25 +790,35 @@
     return bubble;
   }
 
-  // One project in the open editor: watch, comment, run the AI, cut words, export. Then the next project opens.
+  // One project in the open editor, and the comments are the whole story: play, stop, write a comment on that moment, play on,
+  // stop, write another, run the AI, it edits, the result plays. Then the next project opens and it all starts again.
   async function story() {
-    await sleep(900);
+    await sleep(800);
 
-    /* Watch, and write what to change at two moments */
-    await playTo(0, PAUSE_AT);
+    /* Stop the video at 1 second and write what to change there */
+    await playTo(0, FIRST_AT);
     const first = await comment(COMMENT, 1);
-    await playTo(PAUSE_AT, SECOND_AT);
+    await playTo(FIRST_AT, SECOND_AT);
     const second = await comment(COMMENT_2, 2);
 
-    /* Run the AI on both comments */
-    await click($('aiRun'));
+    /* Run the AI on both comments: the picture and the project show it working */
+    await click($('aiRun'), 700);
     setCredits(S.credits - PRICES.ask * 2);
     setRun('running');
+    buildProjects('busy');
+    document.body.classList.add('ai-busy');
+    $('aiWorkTitle').textContent = 'AI is editing';
+    $('aiWorkBar').classList.add('busy');
+    $('aiWorkPct').textContent = '';
+    $('aiWorkTime').textContent = '';
+    $('aiWorkStep').textContent = 'Working on your 2 comments';
     const working = addMessage('working');
-    await tween(2600, (p) => {
+    await tween(3400, (p) => {
       working.querySelector('.ai-progress-word').textContent = WORK_WORDS[Math.min(WORK_WORDS.length - 1, Math.floor(p * WORK_WORDS.length))];
     });
     working.remove();
+    document.body.classList.remove('ai-busy');
+    $('aiWorkBar').classList.remove('busy');
     for (const bubble of [first, second]) {
       bubble.classList.add('done');
       bubble.querySelector('.msg-meta').insertAdjacentHTML('beforeend', TICK);
@@ -812,160 +826,23 @@
     $('aiCount').textContent = '';
     addMessage('ai', READY[(activeProject + 3) % READY.length]);
     setRun('idle');
-    S.zooms = ZOOMS.concat(NEW_ZOOM);
-    S.sfx = SOUNDS.concat(NEW_SOUND);
+    buildProjects('ready');
+    S.zooms = ZOOMS.slice();
+    S.sfx = SOUNDS.slice();
     S.whoosh = NEW_SOUND;
     drawTimeline();
-    showSuggestions(true);
 
-    /* Watch the change */
-    videoCall((v) => { v.currentTime = REPLAY_FROM; });
-    S.head = REPLAY_FROM;
-    setTime(REPLAY_FROM);
-    drawPlayhead();
-    await sleep(350);
-    setPlayIcon('pause');
-    playVideo();
-    await tween((REPLAY_TO - REPLAY_FROM) * 1000, (p) => {
-      S.head = REPLAY_FROM + p * (REPLAY_TO - REPLAY_FROM);
-      setTime(S.head);
-      drawPlayhead();
-    });
-    pauseVideo();
-    setPlayIcon('play');
-    await sleep(500);
-
-    /* Nudge the new whoosh a little later: grab it and drag it along its track */
-    const lanes = () => S.lay.lanes;
-    const pillX = () => srcToX(S.whoosh) + 28;
-    await cursorTo(pillX(), lanes().s1.y + TL.LANE / 2, 700);
-    const from = S.whoosh;
-    const sfxAt = S.sfx.indexOf(S.whoosh);
-    S.drag = 'sound';
-    await drag(900, (p) => { S.whoosh = S.sfx[sfxAt] = from + 0.45 * p; }, () => [pillX(), lanes().s1.y + TL.LANE / 2]);
-    S.drag = null;
-    drawTimeline();
-    await sleep(400);
-
-    /* Scroll to the last clip, pick it and trim its end: the part dragged over is cut */
-    const clip = S.kept.length - 1;
-    const clipX = () => srcToTl(S.kept[clip][0]) * S.pxPerSec;
-    const clipMid = () => (srcToTl(S.kept[clip][0]) + (S.kept[clip][1] - S.kept[clip][0]) / 2) * S.pxPerSec;
-    const clipY = () => S.lay.clipY + S.lay.clipH / 2;
-    // the clip's end (where the trim happens) always in view, its start too when the timeline is wide enough
-    const view = $('timelineScroll').clientWidth - canvas.offsetLeft;
-    const clipEnd = () => (srcToTl(S.kept[clip][0]) + S.kept[clip][1] - S.kept[clip][0]) * S.pxPerSec;
-    await scrollTimelineTo(Math.max(clipX() - 24, clipEnd() - view + 70), 900);
-    await pressAt(clipMid(), clipY(), 650);
-    S.sel = clip;
-    drawTimeline();
-    await sleep(600);
-    const edgeX = () => (srcToTl(S.kept[clip][0]) + S.kept[clip][1] - S.kept[clip][0]) * S.pxPerSec - 3;
-    await cursorTo(edgeX(), clipY(), 500);
-    const end0 = S.kept[clip][1];
-    await drag(1000, (p) => { S.kept[clip][1] = end0 - 0.7 * p; }, () => [edgeX(), clipY()]);
-    setLengths();
-    setTime(S.head);
-    await sleep(700);
-    await pressAt(edgeX() + 60, S.lay.contentEnd + 8, 500);   // a click on the empty area lets go of the clip
-    S.sel = null;
-    drawTimeline();
-    await sleep(400);
-
-    /* Take the AI's suggestion: one click on + and the zoom is on the timeline */
-    showTab('ai');
-    const sugs = [...document.querySelectorAll('#aiSugsIn .ai-sug-plus')];
-    await click(sugs[sugs.length - 1], 700);
-    showSuggestions(true, SUGGESTIONS.slice(0, 1));
-    const added = { ...SUG_ZOOM };
-    S.zooms.push(added);
-    S.drag = added;   // bright for a moment, so it's clear what just landed
-    drawTimeline();
-    await scrollTimelineTo(srcToX(added.start) - 160, 800);
-    await sleep(900);
-    S.drag = null;
-    drawTimeline();
-    await sleep(500);
-
-    /* Zoom the timeline out with the slider to see the whole edit, then play it from the start */
-    const bar = $('tlZoomBar');
-    const knob = () => {
-      const r = bar.getBoundingClientRect();
-      const c = canvas.getBoundingClientRect();
-      return [r.left - c.left + r.width * S.zoomAt, r.top - c.top + r.height / 2];
-    };
-    await cursorTo(...knob(), 800);
-    const sc = $('timelineScroll');
-    const left0 = sc.scrollLeft;
-    await drag(1100, (p) => { S.zoomAt = 0.32 * (1 - p); sc.scrollLeft = left0 * (1 - p); }, knob);
-    await sleep(500);
+    /* Watch what the comments did: the zoom, then the whoosh */
     videoCall((v) => { v.currentTime = 0; });
     S.head = 0;
     setTime(0);
     drawPlayhead();
-    await playTo(0, 6);
-
-    /* Edit the words */
-    const tabTranscript = document.querySelector('.tabs button[data-tab="transcript"]');
-    await click(tabTranscript);
-    showTab('transcript');
-    await sleep(800);
-    const picked = [...document.querySelectorAll('[data-drag]')];
-    await moveTo(picked[0]);
-    for (const word of picked) {
-      await moveTo(word, 260);
-      word.classList.add('sel');
-    }
     await sleep(500);
-    const del = document.querySelector('.tr-keys kbd');
-    if (del) {
-      del.classList.add('demo-lit');
-      await sleep(240);
-      del.classList.remove('demo-lit');
-    }
-    picked.forEach((w) => { w.classList.remove('sel'); w.classList.add('cut'); });
-    S.extraCut = 1;
-    setLengths();
-    setTime(REPLAY_TO);
-    drawTimeline();
-    await sleep(1300);
-
-    /* Export */
-    const render = $('render');
-    await click(render);
-    fillExport();
-    $('exportDlg').classList.remove('hidden');
+    await playTo(0, REPLAY_TO);
     await sleep(900);
-    await click($('xpGo'), 600);
-    $('exportDlg').classList.add('hidden');
-    render.disabled = true;
-    document.body.classList.add('ai-busy');
-    $('aiWorkTitle').textContent = 'Exporting';
-    $('aiWorkBar').classList.remove('busy');
-    $('aiWorkTime').textContent = '';
-    $('aiWorkStep').textContent = "You can switch tabs. Don't close this page.";
-    await tween(2600, (p) => {
-      const pct = Math.round(p * 100);
-      render.textContent = `Exporting ${pct}%`;
-      $('aiWorkPct').textContent = pct + '%';
-      $('aiWorkBar').firstElementChild.style.width = pct + '%';
-      const ring = $('aiWorkRing');
-      ring.classList.add('det');
-      ring.querySelector('.a').style.strokeDasharray = `${Math.round(p * 157)} 157`;
-    });
-    document.body.classList.remove('ai-busy');
-    $('aiWorkPct').textContent = '';
-    $('aiWorkBar').firstElementChild.style.width = '0%';
-    render.textContent = 'Export video';
-    render.disabled = false;
-    const toast = $('toast');
-    toast.textContent = `Exported "${PROJECTS[activeProject]} - edit.mp4" (24 MB). It's in Downloads.`;
-    toast.classList.remove('hidden');
-    await sleep(2400);
-    toast.classList.add('hidden');
 
     /* Start the next project */
-    await click($('videoList').children[(activeProject + 1) % PROJECTS.length], 800);   // the next project opens, uploaded and not edited yet
+    await click($('videoList').children[(activeProject + 1) % PROJECTS.length], 900);
     const swapping = document.querySelectorAll('.stage, .panel, .timeline-wrap');
     swapping.forEach((el) => el.classList.add('demo-swap'));
     await sleep(280);
@@ -1206,15 +1083,25 @@
     $('demoStill').src = 'video-still.jpg';
     $('demoVideo').classList.remove('raw');
     reset();
-    const tab = { transcript: 'transcript', ai: 'ai' }[FEATURE];
+    const tab = { transcript: 'transcript', ai: 'ai', mistakes: 'transcript' }[FEATURE];
     if (tab) showTab(tab);
     S.head = { zooms: 12.2, sfx: 19.9 }[FEATURE] || PAUSE_AT;
     setTime(S.head);
     setTimeline(true);
     if (FEATURE !== 'ai') showSuggestions(false);
+    if (FEATURE === 'overlays') {
+      // the Ask AI tab's suggestions, bigger: where the AI would put B-roll, an image or text
+      const rows = [['Show the product as B-roll', '0:14.5'], ['Add your logo over the intro', '0:29.1'], ['Overlay a price tag', '0:47.0']];
+      const sc = document.createElement('div');
+      sc.id = 'ovScene';
+      sc.innerHTML = '<div class="ov-title">Suggestions</div>' + rows.map(([t, at]) => `<div class="ov-row"><span class="ov-txt">${t}<i>${at}</i></span><span class="ov-plus"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg></span></div>`).join('');
+      document.body.appendChild(sc);
+    }
     if (FEATURE === 'ai') {
       $('aiDisclaimer').classList.add('hidden');
-      $('aiList').firstElementChild.style.display = 'none';   // the first line, so both comments and the answer fit
+      $('aiList').firstElementChild.style.display = 'none';
+      const first = $('aiList').querySelector('.msg.me .ai-text');
+      if (first) first.textContent = 'Add a zoom here';   // the first line, so both comments and the answer fit
       $('aiScroll').scrollTop = 0;
     }
     if (FEATURE === 'cuts') {
@@ -1229,6 +1116,24 @@
     }
     // a panel card shows just the card it is about (siblings hidden)
     const only = (id) => { const card = $(id).closest('.ps-card'); [...card.parentElement.children].forEach((e) => { if (e !== card) e.style.display = 'none'; }); card.style.margin = '0 16px'; };
+    if (FEATURE === 'enhance') {
+      // cleaner sound and richer colour: the picture before / after, the sound wave before / after
+      const bars = (n, f) => Array.from({ length: n }, (_, k) => `<i style="height:${f(k)}%"></i>`).join('');
+      const noisy = (k) => 18 + Math.round(Math.abs(Math.sin(k * 12.9898) * 43758.5453) % 1 * 70);
+      const clean = (k) => 30 + Math.round(34 * Math.abs(Math.sin(k * .5)) + 10 * Math.abs(Math.sin(k * 1.7)));
+      const sc = document.createElement('div');
+      sc.id = 'enScene';
+      sc.innerHTML = `<div class="en-video"><img class="en-b" src="video-still.jpg" alt=""><img class="en-a" src="video-still.jpg" alt=""><span class="en-line"></span><em class="en-lb l">Before</em><em class="en-lb r">After</em></div>
+        <div class="en-audio"><div class="en-row"><span>Before</span><div class="en-wave off">${bars(34, noisy)}</div></div><div class="en-row on"><span>After</span><div class="en-wave">${bars(34, clean)}</div></div></div>`;
+      document.body.appendChild(sc);
+    }
+    if (FEATURE === 'zoomsfx') {
+      // the video frame pushed in, with its zoom settings beside it and a sound chip on the picture
+      const sc = document.createElement('div');
+      sc.id = 'zsScene';
+      sc.innerHTML = '<div class="zs-video"><img src="video-still.jpg" alt=""><span class="zs-zoom"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg>125%</span><span class="zs-sfx"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8v0M5 5v6M8 2.5v11M11 5v6M14 7v2"/></svg>Cash register</span></div><div class="zs-pop"><div class="zs-list"><div class="zs-row z"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg><b>Zoom in</b><i>0:12.2</i></div><div class="zs-row s"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 5v6M8 2.5v11M11 5v6M14 7v2M2 7v2"/></svg><b>Cash register</b><i>0:13.0</i></div><div class="zs-row z"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg><b>Zoom out</b><i>0:13.8</i></div><div class="zs-row s"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 5v6M8 2.5v11M11 5v6M14 7v2M2 7v2"/></svg><b>Whoosh</b><i>0:19.9</i></div></div></div>';
+      document.body.appendChild(sc);
+    }
     if (FEATURE === 'zooms') {
       // the zoom's settings panel, as the app builds it for a zoom chip (type, level, length; the delete button)
       const pop = $('pop');
@@ -1247,12 +1152,38 @@
       $('proScroll').classList.remove('hidden');
       drawPro();
     }
+    if (FEATURE === 'transcript') {
+      // the transcript as plain text you edit: a selected part with its keys, a cut word struck through
+      const sc = document.createElement('div');
+      sc.id = 'txScene';
+      sc.innerHTML = '<p>Doing it yourself takes <mark>hours of chopping up clips,</mark> and paying a freelancer is <s>way too</s> expensive when you are trying to grow. Just throw your raw footage into Cutly instead. It is an AI video editor that does the entire job for you in seconds. You need zero actual editing skills, because the AI handles all the annoying parts automatically.</p>';
+      document.body.appendChild(sc);
+    }
+    if (FEATURE === 'mistakes') {
+      // the Transcript tab with the cut words struck through: what the AI took out of the take
+      const lines = [
+        ['So ', ['um'], ' I have been using this ', ['like, this'], ' serum for about a month,'],
+        [['and and'], ' my skin has honestly never looked better.'],
+        [['I really love, I really love'], ' I really love how light it feels.'],
+        [['Sorry, let me start that again.']],
+        ['It goes on smooth, ', ['uh'], ' absorbs in seconds, and it does not leave that sticky feeling.']
+      ];
+      $('transcript').innerHTML = lines.map((l) => '<p class="mk-line">' + l.map((x) => Array.isArray(x) ? '<span class="w cut">' + x[0] + '</span>' : x).join('') + '</p>').join('');
+      document.body.dataset.cutwords = '1';
+    }
     if (FEATURE === 'presets') {
       showTab('settings');
       $('creator').innerHTML = '<option>UGC ad</option>';
       $('presetTitle').value = 'UGC ad';
       ['pcEnabled', 'pa_ai_first_edit', 'pa_ai_zooms', 'pa_ai_sfx', 'pa_ai_highlights'].forEach((id) => { $(id).checked = true; });
       only('pa_ai_first_edit');
+      [...$('pa_ai_first_edit').closest('.ps-card').querySelectorAll('.switch.ps-row')].slice(3).forEach((e) => { e.style.display = 'none'; });
+      // the settings an editor can change, shown with their values beside the name
+      const card = $('pa_ai_first_edit').closest('.ps-card');
+      card.querySelector('#pa_ai_first_edit').parentElement.querySelector('.ps-name').textContent = 'Choose cut type';
+      card.querySelector('#pa_ai_zooms').parentElement.querySelector('.ps-name').textContent = 'Max video length';
+      card.querySelector('.su-notes').style.display = 'none';
+      card.querySelector('.ps-rows').insertAdjacentHTML('beforeend', [['Cut pauses longer than', '0.3 s'], ['Cut style', 'J-cut'], ['Zoom amount', '125%'], ['Caption look', 'White box']].map(([n, v]) => `<div class="ps-row opt"><span class="ps-name">${n}</span><span class="opt-val">${v}</span></div>`).join(''));
     }
     if (FEATURE === 'captions') {
       // the Captions style window, with the app's own list of looks (caption-looks.json, made by tools/build.py)

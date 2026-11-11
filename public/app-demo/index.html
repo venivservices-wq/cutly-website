@@ -8,14 +8,14 @@
 <link rel="stylesheet" href="style.css?v=250">
 <link rel="stylesheet" href="panel-style.css?v=250">
 <link rel="stylesheet" href="mobile.css?v=250">
-<link rel="stylesheet" href="demo-only.css?v=250-w9">
+<link rel="stylesheet" href="demo-only.css?v=250-w65">
 </head>
 <body>
 <header class="topbar">
   <!-- phones only: opens the project list -->
   <button class="m-only iconbtn" id="mProjects" type="button" aria-label="Projects"><svg viewBox="0 0 16 16"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/></svg></button>
   <button class="m-only m-back" id="mBack" type="button" aria-label="Back to the editor"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg><span>Back</span></button>
-  <div class="brand"><img src="cutly-logo.svg" alt=""><span class="brand-d">Cutly AI</span><span class="brand-m m-only">Cutly AI</span><span class="app-version" id="appVersion"></span><span class="ai-mode" id="aiMode" hidden>API</span></div>
+  <div class="brand"><img src="cutly-logo.png?v=2" alt=""><span class="brand-d">Cutly AI</span><span class="brand-m m-only">Cutly AI</span><span class="app-version" id="appVersion"></span><span class="ai-mode" id="aiMode" hidden>API</span></div>
   <div class="spacer"></div>
   <!-- phones only: small round buttons that float over the video -->
   <button class="m-only m-ic" id="mUndo" type="button" aria-label="Undo"><svg viewBox="0 0 16 16"><path d="M6 3.5 2.5 7 6 10.5M3 7h6.5a3.5 3.5 0 0 1 0 7H8"/></svg></button>
@@ -146,7 +146,7 @@
   <div class="splitter v" id="splitRight" title="Drag to resize"></div>
   <div class="splitter h" id="splitTimeline" title="Drag to resize. Drag down to the bottom edge to close."></div>
   <aside class="videos">
-    <div class="m-drawer-brand m-only"><img src="cutly-logo.svg" alt=""><span>Cutly AI</span></div>
+    <div class="m-drawer-brand m-only"><img src="cutly-logo.png?v=2" alt=""><span>Cutly AI</span></div>
     <div class="side-head">
       <div class="side-title">Projects</div>
       <div class="side-btns">
@@ -792,7 +792,7 @@
 <!-- sign-in (public app only; auth.js shows it when there is no session) -->
 <div class="signin hidden" id="signin" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
   <div class="signin-box">
-    <img src="cutly-logo.svg" alt="" width="44" height="36">
+    <img src="cutly-logo.png?v=2" alt="" width="44" height="44">
     <h2 id="signinTitle">Welcome to Cutly AI</h2>
     <button class="signin-google" id="signinGoogle" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.2H12v4.3h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2.1-1.9 3.3-4.7 3.3-8.1z"/><path fill="#34A853" d="M12 23c3 0 5.4-1 7.2-2.6l-3.5-2.7c-1 .7-2.2 1-3.7 1-2.8 0-5.2-1.9-6.1-4.5H2.3v2.8A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.9 14.2a6.6 6.6 0 0 1 0-4.3V7H2.3a11 11 0 0 0 0 9.9l3.6-2.7z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .5 4.1 1.6l3.1-3.1A11 11 0 0 0 2.3 7l3.6 2.8C6.8 7.3 9.2 5.4 12 5.4z"/></svg>
@@ -803,6 +803,6 @@
   </div>
 </div>
 
-<script src="demo.js?v=250-w18"></script>
+<script src="demo.js?v=250-w37"></script>
 </body>
 </html>

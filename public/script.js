@@ -8,7 +8,7 @@
     <a class="nav-link" href="${n.href}"${n.columns ? ' aria-haspopup="true" aria-expanded="false"' : ''}>${n.label}${n.columns ? chevron : ''}</a>
     ${n.columns ? `<div class="mega"><div class="mega-clip"><div class="page mega-grid">
       ${n.columns.map((c) => `<ul><li class="mega-title">${c.title}</li>${c.links.map((l) => `<li><a href="${n.href}">${l}</a></li>`).join('')}</ul>`).join('')}
-      <a class="mega-promo" href="#try">${sceneHtml('neon', i + 95)}<img src="assets/cutly-logo.png" alt="" width="34" height="28"><span>${n.promo}</span></a>
+      ${n.side ? `<aside class="mega-side">${n.side.map((x) => `<a href="#tools"><span class="mega-side-label">${x.label}</span><img src="${x.img}" alt="" width="1240" height="776"><span class="mega-side-text">${x.text}</span></a>`).join('')}</aside>` : ''}
     </div></div></div>` : ''}
   </div>`).join('');
   const toggle = document.querySelector('.menu-toggle');
@@ -31,8 +31,24 @@
     link.blur();
   });
 
-  /* Client videos: plain looping muted videos, so all three can play at once */
-  $('showcaseList').innerHTML = S.showcase.map((c, i) => `<figure class="showcase-card">
+  // The main button's hover light follows the mouse, easing towards it instead of jumping
+  document.querySelectorAll('.hero-cta .btn-primary').forEach((b) => {
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, inside = false;
+    const tick = () => {
+      cx += (tx - cx) * 0.14; cy += (ty - cy) * 0.14;
+      b.style.setProperty('--mx', cx.toFixed(1) + 'px'); b.style.setProperty('--my', cy.toFixed(1) + 'px');
+      raf = (inside || Math.abs(tx - cx) > 0.3 || Math.abs(ty - cy) > 0.3) ? requestAnimationFrame(tick) : 0;
+    };
+    b.addEventListener('pointerenter', (e) => { const r = b.getBoundingClientRect(); tx = cx = e.clientX - r.left; ty = cy = e.clientY - r.top; inside = true; if (!raf) raf = requestAnimationFrame(tick); });
+    b.addEventListener('pointermove', (e) => { const r = b.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top; });
+    b.addEventListener('pointerleave', () => { inside = false; tx = b.offsetWidth / 2; ty = b.offsetHeight / 2; });
+  });
+
+  /* Client videos: a ring of cards seen at an angle. It turns by itself, with the page scroll and when dragged;
+     only the cards facing you play, so the whole ring never runs at once. */
+  const RING_N = S.showcase.length;
+  $('showcaseList').style.setProperty('--n', RING_N);
+  $('showcaseList').innerHTML = S.showcase.map((c, i) => `<figure class="showcase-card" style="--i:${i}">
     <video muted loop playsinline preload="none" data-wistia="${c.wistia}"></video>
     <figcaption>${sceneHtml(c.face, i + 70)}<span><strong>${c.client}</strong>${c.followers} followers</span></figcaption>
   </figure>`).join('');
@@ -52,59 +68,77 @@
       });
     }).catch(() => { /* the dark card stays as it is */ });
   }
-  // Plays while on screen and pauses once scrolled away
-  const watch = new IntersectionObserver((entries) => {
-    entries.forEach(({ target: v, isIntersecting }) => {
-      if (isIntersecting) v.play().catch(() => {});
-      else v.pause();
-    });
-  }, { threshold: 0.25 });
-  showcaseVideos.forEach((v) => {
-    watch.observe(v);
-    // A video that comes into view before its file is set starts once it can
-    v.addEventListener('canplay', () => { if (v.getBoundingClientRect().bottom > 0 && v.getBoundingClientRect().top < innerHeight) v.play().catch(() => {}); });
-  });
-
-  /* Features accordion, each feature with a coded mockup of the editor */
-  $('toolList').innerHTML = S.tools.map((t, i) => `<div class="tool">
-    <div class="tool-main">
-      <button class="tool-head" type="button" aria-expanded="false"><span>0${i + 1}</span><span>${t.title}</span><i aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M9 3v12M3 9h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></i></button>
-      <div class="tool-reveal tool-copy"><div><p class="tool-text">${t.text}</p></div></div>
-    </div>
-    <div class="tool-reveal tool-side"><div><div class="tool-shot fui-fit">${featureUi(t.ui)}</div></div></div>
-  </div>`).join('');
-  const tools = [...$('toolList').children];
-  document.querySelectorAll('#toolList .fui-fit').forEach(fitFeatureUi);
-  function openTool(i) {
-    tools.forEach((t, j) => {
-      t.classList.toggle('open', j === i);
-      t.querySelector('.tool-head').setAttribute('aria-expanded', j === i);
-    });
-  }
-  tools.forEach((tool, i) => {
-    tool.querySelector('.tool-head').addEventListener('click', () => openTool(i));
-  });
-  openTool(0);
-  // Hovering a closed row shows its preview image next to the cursor (mouse only)
-  if (matchMedia('(hover: hover)').matches) {
-    const preview = document.createElement('div');
-    preview.className = 'tool-preview';
-    preview.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(preview);
-    const hide = () => preview.classList.remove('show');
-    tools.forEach((tool, i) => {
-      const head = tool.querySelector('.tool-head');
-      head.addEventListener('mouseenter', () => {
-        if (tool.classList.contains('open')) return;
-        preview.innerHTML = featureUi(S.tools[i].ui);
-        fitFeatureUi(preview);
-        preview.classList.add('show');
+  // The ring turns only when the visitor drags it or uses the arrows, and always settles with one card straight in front, playing
+  {
+    const stage = $('showcaseStage'), ring = $('showcaseList');
+    const step = 360 / RING_N;
+    let spin = 0, goal = 0, drag = null, raf = 0, shown = -1;
+    const mod = (n) => ((n % RING_N) + RING_N) % RING_N;
+    // A straight row: the card in front is a little bigger, the others sit beside it at normal size
+    const cards = [...ring.children];
+    const draw = () => {
+      const w = cards[0].offsetWidth, p = spin / step;
+      cards.forEach((c, i) => {
+        const o = ((i - p + RING_N / 2) % RING_N + RING_N) % RING_N - RING_N / 2, a = Math.abs(o);
+        const gap = 20, sc = Math.max(0.88, 1.14 - 0.26 * a);
+        // the middle card is bigger, so the first step out is wider; every later step is one side card plus the gap
+        const x = Math.sign(o) * (Math.min(a, 1) * (w * 1.01 + gap) + Math.max(a - 1, 0) * (w * 0.88 + gap));
+        c.style.opacity = (a <= 1 ? 1 - 0.25 * a : Math.max(0, 0.75 - (a - 1) * 1.5)).toFixed(2);
+        c.style.transform = `translateX(${x.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+        c.style.zIndex = Math.round(100 - a * 10);
+        c.style.visibility = a > 1.5 ? 'hidden' : '';
       });
-      head.addEventListener('mousemove', (e) => { preview.style.translate = `${e.clientX + 28}px ${e.clientY - 80}px`; });
-      head.addEventListener('mouseleave', hide);
-      head.addEventListener('click', hide);
+    };
+    addEventListener('resize', draw);
+    // Plays only the card in front (with sound once the visitor has tapped it), pauses the rest
+    function playFront() {
+      const front = mod(Math.round(spin / step));
+      if (front === shown) return;
+      shown = front;
+      showcaseVideos.forEach((v, i) => {
+        v.closest('.showcase-card').classList.toggle('front', i === front);
+        if (i === front) { v.muted = !stage.classList.contains('sound'); v.play().catch(() => {}); }
+        else { v.pause(); v.muted = true; }
+      });
+    }
+    // Glides to the goal angle
+    function glide() {
+      const d = goal - spin;
+      if (Math.abs(d) < 0.05) { spin = goal; draw(); raf = 0; playFront(); return; }
+      spin += d * 0.14; draw();
+      if (Math.abs(spin / step - Math.round(spin / step)) < 0.04 || Math.abs(d) < step * 0.5) playFront();
+      raf = requestAnimationFrame(glide);
+    }
+    const go = (to) => { goal = to * step; if (matchMedia('(prefers-reduced-motion: reduce)').matches) { spin = goal; draw(); playFront(); } else if (!raf) raf = requestAnimationFrame(glide); };
+    const here = () => Math.round(goal / step);
+    $('ringPrev').addEventListener('click', () => go(here() - 1));
+    $('ringNext').addEventListener('click', () => go(here() + 1));
+    stage.parentElement.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { go(here() - 1); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { go(here() + 1); e.preventDefault(); }
     });
-    addEventListener('scroll', hide, { passive: true });
+    // Dragging with mouse, finger or pen; up and down still scrolls the page on a phone. Letting go settles on the nearest card.
+    let moved = 0;
+    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, spin }; moved = 0; if (raf) { cancelAnimationFrame(raf); raf = 0; } stage.setPointerCapture(e.pointerId); stage.classList.add('grab'); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      moved = Math.max(moved, Math.abs(e.clientX - drag.x));
+      spin = goal = drag.spin - (e.clientX - drag.x) * 0.13; draw();
+    });
+    const end = () => { if (!drag) return; drag = null; stage.classList.remove('grab'); go(Math.round(spin / step)); };
+    stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+    // A tap on the front video turns its sound on or off; a tap on a side card brings it to the front
+    stage.addEventListener('click', (e) => {
+      if (moved > 6) return;
+      const card = e.target.closest('.showcase-card');
+      if (!card) return;
+      const i = [...ring.children].indexOf(card);
+      if (i === shown) { stage.classList.toggle('sound'); const v = showcaseVideos[i]; v.muted = !stage.classList.contains('sound'); v.play().catch(() => {}); }
+      else { const d = mod(i - here() ); go(here() + (d > RING_N / 2 ? d - RING_N : d)); }
+    });
+    // The video file arrives after the first look: start the front one then
+    showcaseVideos.forEach((v) => v.addEventListener('loadeddata', () => { shown = -1; playFront(); }));
+    draw(); playFront();
   }
 
   /* The site's painted card backgrounds, used by the reviews, the why section and pricing. Each is a small landscape: a sky, a misty band and a wavy hill,
@@ -135,6 +169,50 @@
     </svg>`;
   };
 
+  /* Features accordion, each feature with a coded mockup of the editor */
+  $('toolList').innerHTML = S.tools.map((t, i) => `<div class="tool">
+    <div class="tool-main">
+      <button class="tool-head" type="button" aria-expanded="false"><span>0${i + 1}</span><span>${t.title}</span><i aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M9 3v12M3 9h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></i></button>
+      <div class="tool-reveal tool-copy"><div><p class="tool-text">${t.text}</p></div></div>
+    </div>
+    <div class="tool-reveal tool-side"><div><div class="tool-shot"><div class="tool-ui fui-fit fui-${t.ui}"></div></div></div></div>
+  </div>`).join('');
+  const tools = [...$('toolList').children];
+  function openTool(i) {
+    tools.forEach((t, j) => {
+      t.classList.toggle('open', j === i);
+      t.querySelector('.tool-head').setAttribute('aria-expanded', j === i);
+      // the real editor loads only when its row is opened, once; the hover preview is a plain image
+      const box = t.querySelector('.tool-ui');
+      if (j === i && !box.firstChild) { box.innerHTML = featureUi(S.tools[j].ui); fitFeatureUi(box); }
+    });
+  }
+  tools.forEach((tool, i) => {
+    tool.querySelector('.tool-head').addEventListener('click', () => openTool(i));
+  });
+  openTool(0);
+  // Hovering a closed row shows its preview image next to the cursor (mouse only)
+  if (matchMedia('(hover: hover)').matches) {
+    const preview = document.createElement('div');
+    preview.className = 'tool-preview';
+    preview.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(preview);
+    const hide = () => preview.classList.remove('show');
+    tools.forEach((tool, i) => {
+      const head = tool.querySelector('.tool-head');
+      head.addEventListener('mouseenter', () => {
+        if (tool.classList.contains('open')) return;
+        // the finished picture of the row, a small image: no live frame is loaded on hover
+        preview.innerHTML = `<img class="tool-img" src="assets/features/feature-${i + 1}.webp" width="1240" height="776" alt="">`;
+        preview.classList.add('show');
+      });
+      head.addEventListener('mousemove', (e) => { preview.style.translate = `${e.clientX + 28}px ${e.clientY - 80}px`; });
+      head.addEventListener('mouseleave', hide);
+      head.addEventListener('click', hide);
+    });
+    addEventListener('scroll', hide, { passive: true });
+  }
+
   /* Why creators choose us: stat cards that state the claim then show the two numbers, a "no waiting" card and perk cards */
   const W = S.why;
   const check = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l3.5 3.5L16 5.5"/></svg>';
@@ -160,10 +238,9 @@
     W.perks.map((p) => `<article class="why-perk"><span class="why-label">${p.label}</span><h3>${p.title}<span>${p.vs}</span></h3></article>`).join('');
 
   /* Reviews */
-  $('reviewList').innerHTML = S.reviews.map((r, i) => `<article class="review">${reviewScene(i)}
-    <b aria-hidden="true">&ldquo;</b>
-    <p>Add a real customer review here, in their own words, about what they made with Cutly.</p>
-    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}</span></div>
+  $('reviewList').innerHTML = S.reviews.map((r, i) => `<article class="review">
+    <p>Add a real customer review here, in their own words, about <mark>what they made with Cutly</mark>.</p>
+    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}<small>000K followers</small></span></div>
   </article>`).join('');
 
   /* Pricing: a gray card, a split card with a painted top, and a black card. The feature rows line up across all three. */
@@ -201,12 +278,12 @@
 
   /* Footer */
   $('footerGrid').innerHTML = `<div class="footer-brand">
-      <a class="logo" href="#top" aria-label="Cutly AI home"><img src="assets/cutly-logo.png" alt="" width="29" height="24"><span>Cutly AI</span></a>
-      <p>${S.tagline}</p>
+      <a class="logo" href="#top" aria-label="Cutly AI home"><img src="assets/cutly-logo.png?v=2" alt="" width="28" height="28"><span>Cutly AI</span></a>
+      ${S.tagline ? `<p>${S.tagline}</p>` : ''}
       <div class="socials"><a href="#" aria-label="Cutly AI on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></a></div>
     </div>` +
     S.footer.map((c) =>
-      `<div><h4>${c.title}</h4><ul>${c.links.map(([label, href]) => `<li><a href="${href}">${label}</a></li>`).join('')}</ul></div>`).join('');
+      `<div><h4>${c.title}</h4><ul>${c.links.map(([label, href]) => `<li><a href="${href}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${label}</a></li>`).join('')}</ul></div>`).join('');
   $('legalLinks').innerHTML = `<span>&copy; ${new Date().getFullYear()} Cutly AI</span><nav>${S.legal.map((l) => `<a href="#">${l}</a>`).join('')}</nav>`;
 
   /* The header gets its scrolled look once the page moves */
