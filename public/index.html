@@ -5,18 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cutly AI: Photo and Video Creation with AI</title>
   <meta name="description" content="Cutly AI helps anyone create standout photos and videos with AI.">
+  <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="inter.css">
-  <link rel="stylesheet" href="styles.css?v=63">
-  <link rel="stylesheet" href="demo.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=186">
+  <link rel="stylesheet" href="demo.css?v=19">
   <link rel="stylesheet" href="feature-ui.css?v=9">
-  <link rel="stylesheet" href="decor.css?v=7">
+  <link rel="stylesheet" href="decor.css?v=9">
 </head>
 <body>
 
 <header class="site-header" id="top">
   <div class="page header-row">
     <a class="logo" href="#top" aria-label="Cutly AI home">
-      <img src="assets/cutly-logo.png" alt="" width="29" height="24">
+      <img src="assets/cutly-logo.png?v=2" alt="" width="28" height="28">
       <span>Cutly AI</span>
     </a>
     <nav class="main-nav" id="mainNav"></nav>
@@ -30,17 +31,19 @@
 <main>
   <div class="page-clip">
   <div class="hero-wash">
-    <div class="deco" aria-hidden="true"><i class="deco-shape t-mid soft d-hero-a"></i><i class="deco-shape s-tri t-faint d-hero-b wide-only"></i><i class="deco-shape s-pill t-strong d-hero-c wide-only"></i><i class="deco-dots d-hero-dots"></i><i class="deco-plus d-hero-plus"></i></div>
+    <div class="hero-glow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="deco" aria-hidden="true"><i class="deco-shape t-mid soft d-hero-a"></i><i class="deco-shape s-tri t-faint d-hero-b wide-only"></i><i class="deco-shape s-pill t-strong d-hero-c wide-only"></i><i class="deco-plus d-hero-plus"></i></div>
     <section class="hero page">
-      <h1>Edit Your Videos <em>Like a Professional</em> at a Fraction of the Cost.</h1>
-      <p class="hero-sub">Make content people stop to watch in just minutes.</p>
+      <p class="hero-badge"><b>AI Video Editing</b></p>
+      <h1>Professional Video Editing <em>Without the Premium</em> Price Tag.</h1>
       <div class="hero-cta" id="try">
-        <a class="btn btn-lg btn-primary" href="#pricing">Start today</a>
+        <a class="btn btn-lg btn-primary btn-go" href="#pricing">Start today<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-lg btn-ghost btn-go" href="#tools">View features<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </section>
 
     <section class="demo" id="demo">
-      <div class="ve-shell"><div class="ve-scaler" id="veScaler" aria-hidden="true"><iframe class="ve-frame" id="veFrame" src="app-demo/index.html" title="Cutly AI editor demo" tabindex="-1" scrolling="no"></iframe></div><button class="ve-open" id="veOpen" type="button" aria-label="Log in to try the Cutly AI editor"></button></div>
+      <div class="ve-shell"><div class="ve-scaler" id="veScaler" aria-hidden="true"><iframe class="ve-frame" id="veFrame" src="app-demo/index.html?v=hero1" title="Cutly AI editor demo" tabindex="-1" scrolling="no"></iframe></div><button class="ve-open" id="veOpen" type="button" aria-label="Log in to try the Cutly AI editor"></button></div>
     </section>
   </div>
 
@@ -50,7 +53,7 @@
       <div class="center-head">
         <h2>See What You Can Create.</h2>
       </div>
-      <div class="showcase" id="showcaseList"></div>
+      <div class="ring-wrap" tabindex="0" aria-label="Client videos, use the arrow keys to browse"><div class="ring-stage" id="showcaseStage"><div class="ring-tilt"><div class="ring" id="showcaseList"></div></div></div><button class="ring-btn prev" id="ringPrev" type="button" aria-label="Previous video"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="ring-btn next" id="ringNext" type="button" aria-label="Next video"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
     </div>
   </section>
 
@@ -99,7 +102,7 @@
     <div class="cta-band">
       <div class="cta-glow" aria-hidden="true"><i></i><i></i><i></i></div>
       <h2>Want to know more?<span>Get in touch.</span></h2>
-      <a class="btn btn-lg cta-main" href="#">Contact us<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
+      <a class="btn btn-lg cta-main" href="contact.html">Contact us<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
     </div>
   </section>
 </main>
@@ -117,7 +120,7 @@
     <div class="auth-left" aria-hidden="true"><div class="auth-scaler" id="authScaler"><iframe class="ve-frame" id="authFrame" title="Cutly AI editor demo" tabindex="-1" scrolling="no"></iframe></div></div>
     <div class="auth-right">
       <button class="auth-close" id="authClose" type="button" aria-label="Close"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-      <img class="auth-logo" src="assets/cutly-logo.png" alt="" width="44" height="36">
+      <img class="auth-logo" src="assets/cutly-logo.png?v=2" alt="" width="44" height="44">
       <h2 id="authTitle">Welcome to Cutly AI</h2>
       <div class="auth-options">
         <a class="auth-btn primary" href="https://app.cutlyai.app/?signin=google" rel="noopener">
@@ -131,9 +134,9 @@
 </div>
 
 <script src="scenes.js?v=7"></script>
-<script src="content.js?v=21"></script>
+<script src="content.js?v=58"></script>
 <script src="feature-ui.js?v=15"></script>
-<script src="script.js?v=27"></script>
-<script src="demo.js?v=9"></script>
+<script src="script.js?v=49nav"></script>
+<script src="demo.js?v=11"></script>
 </body>
 </html>

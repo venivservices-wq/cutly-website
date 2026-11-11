@@ -1,13 +1,16 @@
 // All editable site content lives here. Change the text without touching the layout code.
 window.SITE = {
   nav: [
-    { label: 'Features', href: '#tools', promo: 'See what\'s new', columns: [
+    { label: 'Features', href: '#tools', side: [
+      { label: 'AI editing', img: 'assets/features/feature-6.webp', text: 'Edit your video by writing comments' },
+      { label: "What's new", img: 'assets/features/feature-5.webp', text: 'Sound improvements and color correction' }
+    ], columns: [
       { title: 'AI creation', links: ['AI Design', 'Video Studio', 'AI Video Generator', 'AI Image Generator', 'AI Image Enhancer'] },
       { title: 'Text & Audio', links: ['Auto Captions', 'Caption Styles', 'Speech to Text', 'Text to Speech', 'Custom Voices', 'Voice Enhancer', 'Noise Cleaner'] },
       { title: 'Image', links: ['Background Remover', 'Image Combiner', 'Image Upscaler', 'Image Resizer', 'Photo Editor', 'Text Remover', 'Object Remover'] },
       { title: 'Video', links: ['Video Background Remover', 'Video Upscaler', 'Video Editor', 'Video Trimmer', 'Add Subtitles', 'Video Converter'] }
     ] },
-    { label: 'Blog', href: '#', promo: 'Read the latest', columns: [
+    { label: 'Blog', href: '#', columns: [
       { title: 'Learn', links: ['Tutorials', 'Guides', 'Tips & Tricks'] },
       { title: 'Stories', links: ['Creator Stories', 'Case Studies'] },
       { title: 'News', links: ['Product Updates', 'Announcements'] }
@@ -18,13 +21,14 @@ window.SITE = {
   // Features accordion: one row per main feature, opening to its description and a coded mockup of the editor.
   // `ui` picks the mockup, drawn in feature-ui.js.
   tools: [
-    { title: 'Cut Mistakes Automatically', ui: 'cuts', text: 'Retakes, filler words and long pauses are removed automatically.' },
-    { title: 'Auto Captions', ui: 'captions', text: 'Accurate captions in seconds, styled to match your brand.' },
-    { title: 'Zooms on Key Moments', ui: 'zooms', text: 'Punch-ins land on the lines that matter and keep people watching.' },
-    { title: 'Sound Effects', ui: 'sfx', text: 'Whooshes and pops timed to your cuts, so every edit feels polished.' },
-    { title: 'Ask AI for Changes', ui: 'ai', text: 'Type a note like "make this punchier" and the AI makes the edit.' },
-    { title: 'Edit by Text', ui: 'transcript', text: 'Delete a word from the transcript and it’s gone from the video.' },
-    { title: 'Presets', ui: 'presets', text: 'Save your style once and reuse it on every video in one click.' }
+    { title: 'Cut Mistakes', ui: 'mistakes', text: 'Retakes, filler words and long pauses are removed automatically.' },
+    { title: 'Zooms and Sound Effects', ui: 'zoomsfx', text: 'AI understands your video and automatically adds zooms and sound effects to keep viewers engaged.' },
+    { title: 'Overlays and B-roll', ui: 'overlays', text: 'Add images and B-roll over your footage, and let AI find the perfect moments to place them.' },
+    { title: 'Custom Styles', ui: 'presets', text: 'Style your own captions and set your own preferences for cuts, custom sound effects and more.' },
+    { title: 'Sound Improvements and Color Correction', ui: 'enhance', text: 'Get clearer audio and more vibrant colors with automatic enhancements.' },
+    { title: 'Edit with Comments', ui: 'ai', text: 'Leave a comment at any moment, and let AI make the changes.' },
+    { title: 'Edit with Text', ui: 'transcript', text: 'Delete or bring back words in your transcript, and the changes are automatically reflected in your video.' },
+    { title: 'Edit Using the Timeline', ui: 'cuts', text: 'Take full control of your edits. Drag, trim, and fine-tune every clip exactly how you want.' }
   ],
 
   // Client videos, by Wistia media ID. All three use the editor demo's video for now:
@@ -32,17 +36,24 @@ window.SITE = {
   showcase: [
     { client: 'Client Name', followers: '000K', face: 'peach', wistia: 'xyco9e53i1' },
     { client: 'Client Name', followers: '000K', face: 'mint', wistia: 'xyco9e53i1' },
-    { client: 'Client Name', followers: '000K', face: 'rose', wistia: 'xyco9e53i1' }
+    { client: 'Client Name', followers: '000K', face: 'rose', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'peach', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'mint', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'rose', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'peach', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'mint', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'rose', wistia: 'xyco9e53i1' },
+    { client: 'Client Name', followers: '000K', face: 'peach', wistia: 'xyco9e53i1' }
   ],
 
   // "Why creators choose" section: two stat cards with bars, a "no waiting" card, then perk cards.
   // A bar's `pct` is its length; `ours` marks the Cutly bar.
   why: {
     stats: [
-      { label: 'Cost per video', title: '10x cheaper', vs: 'than an editor', dark: true,
-        from: { name: 'Editor', value: '$5.00' }, to: { name: 'Cutly', value: '$0.50' } },
-      { label: 'Time per video', title: '12x faster', vs: 'than editing by hand',
-        from: { name: 'By hand', value: '60 min' }, to: { name: 'Cutly', value: '5 min' } }
+      { label: 'Cost per video', title: '20x cheaper', vs: 'than an editor', dark: true,
+        from: { name: 'Editor', value: '$5.00' }, to: { name: 'Cutly', value: '$0.25' } },
+      { label: 'Time per video', title: '6x faster', vs: 'than editing by hand',
+        from: { name: 'By hand', value: '30 min' }, to: { name: 'Cutly', value: '5 min' } }
     ],
     wait: {
       label: 'Turnaround',
@@ -73,12 +84,12 @@ window.SITE = {
   planFeatures: ['Cut mistakes automatically', 'Auto captions', 'Zooms and sound effects', 'Edit by text', 'Ask AI for changes', 'Presets for your style'],
 
   faq: [
-    ['What does Cutly AI do?', 'Upload your raw video and Cutly edits it for you. It cuts mistakes and adds captions, zooms and sound effects.'],
-    ['How long does an edit take?', 'About 5 minutes per video, instead of an hour editing by hand.'],
-    ['How much does it cost per video?', '$0.50 on every plan. That is 10x cheaper than the $5 you would pay an editor.'],
-    ['What is the difference between the plans?', 'Start gives you 50 videos a month, Pro 100 and Ultra 150. Pro and Ultra also include Ask AI for changes and presets for your style.'],
-    ['Do I need editing experience?', 'No. Upload your video and Cutly does the editing.'],
-    ['Can I change what the AI did?', 'Yes. You can edit by text, ask the AI for changes on Pro and Ultra, or make manual edits yourself.']
+    ['Can Cutly automatically remove duplicate takes?', 'Yes! Cutly automatically finds and removes duplicate takes. You can also remove anything else with a simple comment.'],
+    ['What are credits, and how do they work?', 'Credits are used whenever you ask Cutly’s AI to perform a task. A first edit usually costs 2 credits, while comments can cost anywhere from 0 to 1 credit.'],
+    ['How many videos can I upload?', 'You can add as many videos to the queue as your available credits allow. Cutly will process them in batches until they’re all finished.'],
+    ['Can I customize my videos?', 'Yes! You can create your own caption styles, save custom cut presets, upload your own sound effects, and much more.'],
+    ['Do I need video editing experience to use Cutly?', 'Not at all! Cutly does the hard work for you. Just tell it what you want, and let AI handle the rest.'],
+    ['Can I make manual edits to my videos?', 'Yes! You can use comments or the timeline, depending on how much control you want.']
   ],
 
   // Placeholders. Use real reviews only, with the customer's permission.
@@ -92,8 +103,8 @@ window.SITE = {
   // Footer columns: [label, link]
   footer: [
     { title: 'Product', links: [['Features', '#tools'], ['Reviews', '#reviews'], ['Pricing', '#pricing']] },
-    { title: 'Company', links: [['Blog', '#'], ['Help Center', '#'], ['Contact', '#']] }
+    { title: 'Company', links: [['Blog', '#'], ['Help Center', '#'], ['Contact', 'contact.html']] }
   ],
-  tagline: 'Create Videos People Actually Want to Watch, in Just Minutes.',
+  tagline: 'The AI Powered Video Editor That Does the Hard Work for You.',
   legal: ['Terms of Service', 'Privacy Policy', 'Cookie Policy']
 };

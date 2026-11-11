@@ -48,7 +48,7 @@
 .d-tools-rings { top: -60px; left: -270px; width: 560px; height: 560px; }
 .d-tools-a { top: 34%; right: -110px; width: 320px; height: 320px; rotate: 12deg; }
 .d-tools-b { bottom: 2%; left: -120px; width: 400px; height: 220px; rotate: 14deg; }
-.d-reviews-ticks { top: 34px; left: 50%; width: min(900px, 76%); translate: -50% 0; }
+.d-reviews-ticks { top: 39px; left: 50%; width: min(900px, 76%); translate: -50% 0; }
 .d-reviews-a { top: 16%; left: -170px; width: 420px; height: 360px; }
 .d-reviews-b { bottom: 6%; right: -90px; width: 320px; height: 320px; rotate: -32deg; }
 .d-why-a { top: 90px; left: -220px; width: 560px; height: 480px; }

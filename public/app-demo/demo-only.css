@@ -73,3 +73,187 @@ body[data-feature="captions"] .cs { padding-top: 12px; }
 body[data-feature="captions"] .cs-search { margin-top: 0; flex: none; }
 body[data-feature="captions"] .cs-pills { display: grid !important; grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 5px !important; padding: 0 14px 12px !important; }
 body[data-feature="captions"] .cs-pills button { width: 100%; flex: none !important; }
+
+/* Cut Mistakes card: the Transcript tab with the cut words struck through, bigger and calmer than the real panel */
+body[data-feature="mistakes"] .stage, body[data-feature="mistakes"] .timeline-wrap { display: none !important; }
+body[data-feature="mistakes"] #panel { position: fixed !important; inset: 0; width: auto !important; height: auto !important; border: 0 !important; padding: 0 !important; overflow: hidden; background: #111214 !important; }
+body[data-feature="mistakes"] .tr-bar, body[data-feature="mistakes"] .tr-tools, body[data-feature="mistakes"] .tr-found, body[data-feature="mistakes"] .tr-format, body[data-feature="mistakes"] .tr-editbar { display: none !important; }
+body[data-feature="mistakes"] #transcript { padding: 64px 28px 0; font-size: 21px !important; line-height: 1.55 !important; color: #f2f3f5; }
+body[data-feature="mistakes"] .mk-line { margin: 0 0 16px; padding: 12px 16px; border-radius: 12px; background: #1b1c1f; }
+body[data-feature="mistakes"] .mk-line .w.cut { display: inline !important; visibility: visible !important; padding: 1px 6px; margin: 0 1px; border-radius: 6px; background: rgba(229, 72, 77, .16); color: #f08285; text-decoration: line-through; text-decoration-color: rgba(240, 130, 133, .8); text-decoration-thickness: 2px; }
+
+/* Zooms and Sound Effects card: the pushed-in frame with a zoom chip and a sound chip, and the zoom's own settings beside it */
+body[data-feature="zoomsfx"] .stage, body[data-feature="zoomsfx"] .timeline-wrap, body[data-feature="zoomsfx"] #panel, body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel { display: none !important; }
+#zsScene { position: fixed; inset: 0; display: flex; align-items: center; gap: 22px; padding: 22px 26px; background: #111214; }
+#zsScene .zs-video { position: relative; flex: 0 0 58%; height: 100%; border-radius: 14px; overflow: hidden; background: #000; }
+#zsScene .zs-video img { position: absolute; left: 50%; top: 30%; width: 128%; max-width: none; transform: translate(-50%, -30%); }
+#zsScene .zs-zoom, #zsScene .zs-sfx { position: absolute; display: flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 9px; font: 600 13px/1 Inter, sans-serif; }
+#zsScene .zs-zoom { left: 12px; top: 12px; font-size: 15px; padding: 8px 13px; background: rgba(60, 50, 10, .85); color: #f5c542; }
+#zsScene .zs-sfx { left: 12px; bottom: 12px; font-size: 14px; padding: 7px 12px; background: rgba(20, 60, 45, .9); color: #6ee7b7; }
+#zsScene svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+#zsScene .zs-pop { flex: 1; min-width: 0; display: flex; justify-content: flex-start; opacity: .9; }
+body[data-feature="zoomsfx"] #pop { opacity: 1 !important; animation: none !important; transition: none !important; visibility: visible !important; display: block !important; position: static !important; transform: none !important; width: 100%; max-width: 300px; margin: 0; }
+
+#zsScene .zs-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+#zsScene .zs-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: #1b1c1f; font: 500 13px/1 Inter, sans-serif; color: #c9cbd1; }
+#zsScene .zs-row b { font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#zsScene .zs-row i { font-style: normal; color: #7b7e86; font-variant-numeric: tabular-nums; }
+#zsScene .zs-row.z svg { color: #f5c542; }
+#zsScene .zs-row.s svg { color: #6ee7b7; }
+
+#zsScene .zs-over { position: absolute; right: 14px; top: 14px; width: 38%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(160deg, #fdf1e7, #f3d9c6); outline: 2px solid #a78bfa; outline-offset: 0; box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }
+#zsScene .zs-over svg { width: 62%; height: 62%; stroke: none; }
+#zsScene .zs-tag { position: absolute; left: 12px; bottom: 12px; display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 9px; background: rgba(60, 40, 110, .9); color: #c4b5fd; font: 600 14px/1 Inter, sans-serif; }
+#zsScene .zs-row.o svg { color: #a78bfa; }
+
+/* Overlays and B-roll card: the AI's suggestions as large rows */
+body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel { display: none !important; }
+#ovScene { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 14px 30px 18px 32px; background: #111214; font-family: Inter, sans-serif; }
+#ovScene .ov-title { padding-left: 4px; font-size: 14px; font-weight: 600; color: #6f727a; }
+#ovScene .ov-row { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 18px; border-radius: 12px; background: #1b1c1f; }
+#ovScene .ov-txt { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 500; color: #e6e7ea; white-space: nowrap; }
+#ovScene .ov-txt i { font-style: normal; padding: 3px 8px; border-radius: 6px; background: rgba(74, 222, 128, .12); color: #4ade80; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+#ovScene .ov-plus { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9px; background: #d4d4d4; color: #111; }
+#ovScene .ov-plus svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+/* Custom Styles card: the AI edit card alone, enlarged, no frame behind it; it runs off the right and the bottom so the switches are out of sight */
+html:has(body[data-feature="presets"]), body[data-feature="presets"] { background: transparent !important; }
+body[data-feature="presets"] #panel { display: block !important; background: transparent !important; padding: 0 !important; overflow: hidden; }
+body[data-feature="presets"] #tab-settings { display: block; width: 100%; padding: 0 !important; }
+body[data-feature="presets"] #tab-settings .ps-card { width: 150vw !important; margin: 16vh 0 0 11vw !important; zoom: 1.35; }
+/* the card itself: a darker, mostly solid glass with lighter rows */
+body[data-feature="presets"] #tab-settings .ps-card { background: transparent !important; border-radius: 18px; }
+body[data-feature="presets"] #tab-settings .ps-card .switch.ps-row, body[data-feature="presets"] #tab-settings .ps-card textarea { background: rgba(255, 255, 255, .08) !important; }
+
+body[data-feature="presets"] .ps-row.opt { justify-content: flex-start !important; gap: 12px; background: rgba(255, 255, 255, .08); }
+body[data-feature="presets"] .ps-row.opt .ps-name { flex: none; }
+body[data-feature="presets"] .opt-val { padding: 3px 9px; border-radius: 7px; background: rgba(255, 255, 255, .12); color: #f2f3f5; font-size: 13px; font-weight: 600; white-space: nowrap; }
+body[data-feature="presets"] #tab-settings .ps-card { margin-top: 11vh !important; }
+
+/* Zooms and Sound Effects picture, fourth pass: no dark frame, the pushed-in video big and bleeding off the bottom, the list further right in dark rows with green time chips */
+html:has(body[data-feature="zoomsfx"]), body[data-feature="zoomsfx"] { background: transparent !important; }
+body[data-feature="zoomsfx"] > *:not(#zsScene) { display: none !important; }
+body[data-feature="zoomsfx"] #zsScene { position: fixed; inset: 0; display: block; padding: 0; background: transparent; overflow: hidden; }
+#zsScene .zs-video { position: absolute; left: 9%; top: 13%; width: 46%; height: 130%; flex: none; border-radius: 20px; box-shadow: 0 18px 40px rgba(5, 20, 40, .35); }
+#zsScene .zs-video img { top: 24%; width: 118%; transform: translate(-50%, -24%); }
+#zsScene .zs-zoom { left: 14px; top: 14px; font-size: 15px; padding: 8px 13px; }
+#zsScene .zs-sfx { left: auto; right: 14px; top: 72px; bottom: auto; font-size: 14px; padding: 7px 12px; }
+#zsScene .zs-pop { position: absolute; left: 60%; top: 32%; width: 34%; display: block; opacity: 1; }
+#zsScene .zs-list { gap: 10px; }
+#zsScene .zs-row { display: flex; align-items: center; gap: 8px; padding: 12px 12px 12px 14px; border-radius: 12px; background: rgba(17, 18, 20, .82); box-shadow: 0 8px 22px rgba(5, 20, 40, .25); color: #e6e7ea; font-size: 15px; font-weight: 500; white-space: nowrap; }
+#zsScene .zs-row b { flex: 1; font-weight: 500; }
+#zsScene .zs-row i { padding: 3px 7px; border-radius: 6px; background: rgba(74, 222, 128, .14); color: #4ade80; font-size: 12px; font-weight: 700; }
+body[data-feature="zoomsfx"] #tlToggle, body[data-feature="zoomsfx"] .tl-toggle, body[data-feature="overlays"] #tlToggle { display: none !important; }
+
+/* Zooms and Sound Effects: the list rows like the AI edit card's (white glass, same size), running off the right */
+#zsScene .zs-pop { left: calc(60% + 2.6vw); top: calc(13% + 3vw); width: 60%; }
+#zsScene .zs-list { gap: 14px; }
+#zsScene .zs-row { padding: 0 24px; height: 65px; border-radius: 16px; background: rgba(255, 255, 255, .13); box-shadow: none; color: #fff; font-size: 20px; font-weight: 600; }
+#zsScene .zs-row svg { width: 22px; height: 22px; color: #fff !important; }
+#zsScene .zs-row i { background: rgba(255, 255, 255, .2); color: #fff; font-size: 15px; padding: 4px 10px; }
+
+/* Edit with Comments card: the chat block centred in the frame, the same space left and right (clear of the rounded corner) */
+body[data-feature="ai"] #panel { display: flex !important; align-items: center; padding: 0 !important; }
+body[data-feature="ai"] #tab-ai { display: block; width: 100%; padding: 0 34px; }
+body[data-feature="ai"] .ai-head { padding: 0 2px 6px; }
+body[data-feature="ai"] #aiScroll { height: auto !important; overflow: visible !important; flex: none; }
+body[data-feature="ai"] #aiList { padding: 8px 0 0 !important; }
+body[data-feature="ai"] #tab-ai { height: auto !important; flex: none; }
+body[data-feature="ai"] #aiList.chat { padding: 8px 0 0 !important; margin: 0 !important; }
+body[data-feature="ai"] #tab-ai { margin: auto 0 !important; }
+body[data-feature="ai"] #aiScroll { padding-left: 0 !important; padding-right: 0 !important; }
+body[data-feature="ai"] .ai-head { padding: 0 0 8px !important; }
+body[data-feature="ai"] #aiList > :nth-child(3) { display: none !important; }
+
+/* the AI's answer carries the Cutly logo, not a star */
+.ai-mark { background: url("cutly-logo.png") center / contain no-repeat !important; border-radius: 22% !important; }
+.ai-mark svg { display: none !important; }
+
+/* Edit with Text card: big plain transcript with a selected part and the keys that act on it, on the same dark panel as the other pictures */
+body[data-feature="transcript"] .stage, body[data-feature="transcript"] .timeline-wrap, body[data-feature="transcript"] #panel { display: none !important; }
+#txScene { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 3.4vw; padding: 5.5vw 6vw; background: #111214; font-family: Inter, sans-serif; }
+#txScene .tx-keys { display: flex; flex-wrap: wrap; gap: 1.2vw; }
+#txScene .tx-keys span { display: flex; align-items: center; gap: 1.2vw; padding: 1.1vw 2.2vw 1.1vw 1.1vw; border-radius: 1.8vw; background: #1b1c1f; color: #c9cbd1; font-size: max(11px, 2.4vw); font-weight: 500; line-height: 1; }
+#txScene kbd { padding: .7vw 1.4vw; border-radius: 1vw; background: #2a2b30; color: #f2f3f5; font: 600 max(10px, 2vw)/1 Inter, sans-serif; }
+#txScene p { margin: 0; font-size: 3.6vw; line-height: 1.55; font-weight: 500; letter-spacing: -.01em; color: #e9eaed; }
+#txScene mark { padding: .3vw .6vw; margin: 0 -.6vw; border-radius: 1vw; background: rgba(255, 255, 255, .18); color: #fff; }
+#txScene s { padding: 0 1vw; border-radius: 1vw; background: rgba(229, 72, 77, .16); color: #f08285; text-decoration-color: rgba(240, 130, 133, .85); text-decoration-thickness: 2px; }
+#tab-ai .msg.ai .ai-mark { background: url("cutly-logo.png") center / contain no-repeat !important; border-radius: 22% !important; animation: none !important; }
+
+/* Edit with Text: bigger text, started from the top and running off the bottom */
+#txScene { justify-content: flex-start; padding-top: 8vw; overflow: hidden; }
+#txScene p { font-size: 5.2vw; line-height: 1.5; }
+
+/* Edit with Comments card: no dark panel; the chat sits on a frosted glass (drawn by the page behind the frame), so the logo shows */
+html:has(body[data-feature="ai"]), body[data-feature="ai"], body[data-feature="ai"] #panel { background: transparent !important; }
+body[data-feature="ai"] #panel { padding: 14% 0 0 !important; box-sizing: border-box; }
+body[data-feature="ai"] #tab-ai { padding: 0 28px 0 calc(12% + 28px) !important; }
+body[data-feature="ai"] .msg.me .bubble { background: rgba(255, 255, 255, .16) !important; color: #fff !important; }
+body[data-feature="ai"] .ai-head, body[data-feature="ai"] .ai-say { color: #fff !important; }
+body[data-feature="ai"] #tab-ai .msg.me .bubble, body[data-feature="ai"] #tab-ai .msg.me.done .bubble { background: rgba(255, 255, 255, .2) !important; }
+body[data-feature="ai"] #tab-ai .ai-head span, body[data-feature="ai"] #tab-ai .ai-say, body[data-feature="ai"] #tab-ai .ai-text, body[data-feature="ai"] #tab-ai .msg.me .bubble * { color: #fff !important; }
+body[data-feature="ai"] #tab-ai .msg-meta, body[data-feature="ai"] #tab-ai .ai-stamp, body[data-feature="ai"] #tab-ai .ai-tick { color: rgba(255, 255, 255, .8) !important; stroke: rgba(255, 255, 255, .8) !important; }
+
+/* Edit Using the Timeline card: one panel colour all the way down, the timeline centred in it */
+html:has(body[data-feature="cuts"]), body[data-feature="cuts"], body[data-feature="cuts"] .timeline-wrap { background: #111214 !important; }
+body[data-feature="cuts"] #timelineScroll { background: transparent !important; }
+body[data-feature="cuts"] .timeline-wrap { padding-top: 66px !important; box-sizing: border-box; }
+body[data-feature="cuts"] .timeline-wrap { padding: 45px 0 0 28px !important; }
+body[data-feature="cuts"] #timelineScroll { height: 232px !important; border-radius: 14px 0 0 14px; overflow: hidden !important; background: #000 !important; }
+
+/* Edit with Comments: zoomed in, started inside the glass, the bottom of the chat may run off */
+body[data-feature="ai"] #panel { align-items: flex-start !important; padding: calc(14% + 20px) 0 0 !important; }
+body[data-feature="ai"] #tab-ai { zoom: 1.4; padding: 0 20px 0 calc(8.5% + 38px) !important; margin: 0 !important; }
+
+/* Edit with Text, redone: the selected words carry a small floating toolbar, as in a text editor */
+#txScene { justify-content: flex-start !important; padding: 17vw 6vw 0 !important; }
+#txScene .tx-keys { display: none; }
+#txScene p { font-size: 4.9vw; line-height: 1.5; }
+#txScene mark { position: relative; }
+#txScene .tx-float { position: absolute; left: .6vw; bottom: 100%; margin-bottom: 1.6vw; display: flex; gap: .6vw; padding: .7vw; border-radius: 2vw; background: #26272b; box-shadow: 0 .8vw 2.4vw rgba(0, 0, 0, .45); white-space: nowrap; }
+#txScene .tx-float > span { display: flex; align-items: center; gap: 1vw; padding: .9vw 1.8vw .9vw .9vw; border-radius: 1.4vw; color: #e6e7ea; font-size: max(11px, 2.3vw); font-weight: 600; line-height: 1; }
+#txScene .tx-float > span:first-child { background: rgba(255, 255, 255, .09); }
+#txScene .tx-float kbd { padding: .6vw 1.2vw; border-radius: .9vw; background: #3a3b41; color: #fff; font: 600 max(10px, 1.9vw)/1 Inter, sans-serif; }
+/* alignment pass: the toolbar sits above the text block's left edge; the timeline card hugs its content and is centred */
+#txScene p { position: relative; }
+#txScene mark { position: static; }
+#txScene .tx-float { left: 0; margin-bottom: 2.4vw; }
+body[data-feature="cuts"] .timeline-wrap { padding: calc((100vh - 200px) / 2) 0 0 28px !important; }
+body[data-feature="cuts"] #timelineScroll { height: 200px !important; }
+
+/* Edit with Text, last pass: only the text, centred, and wide enough that the ends of the lines run off the right */
+#txScene { justify-content: center !important; padding: 0 0 0 7vw !important; }
+#txScene p { width: 150%; font-size: 5.6vw; line-height: 1.5; }
+
+/* Sound Improvements and Color Correction card: the picture and the sound wave before / after, on the dark panel */
+body[data-feature="enhance"] .stage, body[data-feature="enhance"] .timeline-wrap, body[data-feature="enhance"] #panel { display: none !important; }
+#enScene { position: fixed; inset: 0; display: flex; align-items: center; gap: 4vw; padding: 0 0 0 6vw; background: #111214; font-family: Inter, sans-serif; overflow: hidden; }
+#enScene .en-video { position: relative; flex: 0 0 42%; height: 82%; border-radius: 2.4vw; overflow: hidden; }
+#enScene .en-video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+#enScene .en-b { filter: saturate(.55) contrast(.88) brightness(.94); }
+#enScene .en-a { filter: saturate(1.5) contrast(1.08) brightness(1.05); clip-path: inset(0 0 0 50%); }
+#enScene .en-line { position: absolute; top: 0; bottom: 0; left: 50%; width: .5vw; margin-left: -.25vw; background: #fff; }
+#enScene .en-lb { position: absolute; top: 1.6vw; padding: .9vw 1.6vw; border-radius: 99px; background: rgba(0, 0, 0, .55); color: #fff; font-style: normal; font-size: max(11px, 2vw); font-weight: 600; line-height: 1; }
+#enScene .en-lb.l { left: 1.6vw; }
+#enScene .en-lb.r { right: 1.6vw; }
+#enScene .en-audio { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2.4vw; width: 60%; }
+#enScene .en-row { padding: 2vw 2.4vw; border-radius: 2vw; background: #1b1c1f; }
+#enScene .en-row > span { display: block; margin-bottom: 1.4vw; color: #8b8e96; font-size: max(11px, 2.1vw); font-weight: 600; }
+#enScene .en-row.on > span { color: #4ade80; }
+#enScene .en-wave { display: flex; align-items: center; gap: .55vw; height: 9vw; }
+#enScene .en-wave i { flex: none; width: .9vw; border-radius: 99px; background: #4ade80; }
+#enScene .en-wave.off i { background: #6b6e76; }
+/* gentler correction: the same split frame, a natural lift instead of a heavy one */
+#enScene .en-b { filter: saturate(.72) contrast(.9) brightness(.95); }
+#enScene .en-a { filter: saturate(1.12) contrast(1.04) brightness(1.04); }
+
+/* longer text, started near the top so it runs off the bottom as well as the right */
+#txScene { justify-content: flex-start !important; padding: 8.5vw 0 0 7vw !important; }
+
+/* Edit with Comments: everything a bit higher, tighter between the comment and the answer, a touch less zoom so the answer stays on one line */
+body[data-feature="ai"] #panel { padding-top: calc(14% - 4px) !important; }
+body[data-feature="ai"] #tab-ai { zoom: 1.3; }
+body[data-feature="ai"] .ai-head { padding-bottom: 0 !important; }
+body[data-feature="ai"] #aiList.chat { padding-top: 0 !important; gap: 16px !important; }
+/* the answer wraps in balanced lines, so it never leaves one word alone */
+body[data-feature="ai"] .ai-say { text-wrap: balance; }
