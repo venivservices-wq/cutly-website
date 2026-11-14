@@ -132,13 +132,24 @@
     });
     // Dragging with mouse, finger or pen; up and down still scrolls the page on a phone. Letting go settles on the nearest card.
     let moved = 0;
-    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, spin }; moved = 0; if (raf) { cancelAnimationFrame(raf); raf = 0; } stage.setPointerCapture(e.pointerId); stage.classList.add('grab'); });
+    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, spin, dx: 0, at: Math.round(goal / step) }; moved = 0; if (raf) { cancelAnimationFrame(raf); raf = 0; } stage.setPointerCapture(e.pointerId); stage.classList.add('grab'); });
+    // On a phone the card follows the finger one to one (a whole card's slide = one step), and a short swipe is enough (the owner, 2026-11-14:
+    // it used to take a drag across the whole screen)
+    const SWIPE = 40;
     stage.addEventListener('pointermove', (e) => {
       if (!drag) return;
-      moved = Math.max(moved, Math.abs(e.clientX - drag.x));
-      spin = goal = drag.spin - (e.clientX - drag.x) * 0.13; draw();
+      drag.dx = e.clientX - drag.x;
+      moved = Math.max(moved, Math.abs(drag.dx));
+      const perPx = solo.matches ? step / ((stage.offsetWidth + cards[0].offsetWidth) / 2) : 0.13;
+      spin = goal = drag.spin - drag.dx * perPx; draw();
     });
-    const end = () => { if (!drag) return; drag = null; stage.classList.remove('grab'); go(Math.round(spin / step)); };
+    const end = () => {
+      if (!drag) return;
+      const { dx, at } = drag;
+      drag = null; stage.classList.remove('grab');
+      if (solo.matches && Math.abs(dx) >= SWIPE) go(at + (dx < 0 ? 1 : -1));
+      else go(Math.round(spin / step));
+    };
     stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
     // A tap on the front video turns its sound on or off; a tap on a side card brings it to the front
     stage.addEventListener('click', (e) => {
