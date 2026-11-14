@@ -216,7 +216,7 @@
       head.addEventListener('mouseenter', () => {
         if (tool.classList.contains('open')) return;
         // the finished picture of the row, a small image: no live frame is loaded on hover
-        preview.innerHTML = `<img class="tool-img" src="assets/features/feature-${i + 1}.webp" width="1240" height="776" alt="">`;
+        preview.innerHTML = `<img class="tool-img" src="assets/features/feature-${i + 1}.webp?v=8" width="1240" height="776" alt="">`;
         preview.classList.add('show');
       });
       head.addEventListener('mousemove', (e) => { preview.style.translate = `${e.clientX + 28}px ${e.clientY - 80}px`; });

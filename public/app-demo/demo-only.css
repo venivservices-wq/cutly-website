@@ -78,33 +78,13 @@ body[data-feature="captions"] .cs-pills button { width: 100%; flex: none !import
 body[data-feature="mistakes"] .stage, body[data-feature="mistakes"] .timeline-wrap { display: none !important; }
 body[data-feature="mistakes"] #panel { position: fixed !important; inset: 0; width: auto !important; height: auto !important; border: 0 !important; padding: 0 !important; overflow: hidden; background: #111214 !important; }
 body[data-feature="mistakes"] .tr-bar, body[data-feature="mistakes"] .tr-tools, body[data-feature="mistakes"] .tr-found, body[data-feature="mistakes"] .tr-format, body[data-feature="mistakes"] .tr-editbar { display: none !important; }
-body[data-feature="mistakes"] #transcript { padding: 64px 28px 0; font-size: 21px !important; line-height: 1.55 !important; color: #f2f3f5; }
+body[data-feature="mistakes"] #transcript { padding: 58px 0 0 44px; margin-right: -60px; font-size: 21px !important; line-height: 1.55 !important; color: #f2f3f5; }
 body[data-feature="mistakes"] .mk-line { margin: 0 0 16px; padding: 12px 16px; border-radius: 12px; background: #1b1c1f; }
 body[data-feature="mistakes"] .mk-line .w.cut { display: inline !important; visibility: visible !important; padding: 1px 6px; margin: 0 1px; border-radius: 6px; background: rgba(229, 72, 77, .16); color: #f08285; text-decoration: line-through; text-decoration-color: rgba(240, 130, 133, .8); text-decoration-thickness: 2px; }
 
-/* Zooms and Sound Effects card: the pushed-in frame with a zoom chip and a sound chip, and the zoom's own settings beside it */
 body[data-feature="zoomsfx"] .stage, body[data-feature="zoomsfx"] .timeline-wrap, body[data-feature="zoomsfx"] #panel, body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel { display: none !important; }
-#zsScene { position: fixed; inset: 0; display: flex; align-items: center; gap: 22px; padding: 22px 26px; background: #111214; }
-#zsScene .zs-video { position: relative; flex: 0 0 58%; height: 100%; border-radius: 14px; overflow: hidden; background: #000; }
-#zsScene .zs-video img { position: absolute; left: 50%; top: 30%; width: 128%; max-width: none; transform: translate(-50%, -30%); }
-#zsScene .zs-zoom, #zsScene .zs-sfx { position: absolute; display: flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 9px; font: 600 13px/1 Inter, sans-serif; }
-#zsScene .zs-zoom { left: 12px; top: 12px; font-size: 15px; padding: 8px 13px; background: rgba(60, 50, 10, .85); color: #f5c542; }
-#zsScene .zs-sfx { left: 12px; bottom: 12px; font-size: 14px; padding: 7px 12px; background: rgba(20, 60, 45, .9); color: #6ee7b7; }
-#zsScene svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-#zsScene .zs-pop { flex: 1; min-width: 0; display: flex; justify-content: flex-start; opacity: .9; }
-body[data-feature="zoomsfx"] #pop { opacity: 1 !important; animation: none !important; transition: none !important; visibility: visible !important; display: block !important; position: static !important; transform: none !important; width: 100%; max-width: 300px; margin: 0; }
 
-#zsScene .zs-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-#zsScene .zs-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: #1b1c1f; font: 500 13px/1 Inter, sans-serif; color: #c9cbd1; }
-#zsScene .zs-row b { font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#zsScene .zs-row i { font-style: normal; color: #7b7e86; font-variant-numeric: tabular-nums; }
-#zsScene .zs-row.z svg { color: #f5c542; }
-#zsScene .zs-row.s svg { color: #6ee7b7; }
 
-#zsScene .zs-over { position: absolute; right: 14px; top: 14px; width: 38%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(160deg, #fdf1e7, #f3d9c6); outline: 2px solid #a78bfa; outline-offset: 0; box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }
-#zsScene .zs-over svg { width: 62%; height: 62%; stroke: none; }
-#zsScene .zs-tag { position: absolute; left: 12px; bottom: 12px; display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 9px; background: rgba(60, 40, 110, .9); color: #c4b5fd; font: 600 14px/1 Inter, sans-serif; }
-#zsScene .zs-row.o svg { color: #a78bfa; }
 
 /* Overlays and B-roll card: the AI's suggestions as large rows */
 body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel { display: none !important; }
@@ -130,27 +110,8 @@ body[data-feature="presets"] .ps-row.opt .ps-name { flex: none; }
 body[data-feature="presets"] .opt-val { padding: 3px 9px; border-radius: 7px; background: rgba(255, 255, 255, .12); color: #f2f3f5; font-size: 13px; font-weight: 600; white-space: nowrap; }
 body[data-feature="presets"] #tab-settings .ps-card { margin-top: 11vh !important; }
 
-/* Zooms and Sound Effects picture, fourth pass: no dark frame, the pushed-in video big and bleeding off the bottom, the list further right in dark rows with green time chips */
-html:has(body[data-feature="zoomsfx"]), body[data-feature="zoomsfx"] { background: transparent !important; }
-body[data-feature="zoomsfx"] > *:not(#zsScene) { display: none !important; }
-body[data-feature="zoomsfx"] #zsScene { position: fixed; inset: 0; display: block; padding: 0; background: transparent; overflow: hidden; }
-#zsScene .zs-video { position: absolute; left: 9%; top: 13%; width: 46%; height: 130%; flex: none; border-radius: 20px; box-shadow: 0 18px 40px rgba(5, 20, 40, .35); }
-#zsScene .zs-video img { top: 24%; width: 118%; transform: translate(-50%, -24%); }
-#zsScene .zs-zoom { left: 14px; top: 14px; font-size: 15px; padding: 8px 13px; }
-#zsScene .zs-sfx { left: auto; right: 14px; top: 72px; bottom: auto; font-size: 14px; padding: 7px 12px; }
-#zsScene .zs-pop { position: absolute; left: 60%; top: 32%; width: 34%; display: block; opacity: 1; }
-#zsScene .zs-list { gap: 10px; }
-#zsScene .zs-row { display: flex; align-items: center; gap: 8px; padding: 12px 12px 12px 14px; border-radius: 12px; background: rgba(17, 18, 20, .82); box-shadow: 0 8px 22px rgba(5, 20, 40, .25); color: #e6e7ea; font-size: 15px; font-weight: 500; white-space: nowrap; }
-#zsScene .zs-row b { flex: 1; font-weight: 500; }
-#zsScene .zs-row i { padding: 3px 7px; border-radius: 6px; background: rgba(74, 222, 128, .14); color: #4ade80; font-size: 12px; font-weight: 700; }
 body[data-feature="zoomsfx"] #tlToggle, body[data-feature="zoomsfx"] .tl-toggle, body[data-feature="overlays"] #tlToggle { display: none !important; }
 
-/* Zooms and Sound Effects: the list rows like the AI edit card's (white glass, same size), running off the right */
-#zsScene .zs-pop { left: calc(60% + 2.6vw); top: calc(13% + 3vw); width: 60%; }
-#zsScene .zs-list { gap: 14px; }
-#zsScene .zs-row { padding: 0 24px; height: 65px; border-radius: 16px; background: rgba(255, 255, 255, .13); box-shadow: none; color: #fff; font-size: 20px; font-weight: 600; }
-#zsScene .zs-row svg { width: 22px; height: 22px; color: #fff !important; }
-#zsScene .zs-row i { background: rgba(255, 255, 255, .2); color: #fff; font-size: 15px; padding: 4px 10px; }
 
 /* Edit with Comments card: the chat block centred in the frame, the same space left and right (clear of the rounded corner) */
 body[data-feature="ai"] #panel { display: flex !important; align-items: center; padding: 0 !important; }
@@ -171,18 +132,9 @@ body[data-feature="ai"] #aiList > :nth-child(3) { display: none !important; }
 
 /* Edit with Text card: big plain transcript with a selected part and the keys that act on it, on the same dark panel as the other pictures */
 body[data-feature="transcript"] .stage, body[data-feature="transcript"] .timeline-wrap, body[data-feature="transcript"] #panel { display: none !important; }
-#txScene { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 3.4vw; padding: 5.5vw 6vw; background: #111214; font-family: Inter, sans-serif; }
-#txScene .tx-keys { display: flex; flex-wrap: wrap; gap: 1.2vw; }
-#txScene .tx-keys span { display: flex; align-items: center; gap: 1.2vw; padding: 1.1vw 2.2vw 1.1vw 1.1vw; border-radius: 1.8vw; background: #1b1c1f; color: #c9cbd1; font-size: max(11px, 2.4vw); font-weight: 500; line-height: 1; }
-#txScene kbd { padding: .7vw 1.4vw; border-radius: 1vw; background: #2a2b30; color: #f2f3f5; font: 600 max(10px, 2vw)/1 Inter, sans-serif; }
-#txScene p { margin: 0; font-size: 3.6vw; line-height: 1.55; font-weight: 500; letter-spacing: -.01em; color: #e9eaed; }
-#txScene mark { padding: .3vw .6vw; margin: 0 -.6vw; border-radius: 1vw; background: rgba(255, 255, 255, .18); color: #fff; }
-#txScene s { padding: 0 1vw; border-radius: 1vw; background: rgba(229, 72, 77, .16); color: #f08285; text-decoration-color: rgba(240, 130, 133, .85); text-decoration-thickness: 2px; }
 #tab-ai .msg.ai .ai-mark { background: url("cutly-logo.png") center / contain no-repeat !important; border-radius: 22% !important; animation: none !important; }
 
 /* Edit with Text: bigger text, started from the top and running off the bottom */
-#txScene { justify-content: flex-start; padding-top: 8vw; overflow: hidden; }
-#txScene p { font-size: 5.2vw; line-height: 1.5; }
 
 /* Edit with Comments card: no dark panel; the chat sits on a frosted glass (drawn by the page behind the frame), so the logo shows */
 html:has(body[data-feature="ai"]), body[data-feature="ai"], body[data-feature="ai"] #panel { background: transparent !important; }
@@ -206,49 +158,16 @@ body[data-feature="ai"] #panel { align-items: flex-start !important; padding: ca
 body[data-feature="ai"] #tab-ai { zoom: 1.4; padding: 0 20px 0 calc(8.5% + 38px) !important; margin: 0 !important; }
 
 /* Edit with Text, redone: the selected words carry a small floating toolbar, as in a text editor */
-#txScene { justify-content: flex-start !important; padding: 17vw 6vw 0 !important; }
-#txScene .tx-keys { display: none; }
-#txScene p { font-size: 4.9vw; line-height: 1.5; }
-#txScene mark { position: relative; }
-#txScene .tx-float { position: absolute; left: .6vw; bottom: 100%; margin-bottom: 1.6vw; display: flex; gap: .6vw; padding: .7vw; border-radius: 2vw; background: #26272b; box-shadow: 0 .8vw 2.4vw rgba(0, 0, 0, .45); white-space: nowrap; }
-#txScene .tx-float > span { display: flex; align-items: center; gap: 1vw; padding: .9vw 1.8vw .9vw .9vw; border-radius: 1.4vw; color: #e6e7ea; font-size: max(11px, 2.3vw); font-weight: 600; line-height: 1; }
-#txScene .tx-float > span:first-child { background: rgba(255, 255, 255, .09); }
-#txScene .tx-float kbd { padding: .6vw 1.2vw; border-radius: .9vw; background: #3a3b41; color: #fff; font: 600 max(10px, 1.9vw)/1 Inter, sans-serif; }
 /* alignment pass: the toolbar sits above the text block's left edge; the timeline card hugs its content and is centred */
-#txScene p { position: relative; }
-#txScene mark { position: static; }
-#txScene .tx-float { left: 0; margin-bottom: 2.4vw; }
 body[data-feature="cuts"] .timeline-wrap { padding: calc((100vh - 200px) / 2) 0 0 28px !important; }
 body[data-feature="cuts"] #timelineScroll { height: 200px !important; }
 
 /* Edit with Text, last pass: only the text, centred, and wide enough that the ends of the lines run off the right */
-#txScene { justify-content: center !important; padding: 0 0 0 7vw !important; }
-#txScene p { width: 150%; font-size: 5.6vw; line-height: 1.5; }
 
 /* Sound Improvements and Color Correction card: the picture and the sound wave before / after, on the dark panel */
 body[data-feature="enhance"] .stage, body[data-feature="enhance"] .timeline-wrap, body[data-feature="enhance"] #panel { display: none !important; }
-#enScene { position: fixed; inset: 0; display: flex; align-items: center; gap: 4vw; padding: 0 0 0 6vw; background: #111214; font-family: Inter, sans-serif; overflow: hidden; }
-#enScene .en-video { position: relative; flex: 0 0 42%; height: 82%; border-radius: 2.4vw; overflow: hidden; }
-#enScene .en-video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
-#enScene .en-b { filter: saturate(.55) contrast(.88) brightness(.94); }
-#enScene .en-a { filter: saturate(1.5) contrast(1.08) brightness(1.05); clip-path: inset(0 0 0 50%); }
-#enScene .en-line { position: absolute; top: 0; bottom: 0; left: 50%; width: .5vw; margin-left: -.25vw; background: #fff; }
-#enScene .en-lb { position: absolute; top: 1.6vw; padding: .9vw 1.6vw; border-radius: 99px; background: rgba(0, 0, 0, .55); color: #fff; font-style: normal; font-size: max(11px, 2vw); font-weight: 600; line-height: 1; }
-#enScene .en-lb.l { left: 1.6vw; }
-#enScene .en-lb.r { right: 1.6vw; }
-#enScene .en-audio { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2.4vw; width: 60%; }
-#enScene .en-row { padding: 2vw 2.4vw; border-radius: 2vw; background: #1b1c1f; }
-#enScene .en-row > span { display: block; margin-bottom: 1.4vw; color: #8b8e96; font-size: max(11px, 2.1vw); font-weight: 600; }
-#enScene .en-row.on > span { color: #4ade80; }
-#enScene .en-wave { display: flex; align-items: center; gap: .55vw; height: 9vw; }
-#enScene .en-wave i { flex: none; width: .9vw; border-radius: 99px; background: #4ade80; }
-#enScene .en-wave.off i { background: #6b6e76; }
-/* gentler correction: the same split frame, a natural lift instead of a heavy one */
-#enScene .en-b { filter: saturate(.72) contrast(.9) brightness(.95); }
-#enScene .en-a { filter: saturate(1.12) contrast(1.04) brightness(1.04); }
 
 /* longer text, started near the top so it runs off the bottom as well as the right */
-#txScene { justify-content: flex-start !important; padding: 8.5vw 0 0 7vw !important; }
 
 /* Edit with Comments: everything a bit higher, tighter between the comment and the answer, a touch less zoom so the answer stays on one line */
 body[data-feature="ai"] #panel { padding-top: calc(14% - 4px) !important; }
@@ -261,3 +180,57 @@ body[data-feature="ai"] .ai-say { text-wrap: balance; }
 
 /* ?phone: the scrub strip is filled with thumbnails by the app's script, which the demo does not run; empty it showed only its playhead */
 .demo-phone #mScrub { display: none !important; }
+
+/* Zooms and Sound Effects (2026-11-14, glass): the frame is see-through; the glass card itself is drawn by the page (styles.css .fui-zoomsfx::before,
+   corner at 10% / 12%). .zs-out sits on that corner; .zs-in is laid out for a 480 px wide frame and zoomed to the real width (demo.js). */
+html:has(body[data-feature="zoomsfx"]), body[data-feature="zoomsfx"] { background: transparent !important; }
+body[data-feature="zoomsfx"] > *:not(#zsScene) { display: none !important; }
+#zsScene { position: fixed; inset: 0; overflow: hidden; background: transparent; font-family: Inter, sans-serif; color: #fff; }
+#zsScene .zs-out { position: absolute; left: 10%; top: 12%; }
+#zsScene .zs-in { padding: 34px 0 0 34px; }
+/* the zoom: the same moment three times, each closer; big enough that the last runs off the right edge.
+   the sound: a white wave under them, running off the right and bottom; the sound effect's line sits under the last frame (where the zoom lands) */
+#zsScene .zs-strip { display: flex; gap: 12px; }
+#zsScene .zs-f { position: relative; flex: none; width: 140px; height: 166px; border-radius: 16px; overflow: hidden; background: url(creator-3.jpg) 50% 12% / cover no-repeat; }
+#zsScene .zs-f:nth-child(2) { background-size: 150%; background-position: 50% 8%; }
+#zsScene .zs-f:nth-child(3) { background-size: 205%; background-position: 50% 7%; }
+#zsScene .zs-f em { position: absolute; left: 10px; bottom: 10px; padding: 4px 8px; border-radius: 8px; background: rgba(255, 255, 255, .24); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-style: normal; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+#zsScene .zs-wave { position: relative; display: flex; align-items: center; gap: 3px; width: 600px; height: 42px; margin-top: 18px; }
+#zsScene .zs-wave i { flex: none; width: 3px; border-radius: 2px; background: rgba(255, 255, 255, .5); }
+#zsScene .zs-wave i.hit { height: 100% !important; background: #fff; }
+#zsScene .zs-pin { position: absolute; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 9px; background: rgba(255, 255, 255, .26); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-size: 12px; font-weight: 600; white-space: nowrap; }
+#zsScene .zs-pin svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+
+/* Sound Improvements and Color Correction (2026-11-14, glass, the zoom card's language): the frame is see-through, the glass is drawn by the page
+   (styles.css .fui-enhance::before, corner 10% / 12%). One photo split down the middle (before dull, after true colour) with a handle,
+   and one sound wave that goes from noisy to clean. .en-in is laid out for a 480 px wide frame and zoomed to the real width (demo.js). */
+html:has(body[data-feature="enhance"]), body[data-feature="enhance"] { background: transparent !important; }
+body[data-feature="enhance"] > *:not(#enScene) { display: none !important; }
+#enScene { position: fixed; inset: 0; overflow: hidden; background: transparent; font-family: Inter, sans-serif; color: #fff; }
+#enScene .en-out { position: absolute; left: 10%; top: 12%; }
+/* two prints of the same shot, fanned: the dull one behind, the corrected one in front, a glass pill for the sound */
+#enScene .en-in { position: relative; width: 400px; height: 250px; }
+#enScene .en-card { position: absolute; width: 158px; height: 210px; border-radius: 16px; overflow: hidden; background: url(creator-4.jpg) 50% 10% / cover no-repeat; }
+#enScene .en-card.b { left: 78px; top: 30px; transform: rotate(-7deg); filter: saturate(.25) contrast(.82) brightness(.88); opacity: .9; }
+#enScene .en-card.a { left: 192px; top: 18px; transform: rotate(5deg); filter: saturate(1.15) contrast(1.05) brightness(1.04); }
+#enScene .en-card em { position: absolute; left: 10px; top: 10px; padding: 3px 8px; border-radius: 7px; background: rgba(255, 255, 255, .26); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-style: normal; font-size: 11px; font-weight: 600; }
+#enScene .en-pill { position: absolute; left: 268px; top: 178px; display: flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 12px; background: rgba(255, 255, 255, .24); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 13px; font-weight: 600; white-space: nowrap; }
+#enScene .en-pill svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Edit with Text (2026-11-14, glass): the frame is see-through, the glass is drawn by the page (styles.css .fui-transcript::before, corner 10% / 12%).
+   A short paragraph that fits whole on the glass, filler words struck out. .tx-in is laid out for a 480 px wide frame and zoomed to the real width (demo.js). */
+html:has(body[data-feature="transcript"]), body[data-feature="transcript"] { background: transparent !important; }
+body[data-feature="transcript"] > *:not(#txScene) { display: none !important; }
+#txScene { position: fixed; inset: 0; overflow: hidden; background: transparent; font-family: Inter, sans-serif; color: #fff; }
+#txScene .tx-out { position: absolute; left: 18%; top: 22%; }
+#txScene .tx-in { width: 470px; padding: 34px 0 0 36px; }
+#txScene .tx-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 15px; font-weight: 600; }
+#txScene .tx-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: rgba(255, 255, 255, .16); }
+#txScene .tx-ic svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+#txScene p { margin: 0; font-size: 21px; line-height: 1.6; font-weight: 500; letter-spacing: -.01em; }
+#txScene s { padding: 1px 6px; border-radius: 7px; background: rgba(255, 255, 255, .16); color: rgba(255, 255, 255, .62); text-decoration-color: #ff8a8e; text-decoration-thickness: 2px; }
+
+/* Edit Using the Timeline (2026-11-14, the owner): the timeline runs edge to edge and fills the bottom; the painted background shows only as a strip on top
+   (styles.css .fui-cuts puts the frame there) */
+body[data-feature="cuts"] .timeline-wrap { padding: 0 !important; }
+body[data-feature="cuts"] #timelineScroll { height: 100vh !important; border-radius: 0 !important; }
