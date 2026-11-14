@@ -250,24 +250,29 @@
     </article>` +
     W.perks.map((p) => `<article class="why-perk"><span class="why-label">${p.label}</span><h3>${p.title}<span>${p.vs}</span></h3></article>`).join('');
 
-  /* Reviews */
-  $('reviewList').innerHTML = S.reviews.map((r, i) => `<article class="review">
-    <p>Add a real customer review here, in their own words, about <mark>what they made with Cutly</mark>.</p>
-    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}<small>000K followers</small></span></div>
+  /* Reviews. The design samples (made up, not real people) show ONLY on a local copy of the site, or through the private review link
+     https://cutlyai.app/?preview that the owner sends to the people testing the site; a normal visit shows the plain placeholders.
+     Real reviews go in S.reviews (with text, mark, followers) and then show everywhere. Remove sampleReviews before launch. */
+  const localCopy = location.protocol === 'file:' || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const reviewLink = new URLSearchParams(location.search).has('preview');
+  const reviewItems = (localCopy || reviewLink) && S.sampleReviews ? S.sampleReviews : S.reviews;
+  $('reviewList').innerHTML = reviewItems.map((r, i) => `<article class="review">
+    <p>${r.text ? r.text.replace(r.mark, `<mark>${r.mark}</mark>`) : 'Add a real customer review here, in their own words, about <mark>what they made with Cutly</mark>.'}</p>
+    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}<small>${r.followers || '000K'} followers</small></span></div>
   </article>`).join('');
 
-  /* Pricing: a gray card, a split card with a painted top, and a black card. The feature rows line up across all three. */
+  /* Pricing: a gray card, a split card with a painted top, and a black card. Each lists its credits, then every feature (ticked or greyed), so the rows line up across all three. */
   const tick = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.6"/></svg>';
   const dash = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg>';
   $('planList').innerHTML = S.plans.map((p) => `<article class="plan plan-${p.name.toLowerCase()}${p.popular ? ' plan-pop' : ''}">
       <div class="plan-head">${p.popular ? reviewScene(0, 'planPop', 30) : ''}
         <div class="plan-top"><h3>${p.name}</h3>${p.popular ? '<b>Most popular</b>' : ''}</div>
-        <div class="plan-price"><strong>$${p.videos * p.perVideo}</strong><span>/ month</span></div>
-        <p class="plan-videos">${p.videos} videos a month</p>
+        <div class="plan-price"><strong>$${+(p.aboutVideos * p.perVideo).toFixed(2)}</strong><span>/ month</span></div>
+        <p class="plan-videos">${p.credits} credits a month</p>
       </div>
       <div class="plan-body">
         <a class="btn btn-lg plan-btn" href="#try">Choose ${p.name}</a>
-        <ul>${S.planFeatures.map((f, n) => (n < p.level ? `<li>${tick}${f}</li>` : `<li class="off">${dash}${f}</li>`)).join('')}</ul>
+        <ul><li>${tick}${p.credits} credits (around ${p.aboutVideos} videos)</li>${S.planFeatures.map((f, n) => (n < p.level ? `<li>${tick}${f}</li>` : `<li class="off">${dash}${f}</li>`)).join('')}</ul>
       </div>
     </article>`).join('');
 
