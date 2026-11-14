@@ -73,4 +73,12 @@
   <div class="page legal"><span>&copy; ${new Date().getFullYear()} Cutly AI</span><nav>${S.legal.map((l) => `<a href="#">${l}</a>`).join('')}</nav></div>
   <div class="wordmark" aria-hidden="true">Cutly AI</div>`;
   }
+
+  /* The login window (auth.css + auth.js): every Log in button, on every page, opens it */
+  const authCss = document.createElement('link');
+  authCss.rel = 'stylesheet'; authCss.href = BASE + 'auth.css?v=6';
+  document.head.appendChild(authCss);
+  const authJs = document.createElement('script');
+  authJs.src = BASE + 'auth.js?v=4';
+  document.body.appendChild(authJs);
 })();
