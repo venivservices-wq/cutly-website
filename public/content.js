@@ -2,18 +2,16 @@
 window.SITE = {
   nav: [
     { label: 'Features', href: '#tools', side: [
-      { label: 'AI editing', img: 'assets/features/feature-6.webp', text: 'Edit your video by writing comments' },
-      { label: "What's new", img: 'assets/features/feature-5.webp', text: 'Sound improvements and color correction' }
+      { label: 'Guides', href: 'blog/upload-your-video-and-get-your-first-edit.html', img: 'assets/features/blog-upload.webp?v=3', text: 'How to upload your video to Cutly and get your first edit' }
     ], columns: [
-      { title: 'AI creation', links: ['AI Design', 'Video Studio', 'AI Video Generator', 'AI Image Generator', 'AI Image Enhancer'] },
-      { title: 'Text & Audio', links: ['Auto Captions', 'Caption Styles', 'Speech to Text', 'Text to Speech', 'Custom Voices', 'Voice Enhancer', 'Noise Cleaner'] },
-      { title: 'Image', links: ['Background Remover', 'Image Combiner', 'Image Upscaler', 'Image Resizer', 'Photo Editor', 'Text Remover', 'Object Remover'] },
-      { title: 'Video', links: ['Video Background Remover', 'Video Upscaler', 'Video Editor', 'Video Trimmer', 'Add Subtitles', 'Video Converter'] }
+      { title: 'Cut', links: [['Cut Mistakes', '#tools'], ['Edit with Comments', '#tools'], ['Edit with Text', '#tools'], ['Edit Using the Timeline', '#tools']] },
+      { title: 'Style', links: [['Auto Captions', '#tools'], ['Caption Styles', '#tools'], ['Custom Styles', '#tools']] },
+      { title: 'Polish', links: [['Zooms and Sound Effects', '#tools'], ['Overlays and B-roll', '#tools'], ['Sound Improvements', '#tools'], ['Color Correction', '#tools']] }
     ] },
-    { label: 'Blog', href: '#', columns: [
-      { title: 'Learn', links: ['Tutorials', 'Guides', 'Tips & Tricks'] },
-      { title: 'Stories', links: ['Creator Stories', 'Case Studies'] },
-      { title: 'News', links: ['Product Updates', 'Announcements'] }
+    { label: 'Resources', href: 'blog/index.html', side: [
+      { label: 'Guides', href: 'blog/edit-your-video-with-comments.html', img: 'assets/features/blog-comments.webp?v=3', text: 'How to edit your video with comments' }
+    ], columns: [
+      { title: 'Blog', links: [['Blog home', 'blog/index.html'], ['How to edit your video with comments', 'blog/edit-your-video-with-comments.html'], ['How to help Cutly find duplicate takes', 'blog/help-cutly-find-duplicate-takes.html']] }
     ] },
     { label: 'Pricing', href: '#pricing' }
   ],
@@ -101,15 +99,15 @@ window.SITE = {
   // name: who (no follower count when none was given). Entries without text are placeholders for the next real reviews.
   reviews: [
     { name: 'UGC creator', face: 'mint', photo: 'assets/reviews/review-1.jpg?v=2', text: 'Cutly AI has saved me so much time as a UGC creator. Editing used to take up most of my time, but now I can create videos much faster without losing quality. It’s become an essential part of my workflow!', mark: 'create videos much faster' },
-    { name: 'TikTok Shop creator', face: 'peach', text: 'This app saves me so much time editing my TikTok Shop videos. I used to spend hours editing everything myself, but now CutlyAI does it for me. I get more free time every day, and the videos turn out great! Definitely worth it!', mark: 'more free time every day' },
-    { name: 'Content creator', face: 'lilac', text: 'I’ve been using Cutly for my content, and I’m loving it so far! The results look great, and it makes creating videos so much easier, especially if you’re not experienced with editing. Highly recommend it if you want to make videos without the hassle!', mark: 'without the hassle' },
-    { name: 'Creator', face: 'rose', text: 'Cutly has made video editing so much easier for me! I don’t have to worry about spending hours learning complicated editing tools anymore. It does most of the work for me, and the videos come out looking amazing. Such a great tool for anyone creating content!', mark: 'does most of the work for me' }
+    { name: 'TikTok Shop creator', face: 'peach', photo: 'assets/reviews/review-2.jpg?v=1', text: 'This app saves me so much time editing my TikTok Shop videos. I used to spend hours editing everything myself, but now CutlyAI does it for me. I get more free time every day, and the videos turn out great! Definitely worth it!', mark: 'more free time every day' },
+    { name: 'Content creator', face: 'lilac', photo: 'assets/reviews/review-3.jpg?v=1', text: 'I’ve been using Cutly for my content, and I’m loving it so far! The results look great, and it makes creating videos so much easier, especially if you’re not experienced with editing. Highly recommend it if you want to make videos without the hassle!', mark: 'without the hassle' },
+    { name: 'Creator', face: 'rose', photo: 'assets/reviews/review-4.jpg?v=1', text: 'Cutly has made video editing so much easier for me! I don’t have to worry about spending hours learning complicated editing tools anymore. It does most of the work for me, and the videos come out looking amazing. Such a great tool for anyone creating content!', mark: 'does most of the work for me' }
   ],
 
   // Footer columns: [label, link]
   footer: [
     { title: 'Product', links: [['Features', '#tools'], ['Reviews', '#reviews'], ['Pricing', '#pricing']] },
-    { title: 'Company', links: [['Blog', 'blog/'], ['Help Center', '#'], ['Contact', 'contact.html']] }
+    { title: 'Company', links: [['Resources', 'blog/index.html'], ['Help Center', '#'], ['Contact', 'contact.html']] }
   ],
   tagline: 'The AI Powered Video Editor That Does the Hard Work for You.',
   legal: ['Terms of Service', 'Privacy Policy', 'Cookie Policy']

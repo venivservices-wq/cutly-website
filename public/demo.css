@@ -36,3 +36,13 @@
   .auth-left { display: none; }
   .auth-right { padding: 56px 24px 32px; }
 }
+
+/* Login window restyle (the owner picked option 3, 2026-11-14): everything on the right sits on one left edge, a short line under the title, a white Google button */
+.auth-right { align-items: stretch; }
+.auth-logo { align-self: flex-start; margin-bottom: 20px; }
+.auth-right h2 { margin-bottom: 8px; text-align: left; }
+.auth-sub { margin: 0 0 28px; font-size: 16px; line-height: 1.4; color: var(--muted); }
+.auth-btn { justify-content: flex-start; padding: 10px 18px 10px 54px; }
+.auth-btn svg { left: 16px; }
+.auth-legal { margin-top: 18px; text-align: left; }
+@media (max-width: 860px) { .auth-right { padding: 56px 24px 32px; } }

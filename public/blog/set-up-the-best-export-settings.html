@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to set up the best export settings for your video</title>
+  <meta name="description" content="How to set up the best export settings for your video. This guide is coming soon.">
+  <link rel="icon" href="../favicon.ico" sizes="any"><link rel="icon" type="image/png" href="../favicon.png"><link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../inter.css">
+  <link rel="stylesheet" href="../styles.css?v=187">
+  <link rel="stylesheet" href="../decor.css?v=9">
+  <link rel="stylesheet" href="blog.css?v=13">
+  <link rel="stylesheet" href="demo.css?v=20">
+</head>
+<body>
+
+<header class="site-header" id="top"></header>
+
+<main>
+  <div class="art-top"><div class="hero-glow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+
+  <div class="page art-grid">
+    <aside class="side">
+      <div class="side-in">
+        <p class="side-h">Coming soon</p>
+        <div class="side-art" aria-hidden="true"><img src="../assets/features/blog-export.webp?v=3" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      </div>
+    </aside>
+
+    <div class="art-col">
+      <p class="crumbs"><a href="index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Blog</a></p>
+      <h1>How to set up the best export settings for your video</h1>
+      <p class="byline">Cutly team<i></i>Coming soon</p>
+      <article class="pbody">
+      <p>This guide is coming soon. We are putting it together now.</p>
+      <p>In the meantime, you can read our other <a href="index.html" style="text-decoration:underline">guides</a>.</p>
+      </article>
+    </div>
+  </div>
+
+  <section class="block page" id="start">
+    <div class="cta-band">
+      <div class="cta-glow" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2>Edit less.<span>Post more.</span></h2>
+      <a class="btn btn-lg cta-main" href="../index.html#pricing">Get started<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9.5M8.5 4l4 4-4 4"/></svg></a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" id="siteFooter"></footer>
+
+<script>window.NAV_BASE = '../';</script>
+<script src="../content.js?v=74"></script>
+<script src="../chrome.js?v=1"></script>
+<script>
+  var h = document.querySelector('.site-header');
+  function s() { h.classList.toggle('scrolled', window.scrollY > 8); }
+  addEventListener('scroll', s, { passive: true }); s();
+  var links = [].slice.call(document.querySelectorAll('#toc a'));
+  var heads = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function mark() {
+    var cur = 0;
+    heads.forEach(function (el, i) { if (el.getBoundingClientRect().top < 140) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('on', i === cur); a.classList.toggle('done', i < cur); });
+  }
+  addEventListener('scroll', mark, { passive: true }); mark();
+</script>
+</body>
+</html>

@@ -1233,17 +1233,15 @@
     setLengths();
     setTime(PAUSE_AT);
     setTimeline(true);
-    // the Pro view, switched on the way the app's setView does it
-    document.querySelectorAll('.viewtoggle button').forEach((b) => b.classList.toggle('on', b.dataset.view === 'pro'));
-    document.body.classList.add('view-pro');
-    $('timelineScroll').classList.add('hidden');
-    $('proScroll').classList.remove('hidden');
-    drawPro();
-    let proRedraw = 0;
+    // the Basic view, as a new visitor sees the app (the owner, 2026-11-14: not the Pro view)
+    document.body.classList.remove('view-pro');
+    $('proScroll').classList.add('hidden');
+    $('timelineScroll').classList.remove('hidden');
+    let basicRedraw = 0;
     new ResizeObserver(() => {
-      cancelAnimationFrame(proRedraw);
-      proRedraw = requestAnimationFrame(drawPro);
-    }).observe($('proScroll'));
+      cancelAnimationFrame(basicRedraw);
+      basicRedraw = requestAnimationFrame(() => setTimeline(true));
+    }).observe($('timelineScroll'));
     return;
   }
 

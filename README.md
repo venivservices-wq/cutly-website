@@ -14,3 +14,6 @@ The public front page of Cutly AI (plain HTML, CSS and JavaScript, no build step
 4. Merging to `main` deploys to the live site.
 
 No secret, key or password belongs in this repo, and none is needed. It is public on purpose.
+
+## Shared header and footer (2026-11-14)
+The header (with the nav) and the footer are written ONCE, in `public/chrome.js`, and filled from `public/content.js` (`nav`, `footer`, `tagline`, `legal`). A page only holds `<header class="site-header" id="top"></header>` and `<footer class="site-footer" id="siteFooter"></footer>`, then loads `content.js` and `chrome.js` (pages in `blog/` first set `window.NAV_BASE = '../'`). Change either file and every page changes. A new page does the same. `contact.html` is a full-screen form and has neither.

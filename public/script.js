@@ -3,34 +3,6 @@
   const $ = (id) => document.getElementById(id);
   const chevron = '<svg viewBox="0 0 10 6" width="9" height="6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
 
-  /* Navigation */
-  $('mainNav').innerHTML = S.nav.map((n, i) => `<div class="nav-item">
-    <a class="nav-link" href="${n.href}"${n.columns ? ' aria-haspopup="true" aria-expanded="false"' : ''}>${n.label}${n.columns ? chevron : ''}</a>
-    ${n.columns ? `<div class="mega"><div class="mega-clip"><div class="page mega-grid">
-      ${n.columns.map((c) => `<ul><li class="mega-title">${c.title}</li>${c.links.map((l) => `<li><a href="${n.href}">${l}</a></li>`).join('')}</ul>`).join('')}
-      ${n.side ? `<aside class="mega-side">${n.side.map((x) => `<a href="#tools"><span class="mega-side-label">${x.label}</span><img src="${x.img}" alt="" width="1240" height="776"><span class="mega-side-text">${x.text}</span></a>`).join('')}</aside>` : ''}
-    </div></div></div>` : ''}
-  </div>`).join('');
-  const toggle = document.querySelector('.menu-toggle');
-  toggle.addEventListener('click', () => {
-    const open = $('mainNav').classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open);
-  });
-  $('mainNav').addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    if (!link) return;
-    // In the phone menu, a tab with a dropdown expands instead of navigating.
-    if (link.matches('.nav-link[aria-haspopup]') && matchMedia('(max-width: 1040px)').matches) {
-      e.preventDefault();
-      const open = link.parentElement.classList.toggle('expanded');
-      link.setAttribute('aria-expanded', open);
-      return;
-    }
-    $('mainNav').classList.remove('open');
-    toggle.setAttribute('aria-expanded', false);
-    link.blur();
-  });
-
   // The main button's hover light follows the mouse, easing towards it instead of jumping
   document.querySelectorAll('.hero-cta .btn-primary').forEach((b) => {
     let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, inside = false;
@@ -299,16 +271,6 @@
       other.querySelector('.faq-q').setAttribute('aria-expanded', open);
     });
   });
-
-  /* Footer */
-  $('footerGrid').innerHTML = `<div class="footer-brand">
-      <a class="logo" href="#top" aria-label="Cutly AI home"><img src="assets/cutly-logo.png?v=2" alt="" width="28" height="28"><span>Cutly AI</span></a>
-      ${S.tagline ? `<p>${S.tagline}</p>` : ''}
-      <div class="socials"><a href="#" aria-label="Cutly AI on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></a></div>
-    </div>` +
-    S.footer.map((c) =>
-      `<div><h4>${c.title}</h4><ul>${c.links.map(([label, href]) => `<li><a href="${href}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${label}</a></li>`).join('')}</ul></div>`).join('');
-  $('legalLinks').innerHTML = `<span>&copy; ${new Date().getFullYear()} Cutly AI</span><nav>${S.legal.map((l) => `<a href="#">${l}</a>`).join('')}</nav>`;
 
   /* The header gets its scrolled look once the page moves */
   const siteHeader = document.querySelector('.site-header');
