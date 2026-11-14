@@ -74,14 +74,17 @@ window.SITE = {
     ]
   },
 
-  // Pricing: videos per month at a price per video. The monthly price is worked out from these.
-  // level: how many of planFeatures the plan includes, counted from the top.
+  // Pricing (the owner, 2026-11-14): credits a month; a first edit is 2 credits, so aboutVideos = credits / 2.
+  // The monthly price is aboutVideos x perVideo. Every card lists ALL of planFeatures (the owner: show what you do and do not get);
+  // level: how many of them the plan includes, counted from the top (the rest show greyed with a dash).
   plans: [
-    { name: 'Start', videos: 50, perVideo: 0.5, level: 4 },
-    { name: 'Pro', videos: 100, perVideo: 0.5, level: 6, popular: true },
-    { name: 'Ultra', videos: 150, perVideo: 0.5, level: 6 }
+    { name: 'Start', credits: 200, aboutVideos: 100, perVideo: 0.25, level: 5 },
+    { name: 'Pro', credits: 400, aboutVideos: 200, perVideo: 0.30, level: 9, popular: true },
+    { name: 'Ultra', credits: 600, aboutVideos: 300, perVideo: 0.35, level: 12 }
   ],
-  planFeatures: ['Cut mistakes automatically', 'Auto captions', 'Zooms and sound effects', 'Edit by text', 'Ask AI for changes', 'Presets for your style'],
+  planFeatures: ['Cut mistakes automatically', 'Remove retakes and silences','Auto captions', 'Zooms and sound effects', 'Edit by text, comments or timeline',
+    'Overlays and B-roll', 'Queue unlimited videos', 'Presets for your style', 'Caption presets',
+    'Custom sound effects', 'Studio Sound', 'Color grading'],
 
   faq: [
     ['Can Cutly automatically remove duplicate takes?', 'Yes! Cutly automatically finds and removes duplicate takes. You can also remove anything else with a simple comment.'],
@@ -100,6 +103,15 @@ window.SITE = {
     { name: 'Customer Name', face: 'peach' },
     { name: 'Customer Name', face: 'lilac' },
     { name: 'Customer Name', face: 'rose' }
+  ],
+  // DESIGN SAMPLES ONLY, NOT REAL PEOPLE OR REVIEWS. script.js shows them only on a local copy (localhost / 127.0.0.1 / a file) or through
+  // the private review link https://cutlyai.app/?preview sent to the site's testers; a normal visit never shows them. Replace with real reviews
+  // (with permission) and delete this list before launch.
+  sampleReviews: [
+    { name: 'Maya R.', followers: '48K', face: 'mint', text: 'I used to spend my whole Sunday editing. Now it’s done before lunch.', mark: 'done before lunch' },
+    { name: 'Jordan T.', followers: '112K', face: 'peach', text: 'The duplicate take thing is unreal. I ramble, restart lines, say “wait, let me do that again”, and Cutly just keeps the good version.', mark: 'keeps the good version' },
+    { name: 'Priya S.', followers: '230K', face: 'lilac', text: 'I post product reviews every day and editing was the part I dreaded. I upload five videos at night and in the morning they’re cut, zoomed and captioned. I still tweak a few things with comments, but it takes minutes instead of hours.', mark: 'minutes instead of hours' },
+    { name: 'Leo M.', followers: '21K', face: 'rose', text: 'Captions and zooms in one click. Finally.', mark: 'in one click' }
   ],
 
   // Footer columns: [label, link]

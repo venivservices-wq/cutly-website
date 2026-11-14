@@ -234,7 +234,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .plan-price strong { font-size: 68px; line-height: 1; font-weight: 600; letter-spacing: -.045em; }
 .plan-price span { font-size: 15px; color: var(--soft); }
 .plan-videos { margin-top: 12px; font-size: 17px; font-weight: 600; }
-.plan-btn { background: #000; color: #fff; }
+.plan-btn { background: #050505; color: #fff; }   /* the original #000, 2% lighter (the owner) */
 .plan-btn:hover { opacity: 1; background: #262626; }
 .plan ul { display: grid; gap: 14px; margin-top: 28px; list-style: none; }
 .plan li { display: flex; align-items: center; gap: 10px; font-size: 15px; }
@@ -242,19 +242,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .plan li.off { color: var(--faint); }
 .plan li.off svg { stroke: var(--faint); }
 /* Start: plain gray */
-.plan-start { background: var(--panel-2); }
+.plan-start { background: #e5eaf2; }   /* the original --panel-2 #e4e9f2, 2% lighter (the owner; #e9edf4 and #eef1f6 looked washed out) */
 .plan-start li.off, .plan-start li.off svg { color: #8791a1; stroke: #8791a1; }
 /* Ultra: solid black */
-.plan-ultra { --tick: #34d399; --soft: rgba(255, 255, 255, .62); background: #000; color: #fff; }
+.plan-ultra { --tick: #34d399; --soft: rgba(255, 255, 255, .62); background: #050505; color: #fff; }   /* the original #000, 2% lighter (the owner; #111216 and #1d1f25 looked washed out) */
 .plan-ultra .plan-btn { background: #fff; color: var(--ink); }
 .plan-ultra .plan-btn:hover { background: #e4e9f2; }
 /* Pro: split in two. The top has the blue and green scene from the first review card, the bottom is plain white. It also stands taller. */
-.plan-pop { --soft: rgba(255, 255, 255, .82); margin-top: -18px; border: 1px solid var(--line); background: #fff; }
-.plan-pop .plan-head { min-height: 270px; color: #fff; }
+/* All three cards line up row for row (the owner, 2026-11-14): same top, price, credits line, button and first list row.
+   Pro's painted top is 24px shorter than the other heads because its white body adds 24px before the button. */
+.plan-pop { --soft: rgba(255, 255, 255, .82); border: 1px solid var(--line); background: #fff; }
+.plan-pop .plan-head { min-height: 227px; color: #fff; }
 .plan-pop .plan-head::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .22; mix-blend-mode: soft-light; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 .plan-pop .review-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
-.plan-pop .plan-videos { margin-top: auto; }
-.plan-pop .plan-body { padding-top: 24px; padding-bottom: 50px; }
+.plan-pop .plan-body { --soft: var(--muted); padding-top: 24px; }
 .plan-foot { margin-top: 44px; text-align: center; font-size: 15px; color: var(--muted); }
 
 /* FAQ */
@@ -455,13 +456,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .tool-text { padding: 8px 20px 0; font-size: 16px; line-height: 1.45; }
   .tool-shot { margin: 0 12px 12px; border-radius: 14px; }
   .tool-shot .tool-ui { inset: 11% 0 0 8%; border-radius: 12px 0 0 0; }
-  /* showcase on phones: the video takes the panel's width, the two arrows sit side by side under it (not over the picture) */
-  .ring-wrap { padding: 0 16px 58px; }
+  /* showcase on phones: the video takes the panel's width; the arrows sit on its left and right edges at the video's middle (the owner: under it they get missed) */
+  .ring-wrap { padding: 0 16px; }
   .ring-stage { --cw: min(calc(100vw - 64px), 360px); height: calc(var(--cw) * 1.78 + 64px); }   /* just the card's height (9:16 video + name row) */
   .ring-tilt, .ring { top: 8px; }
   .showcase-card { top: 0; }
-  .ring-btn { top: auto; bottom: 0; width: 44px; height: 44px; margin-top: 0; opacity: 1; }
-  .ring-btn.prev { left: calc(50% - 50px); } .ring-btn.next { right: calc(50% - 50px); }
+  .ring-btn { top: 45%; z-index: 200; width: 44px; height: 44px; margin-top: -22px; opacity: 1; box-shadow: 0 2px 10px rgba(0, 0, 0, .18); }
+  .ring-btn.prev { left: 6px; } .ring-btn.next { right: 6px; }
 }
 @media (max-width: 350px) {
   .site-header .logo span { display: none; }
