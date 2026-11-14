@@ -1108,33 +1108,46 @@
       $('aiScroll').scrollTop = 0;
     }
     if (FEATURE === 'cuts') {
-      // zoomed out so two cuts show (the first and second clip, the second and third), the playhead on the first
+      thumb.src = 'creator-1-thumb.jpg';   // a different creator in each feature picture (the owner, 2026-11-14)
+      // zoomed out so two cuts show, from the very start of the timeline so nothing is cut off at the left edge
       S.zoomAt = 0.28;
       S.head = KEPT[0][1] - KEPT[0][0];
       setTime(S.head);
       setTimeline(true);
-      $('timelineScroll').scrollLeft = Math.max(0, S.head * S.pxPerSec - 190);
+      $('timelineScroll').scrollLeft = 0;
       drawTimeline();
-      requestAnimationFrame(() => { $('timelineScroll').scrollLeft = Math.max(0, S.head * S.pxPerSec - 190); drawTimeline(); drawPlayhead(); });
+      // the playhead in the middle of what shows (the owner, 2026-11-14), on any frame width
+      const midHead = () => { $('timelineScroll').scrollLeft = 0; drawTimeline(); S.head = $('timelineScroll').clientWidth / 2 / S.pxPerSec; setTime(S.head); drawPlayhead(); };
+      midHead();
+      requestAnimationFrame(midHead);
+      addEventListener('resize', midHead);
     }
     // a panel card shows just the card it is about (siblings hidden)
     const only = (id) => { const card = $(id).closest('.ps-card'); [...card.parentElement.children].forEach((e) => { if (e !== card) e.style.display = 'none'; }); card.style.margin = '0 16px'; };
     if (FEATURE === 'enhance') {
-      // cleaner sound and richer colour: the picture before / after, the sound wave before / after
-      const bars = (n, f) => Array.from({ length: n }, (_, k) => `<i style="height:${f(k)}%"></i>`).join('');
-      const noisy = (k) => 18 + Math.round(Math.abs(Math.sin(k * 12.9898) * 43758.5453) % 1 * 70);
-      const clean = (k) => 30 + Math.round(34 * Math.abs(Math.sin(k * .5)) + 10 * Math.abs(Math.sin(k * 1.7)));
+      // two prints of the same shot fanned out (dull before, corrected after) and one glass pill for the cleaner sound
       const sc = document.createElement('div');
       sc.id = 'enScene';
-      sc.innerHTML = `<div class="en-video"><img class="en-b" src="video-still.jpg" alt=""><img class="en-a" src="video-still.jpg" alt=""><span class="en-line"></span><em class="en-lb l">Before</em><em class="en-lb r">After</em></div>
-        <div class="en-audio"><div class="en-row"><span>Before</span><div class="en-wave off">${bars(34, noisy)}</div></div><div class="en-row on"><span>After</span><div class="en-wave">${bars(34, clean)}</div></div></div>`;
+      const speaker = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6h2.5l3.5-3v10L5 10H2.5zM11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.8a6 6 0 0 1 0 8.4"/></svg>';
+      sc.innerHTML = `<div class="en-out"><div class="en-in"><div class="en-card b"><em>Before</em></div><div class="en-card a"><em>After</em></div><span class="en-pill">${speaker}Noise removed</span></div></div>`;
+      const enFit = () => { sc.querySelector('.en-in').style.zoom = Math.max(1, innerWidth / 480); };
+      addEventListener('resize', enFit);
+      enFit();
       document.body.appendChild(sc);
     }
     if (FEATURE === 'zoomsfx') {
-      // the video frame pushed in, with its zoom settings beside it and a sound chip on the picture
+      // the pushed-in video at the left, what the AI added at the right (the Overlays card's look)
       const sc = document.createElement('div');
       sc.id = 'zsScene';
-      sc.innerHTML = '<div class="zs-video"><img src="video-still.jpg" alt=""><span class="zs-zoom"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg>125%</span><span class="zs-sfx"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8v0M5 5v6M8 2.5v11M11 5v6M14 7v2"/></svg>Cash register</span></div><div class="zs-pop"><div class="zs-list"><div class="zs-row z"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg><b>Zoom in</b><i>0:12.2</i></div><div class="zs-row s"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 5v6M8 2.5v11M11 5v6M14 7v2M2 7v2"/></svg><b>Cash register</b><i>0:13.0</i></div><div class="zs-row z"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.2"/><path d="m10.2 10.2 3.3 3.3M5 7h4M7 5v4"/></svg><b>Zoom out</b><i>0:13.8</i></div><div class="zs-row s"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 5v6M8 2.5v11M11 5v6M14 7v2M2 7v2"/></svg><b>Whoosh</b><i>0:19.9</i></div></div></div>';
+      // the sound's line sits under the second frame, where the arrow in the owner's note pointed (a bar every 6 px)
+      const HIT = 30;
+      const waveBars = Array.from({ length: 100 }, (_, k) => `<i class="${k === HIT ? 'hit' : ''}" style="height:${14 + Math.round(70 * Math.abs(Math.sin(k * 0.37) * Math.sin(k * 0.11 + 1)))}%"></i>`).join('');
+      sc.innerHTML = '<div class="zs-out"><div class="zs-in"><div class="zs-strip"><div class="zs-f"></div><div class="zs-f"></div><div class="zs-f"><em>150%</em></div></div>'
+        + '<div class="zs-wave">' + waveBars + '<span class="zs-pin" style="left:' + (HIT * 6 + 12) + 'px"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7v2M5 5v6M8 2.5v11M11 5v6M14 7v2"/></svg>Whoosh</span></div></div></div>';
+      // laid out for a 480 px wide frame, zoomed to the real one so it keeps its size on the card
+      const zsFit = () => { sc.querySelector('.zs-in').style.zoom = Math.max(1, innerWidth / 480); };
+      addEventListener('resize', zsFit);
+      zsFit();
       document.body.appendChild(sc);
     }
     if (FEATURE === 'zooms') {
@@ -1156,10 +1169,15 @@
       drawPro();
     }
     if (FEATURE === 'transcript') {
-      // the transcript as plain text you edit: a selected part with its keys, a cut word struck through
+      // the transcript on frosted glass: a short paragraph that fits whole, the filler words struck out (cut from the video)
       const sc = document.createElement('div');
       sc.id = 'txScene';
-      sc.innerHTML = '<p>Doing it yourself takes <mark>hours of chopping up clips,</mark> and paying a freelancer is <s>way too</s> expensive when you are trying to grow. Just throw your raw footage into Cutly instead. It is an AI video editor that does the entire job for you in seconds. You need zero actual editing skills, because the AI handles all the annoying parts automatically.</p>';
+      const doc = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5h5.5L12 5v8.5H4zM9.5 2.5V5H12M6 8h4M6 10.5h4"/></svg>';
+      sc.innerHTML = '<div class="tx-out"><div class="tx-in"><div class="tx-head"><span class="tx-ic">' + doc + '</span>Transcript</div>'
+        + '<p>Doing it yourself takes <s>um,</s> hours of chopping up clips. Just <s>like,</s> throw your raw footage into Cutly, and <s>and</s> the AI does the hard part for you, so you can <s>you know,</s> post more often.</p></div></div>';
+      const txFit = () => { sc.querySelector('.tx-in').style.zoom = Math.max(1, innerWidth / 480); };
+      addEventListener('resize', txFit);
+      txFit();
       document.body.appendChild(sc);
     }
     if (FEATURE === 'mistakes') {
