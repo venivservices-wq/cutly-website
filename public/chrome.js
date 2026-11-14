@@ -29,6 +29,16 @@
       ${n.side ? `<aside class="mega-side">${n.side.map((x) => `<a href="${fix(x.href || '#tools')}"><span class="mega-side-label">${x.label}</span><img src="${fix(x.img)}" alt="" width="1240" height="776"><span class="mega-side-text">${x.text}</span></a>`).join('')}</aside>` : ''}
     </div></div></div>` : ''}
   </div>`).join('');
+  // Phone menu (the owner picked option 6, 2026-11-14): a sheet with a Log in button at its bottom; it clicks the header's own Log in button
+  const loginRow = document.createElement('div');
+  loginRow.className = 'nav-login';
+  loginRow.innerHTML = '<button class="btn" type="button">Log in</button>';
+  $('mainNav').appendChild(loginRow);
+  loginRow.querySelector('button').addEventListener('click', () => {
+    $('mainNav').classList.remove('open');
+    document.querySelector('.menu-toggle').setAttribute('aria-expanded', false);
+    const b = $('openLogin'); if (b) b.click();
+  });
   const toggle = document.querySelector('.menu-toggle');
   toggle.addEventListener('click', () => {
     const open = $('mainNav').classList.toggle('open');
