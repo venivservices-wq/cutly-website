@@ -3,7 +3,7 @@
 html, body { pointer-events: none; user-select: none; }
 html { background: #0a0a0a; }
 /* The demo is always the desktop editor: the app's phone pieces (its mobile.css shows them under 821 px) never show */
-.m-only, #mProjects { display: none !important; }
+body:not(.demo-phone) .m-only, body:not(.demo-phone) #mProjects { display: none !important; }
 /* Stays dark until demo.js has set the window up, so the app's empty screen never flashes */
 body:not(.demo-ready) { visibility: hidden; }
 /* The sidebar a little wider than the app's default 210 px (the user can drag it wider in the app too), so every row
@@ -257,3 +257,7 @@ body[data-feature="ai"] .ai-head { padding-bottom: 0 !important; }
 body[data-feature="ai"] #aiList.chat { padding-top: 0 !important; gap: 16px !important; }
 /* the answer wraps in balanced lines, so it never leaves one word alone */
 body[data-feature="ai"] .ai-say { text-wrap: balance; }
+
+
+/* ?phone: the scrub strip is filled with thumbnails by the app's script, which the demo does not run; empty it showed only its playhead */
+.demo-phone #mScrub { display: none !important; }

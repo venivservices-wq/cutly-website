@@ -10,10 +10,15 @@
   let onScreen = false;
   let returnFocus = null;
 
+  // Phones get the editor's phone layout in a phone-sized frame; wider screens the desktop editor
+  const PHONE = '(max-width: 600px)';
   function fit() {
+    const phone = matchMedia(PHONE).matches;
+    const src = 'app-demo/index.html?v=hero2' + (phone ? '&phone' : '');
+    if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
     const narrow = innerWidth <= 760;
-    const w = narrow ? 1100 : 1440;
-    const h = narrow ? 800 : 860;
+    const w = phone ? 390 : narrow ? 1100 : 1440;
+    const h = phone ? 720 : narrow ? 800 : 860;
     const scale = scaler.clientWidth / w;
     frame.style.width = w + 'px';
     frame.style.height = h + 'px';
@@ -34,9 +39,9 @@
   }
 
   function tell() {
-    const open = !auth.hidden;
+    // The owner (2026-11-14): no animation. The demo stays on its first frame; it is only ever told to pause.
     // Only our own page may receive this (a file:// preview has the origin 'null', which cannot be a target)
-    if (frame.contentWindow) frame.contentWindow.postMessage(onScreen && !open ? 'demo-play' : 'demo-pause', location.origin === 'null' ? '*' : location.origin);
+    if (frame.contentWindow) frame.contentWindow.postMessage('demo-pause', location.origin === 'null' ? '*' : location.origin);
   }
 
   function openAuth(e) {

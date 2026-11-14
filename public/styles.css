@@ -93,8 +93,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .btn-go svg { flex: none; transition: transform .2s; }
 .btn-primary.btn-go:hover svg { transform: translateX(3px); }
 .btn-ghost.btn-go:hover svg { transform: translateX(3px); }
-.hero-sub { max-width: 520px; margin: 14px auto 0; font-size: clamp(17px, 1.5vw, 20px); line-height: 1.5; color: var(--muted); }
-.hero-cta { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 52px; }
+.hero-sub { max-width: 900px; margin: 14px auto 0; font-size: clamp(17px, 1.5vw, 20px); line-height: 1.5; color: var(--muted); }
+.hero-sub span { display: block; text-wrap: balance; }
+.hero-cta { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: clamp(26px, 2.4vw, 34px); }
 
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
@@ -384,6 +385,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .tool-head i { top: 27px; right: 20px; width: 16px; height: 16px; }
   .tool.open { border-radius: 22px; }
   .tool.open .tool-head span + span { transform: scale(1.12); }
+  /* the desktop width cap (58% of the container minus the picture's room) left about 90px on a phone: one word per line */
+  .tool-head span + span { max-width: calc(100% / 1.12); }
   .tool-text { min-height: 0; padding: 10px 20px 0 62px; font-size: 17px; }
   .tool-shot { margin: 0 10px 10px; border-radius: 12px; }
   .review:nth-child(n) { width: 100%; transform: none; }
@@ -432,7 +435,23 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .hero-cta .btn { flex: 1 1 100%; }
   .showcase-panel { padding: 28px 0 24px; border-radius: 16px; }
   #showcase .center-head { margin-bottom: 20px; padding-inline: 20px; }
-  .ring-stage { --cw: clamp(110px, 31vw, 170px); }
+  /* phones: one big card at a time (script.js `solo`), the arrows beside it */
+  .ring-stage { --cw: min(calc(100vw - 140px), 300px); width: 100%; height: calc(var(--cw) * 2 + 16px); }   /* the card starts 8px from the top (was ~37px) */
+  #showcase .center-head { margin-bottom: 14px; }
+  /* less space between the sections on phones (the owner, 2026-11-14) */
+  .block { padding-block: 28px; }
+  #demo.demo { padding-bottom: 28px; }
+  #reviews { padding-bottom: 28px; }
+  #reviews .center-head { margin: 0 0 24px; }
+  /* feature list on phones: the number sits small above the title, so title, text and picture share one left edge; the open title is not enlarged */
+  .tool-head { display: block; padding: 20px 48px 0 20px; font-size: 22px; }
+  .tool-head span:first-child { display: block; margin-bottom: 6px; font-size: 12px; }
+  .tool-head span + span, .tool.open .tool-head span + span { max-width: none; transform: none; }
+  .tool-head i { top: 42px; }
+  .tool-main { padding-bottom: 18px; }
+  .tool-text { padding: 8px 20px 0; font-size: 16px; line-height: 1.45; }
+  .tool-shot { margin: 0 12px 12px; border-radius: 14px; }
+  .tool-shot .tool-ui { inset: 11% 0 0 8%; border-radius: 12px 0 0 0; }
   .ring-btn { width: 38px; height: 38px; margin-top: -19px; }
   .ring-btn.prev { left: 6px; } .ring-btn.next { right: 6px; }
   .ring-wrap { padding-inline: 48px; }
