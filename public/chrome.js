@@ -76,9 +76,9 @@
 
   /* The login window (auth.css + auth.js): every Log in button, on every page, opens it */
   const authCss = document.createElement('link');
-  authCss.rel = 'stylesheet'; authCss.href = BASE + 'auth.css?v=6';
+  authCss.rel = 'stylesheet'; authCss.href = BASE + 'auth.css?v=7';
   document.head.appendChild(authCss);
   const authJs = document.createElement('script');
-  authJs.src = BASE + 'auth.js?v=4';
+  authJs.src = BASE + 'auth.js?v=5';
   document.body.appendChild(authJs);
 })();
