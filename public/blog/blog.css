@@ -97,3 +97,28 @@ main { overflow-x: clip; }
 
 .side-art.cmt { background: linear-gradient(180deg, #3b82e0 0%, #5da2e9 30%, #c6dbea 55%, #4f9a78 82%, #2a7a52 100%); }
 .side-art.cmt svg { transform: none; }
+
+.cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* blog home: the newest guide is big, the rest sit in a two-column grid (the owner, 2026-11-14) */
+.post-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 28px; margin-top: 56px; }
+.post-grid .feat + .feat { margin-top: 0; }
+.post-grid .feat h2 { font-size: clamp(20px, 2vw, 26px); line-height: 1.2; letter-spacing: -.02em; }
+.post-grid .feat .cover { border-radius: 16px; }
+.feat .post-when { margin-top: 8px; }
+@media (max-width: 700px) { .post-grid { grid-template-columns: 1fr; gap: 40px; margin-top: 40px; } }
+
+/* blog home, redone 2026-11-14: one left edge for the title, the text and the cards; every guide is the same size card */
+.blog-home { padding-top: 96px; }
+.blog-home h1 { font-size: clamp(38px, 4.4vw, 56px); line-height: 1.06; font-weight: 600; letter-spacing: -.035em; }
+.blog-home .sub { margin-top: 12px; font-size: 18px; line-height: 1.45; color: var(--muted); }
+.bgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 28px; margin-top: 48px; }
+.bcard { display: flex; flex-direction: column; align-items: flex-start; }
+.bcard img { display: block; width: 100%; aspect-ratio: 32 / 15; object-fit: cover; border-radius: 16px; background: var(--panel); }
+.bcard h2 { margin-top: 16px; font-size: 22px; line-height: 1.25; font-weight: 600; letter-spacing: -.02em; text-wrap: pretty; }
+.bcard:hover h2 { text-decoration: underline; text-underline-offset: 4px; }
+.bcard-meta { display: flex; flex-wrap: wrap; margin-top: 8px; font-size: 14px; line-height: 1.4; color: var(--muted); }
+.bcard-meta span + span::before { content: "·"; margin: 0 8px; }
+@media (max-width: 1000px) { .bgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .blog-home { padding-top: 72px; } .bgrid { grid-template-columns: 1fr; gap: 36px; margin-top: 36px; } }
+.side-art:has(> img) { aspect-ratio: 32 / 15; }

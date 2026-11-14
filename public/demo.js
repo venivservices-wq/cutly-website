@@ -49,7 +49,7 @@
     auth.hidden = false;
     document.documentElement.style.overflow = 'hidden';
     fitAuth();
-    if (!authFrame.getAttribute('src') && authScaler.offsetWidth) authFrame.src = 'app-demo/index.html?still';
+    if (!authFrame.getAttribute('src') && authScaler.offsetWidth) authFrame.src = 'app-demo/index.html?still&v=2';
     tell();
     closeBtn.focus();
   }
