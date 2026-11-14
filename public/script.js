@@ -250,15 +250,10 @@
     </article>` +
     W.perks.map((p) => `<article class="why-perk"><span class="why-label">${p.label}</span><h3>${p.title}<span>${p.vs}</span></h3></article>`).join('');
 
-  /* Reviews. The design samples (made up, not real people) show ONLY on a local copy of the site, or through the private review link
-     https://cutlyai.app/?preview that the owner sends to the people testing the site; a normal visit shows the plain placeholders.
-     Real reviews go in S.reviews (with text, mark, followers) and then show everywhere. Remove sampleReviews before launch. */
-  const localCopy = location.protocol === 'file:' || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-  const reviewLink = new URLSearchParams(location.search).has('preview');
-  const reviewItems = (localCopy || reviewLink) && S.sampleReviews ? S.sampleReviews : S.reviews;
-  $('reviewList').innerHTML = reviewItems.map((r, i) => `<article class="review">
+  /* Reviews: real ones (with text) as written, the rest still placeholders. A follower count shows only when one was given. */
+  $('reviewList').innerHTML = S.reviews.map((r, i) => `<article class="review">
     <p>${r.text ? r.text.replace(r.mark, `<mark>${r.mark}</mark>`) : 'Add a real customer review here, in their own words, about <mark>what they made with Cutly</mark>.'}</p>
-    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}<small>${r.followers || '000K'} followers</small></span></div>
+    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}${r.followers ? `<small>${r.followers} followers</small>` : r.text ? '' : '<small>000K followers</small>'}</span></div>
   </article>`).join('');
 
   /* Pricing: a gray card, a split card with a painted top, and a black card. Each lists its credits, then every feature (ticked or greyed), so the rows line up across all three. */

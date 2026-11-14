@@ -97,21 +97,13 @@ window.SITE = {
     ['Can Cutly replace my video editor?', 'Cutly helps you or your editor work 6x faster, but it can still make mistakes, so a person should review the final edit.']
   ],
 
-  // Placeholders. Use real reviews only, with the customer's permission.
+  // Real reviews, given by the owner (2026-11-14), shown as written. text: the review, mark: the words highlighted,
+  // name: who (no follower count when none was given). Entries without text are placeholders for the next real reviews.
   reviews: [
-    { name: 'Customer Name', face: 'mint' },
-    { name: 'Customer Name', face: 'peach' },
+    { name: 'UGC creator', face: 'mint', text: 'Cutly AI has saved me so much time as a UGC creator. Editing used to take up most of my time, but now I can create videos much faster without losing quality. It’s become an essential part of my workflow!', mark: 'create videos much faster' },
+    { name: 'TikTok Shop creator', face: 'peach', text: 'This app saves me so much time editing my TikTok Shop videos. I used to spend hours editing everything myself, but now CutlyAI does it for me. I get more free time every day, and the videos turn out great! Definitely worth it!', mark: 'more free time every day' },
     { name: 'Customer Name', face: 'lilac' },
     { name: 'Customer Name', face: 'rose' }
-  ],
-  // DESIGN SAMPLES ONLY, NOT REAL PEOPLE OR REVIEWS. script.js shows them only on a local copy (localhost / 127.0.0.1 / a file) or through
-  // the private review link https://cutlyai.app/?preview sent to the site's testers; a normal visit never shows them. Replace with real reviews
-  // (with permission) and delete this list before launch.
-  sampleReviews: [
-    { name: 'Maya R.', followers: '48K', face: 'mint', text: 'I used to spend my whole Sunday editing. Now it’s done before lunch.', mark: 'done before lunch' },
-    { name: 'Jordan T.', followers: '112K', face: 'peach', text: 'The duplicate take thing is unreal. I ramble, restart lines, say “wait, let me do that again”, and Cutly just keeps the good version.', mark: 'keeps the good version' },
-    { name: 'Priya S.', followers: '230K', face: 'lilac', text: 'I post product reviews every day and editing was the part I dreaded. I upload five videos at night and in the morning they’re cut, zoomed and captioned. I still tweak a few things with comments, but it takes minutes instead of hours.', mark: 'minutes instead of hours' },
-    { name: 'Leo M.', followers: '21K', face: 'rose', text: 'Captions and zooms in one click. Finally.', mark: 'in one click' }
   ],
 
   // Footer columns: [label, link]
