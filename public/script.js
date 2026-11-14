@@ -253,7 +253,7 @@
   /* Reviews: real ones (with text) as written, the rest still placeholders. A follower count shows only when one was given. */
   $('reviewList').innerHTML = S.reviews.map((r, i) => `<article class="review">
     <p>${r.text ? r.text.replace(r.mark, `<mark>${r.mark}</mark>`) : 'Add a real customer review here, in their own words, about <mark>what they made with Cutly</mark>.'}</p>
-    <div class="reviewer">${sceneHtml(r.face, i + 40)}<span>${r.name}${r.followers ? `<small>${r.followers} followers</small>` : r.text ? '' : '<small>000K followers</small>'}</span></div>
+    <div class="reviewer">${r.photo ? `<img class="art" src="${r.photo}" width="40" height="40" alt="" loading="lazy">` : sceneHtml(r.face, i + 40)}<span>${r.name}${r.followers ? `<small>${r.followers} followers</small>` : r.text ? '' : '<small>000K followers</small>'}</span></div>
   </article>`).join('');
 
   /* Pricing: a gray card, a split card with a painted top, and a black card. Each lists its credits, then every feature (ticked or greyed), so the rows line up across all three. */
