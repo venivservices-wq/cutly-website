@@ -581,4 +581,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .nav-item.expanded .nav-link { border-bottom-color: transparent; }
   .nav-item.expanded { border-bottom: 1px solid rgba(11, 14, 20, .06); }
   .nav-item.expanded:nth-last-child(2) { border-bottom: 0; }
+  /* Smooth open / close (2026-11-14): the sheet unfolds from the header, the page dims with it */
+  .main-nav { display: flex; visibility: hidden; opacity: 0; clip-path: inset(0 0 100% 0); pointer-events: none; transition: clip-path .38s cubic-bezier(.22, 1, .36, 1), opacity .22s ease, visibility 0s linear .38s; }
+  .main-nav.open { visibility: visible; opacity: 1; clip-path: inset(0 0 -2px 0); pointer-events: auto; transition: clip-path .42s cubic-bezier(.22, 1, .36, 1), opacity .2s ease, visibility 0s; }
+  .site-header::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 100vh; z-index: -1; pointer-events: none; background: rgba(11, 14, 20, .4); opacity: 0; transition: opacity .3s ease; }
+  .site-header:has(.main-nav.open)::after { opacity: 1; }
+  .site-header { transition: background .25s ease; }
 }
