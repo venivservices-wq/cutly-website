@@ -102,7 +102,7 @@ window.SITE = {
   reviews: [
     { name: 'UGC creator', face: 'mint', text: 'Cutly AI has saved me so much time as a UGC creator. Editing used to take up most of my time, but now I can create videos much faster without losing quality. It’s become an essential part of my workflow!', mark: 'create videos much faster' },
     { name: 'TikTok Shop creator', face: 'peach', text: 'This app saves me so much time editing my TikTok Shop videos. I used to spend hours editing everything myself, but now CutlyAI does it for me. I get more free time every day, and the videos turn out great! Definitely worth it!', mark: 'more free time every day' },
-    { name: 'Customer Name', face: 'lilac' },
+    { name: 'Content creator', face: 'lilac', text: 'I’ve been using Cutly for my content, and I’m loving it so far! The results look great, and it makes creating videos so much easier, especially if you’re not experienced with editing. Highly recommend it if you want to make videos without the hassle!', mark: 'without the hassle' },
     { name: 'Customer Name', face: 'rose' }
   ],
 
