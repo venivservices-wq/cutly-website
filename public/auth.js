@@ -41,7 +41,7 @@
     document.documentElement.style.overflow = 'hidden';
     fitAuth();
     if (!authFrame.getAttribute('src') && authScaler.offsetWidth && !matchMedia('(max-width: 860px)').matches) authFrame.src = BASE + 'app-demo/index.html?still';
-    closeBtn.focus();
+    if (!matchMedia('(max-width: 860px)').matches) closeBtn.focus();   // on a phone no ring on the X
   }
   function closeAuth() {
     auth.hidden = true;

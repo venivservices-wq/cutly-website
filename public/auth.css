@@ -27,11 +27,7 @@
 @keyframes auth-rise { from { opacity: 0; transform: translateY(14px) scale(.985); } }
 
 @media (max-width: 860px) {
-  .auth-box { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; width: min(480px, 100%); height: auto; max-height: 100%; overflow-y: auto; }
-  .auth-left { padding: 12px; }
-  .auth-scaler { flex: none; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; }
-  .auth-scaler .ve-frame { display: none; }
-  .auth-pic { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
-  .auth-scaler::after { inset: -12px; border-width: 12px; border-radius: 22px; }
-  .auth-right { padding: 28px 24px 28px; }
+  .auth-left { display: none; }   /* phones: only the sign-in options, no editor picture (the owner, 2026-11-14) */
+  .auth-box { grid-template-columns: minmax(0, 1fr); width: min(480px, 100%); height: auto; max-height: 100%; overflow-y: auto; }
+  .auth-right { padding: 56px 24px 32px; }
 }
