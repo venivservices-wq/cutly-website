@@ -3,6 +3,9 @@
 // user plays the result, asks for a change, cuts words in the transcript and exports. Then the next project opens.
 // The timeline, chat and screens follow app.js in the Video Editor (Version 250), so they look the same.
 (function () {
+  // ?phone: the site shows this frame at phone size on phones, so it loads the editor's real phone layout
+  // (mobile.css here has its phone rules switched off; mobile-phone.css is the app's own copy, tools/build.py)
+  if (location.search.includes('phone')) document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="mobile-phone.css?v=1">');
   const $ = (id) => document.getElementById(id);
   const fmt = (s) => {
     s = Math.max(0, s || 0);
@@ -1247,5 +1250,7 @@
       })();
     }
   });
+  // phone layout: the phone buttons show and the timeline stays closed (the app opens it with Edit)
+  if (location.search.includes('phone')) document.body.classList.add('demo-phone', 'tl-closed');
   if (window.parent !== window) window.parent.postMessage('demo-ready', location.origin === 'null' ? '*' : location.origin);
 })();

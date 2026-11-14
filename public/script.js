@@ -76,8 +76,21 @@
     const mod = (n) => ((n % RING_N) + RING_N) % RING_N;
     // A straight row: the card in front is a little bigger, the others sit beside it at normal size
     const cards = [...ring.children];
+    // On a phone only one card shows, full size; its neighbours slide in from off the stage
+    const solo = matchMedia('(max-width: 600px)');
     const draw = () => {
       const w = cards[0].offsetWidth, p = spin / step;
+      if (solo.matches) {
+        const room = stage.offsetWidth;
+        cards.forEach((c, i) => {
+          const o = ((i - p + RING_N / 2) % RING_N + RING_N) % RING_N - RING_N / 2, a = Math.abs(o);
+          c.style.opacity = Math.max(0, 1 - a).toFixed(2);
+          c.style.transform = `translateX(${(o * (room + w) / 2).toFixed(1)}px)`;
+          c.style.zIndex = Math.round(100 - a * 10);
+          c.style.visibility = a >= 1 ? 'hidden' : '';
+        });
+        return;
+      }
       cards.forEach((c, i) => {
         const o = ((i - p + RING_N / 2) % RING_N + RING_N) % RING_N - RING_N / 2, a = Math.abs(o);
         const gap = 20, sc = Math.max(0.88, 1.14 - 0.26 * a);

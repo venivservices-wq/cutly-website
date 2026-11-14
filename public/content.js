@@ -85,11 +85,13 @@ window.SITE = {
 
   faq: [
     ['Can Cutly automatically remove duplicate takes?', 'Yes! Cutly automatically finds and removes duplicate takes. You can also remove anything else with a simple comment.'],
-    ['What are credits, and how do they work?', 'Credits are used whenever you ask Cutly’s AI to perform a task. A first edit usually costs 2 credits, while comments can cost anywhere from 0 to 1 credit.'],
+    ['How many credits does a video use?', 'Credits are used whenever you ask Cutly’s AI to perform a task. A first edit usually costs 2 credits, while comments can cost anywhere from 0 to 1 credit.'],
     ['How many videos can I upload?', 'You can add as many videos to the queue as your available credits allow. Cutly will process them in batches until they’re all finished.'],
     ['Can I customize my videos?', 'Yes! You can create your own caption styles, save custom cut presets, upload your own sound effects, and much more.'],
     ['Do I need video editing experience to use Cutly?', 'Not at all! Cutly does the hard work for you. Just tell it what you want, and let AI handle the rest.'],
-    ['Can I make manual edits to my videos?', 'Yes! You can use comments or the timeline, depending on how much control you want.']
+    ['Can I make manual edits to my videos?', 'Yes! You can use comments or the timeline, depending on how much control you want.'],
+    ['Can Cutly make mistakes?', 'Yes, Cutly can make mistakes, but it’s very easy to fix them using comments or the built-in timeline.'],
+    ['Can Cutly replace my video editor?', 'Cutly helps you or your editor work 6x faster, but it can still make mistakes, so a person should review the final edit.']
   ],
 
   // Placeholders. Use real reviews only, with the customer's permission.
@@ -103,7 +105,7 @@ window.SITE = {
   // Footer columns: [label, link]
   footer: [
     { title: 'Product', links: [['Features', '#tools'], ['Reviews', '#reviews'], ['Pricing', '#pricing']] },
-    { title: 'Company', links: [['Blog', '#'], ['Help Center', '#'], ['Contact', 'contact.html']] }
+    { title: 'Company', links: [['Blog', 'blog/'], ['Help Center', '#'], ['Contact', 'contact.html']] }
   ],
   tagline: 'The AI Powered Video Editor That Does the Hard Work for You.',
   legal: ['Terms of Service', 'Privacy Policy', 'Cookie Policy']

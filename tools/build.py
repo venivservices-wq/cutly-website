@@ -17,8 +17,9 @@ shutil.copy(app / 'static' / 'panel-style.css', out / 'panel-style.css')   # the
 phone = (app / 'static' / 'mobile.css').read_text(encoding='utf-8')
 phone = re.sub(r'@media \(max-width: \d+px\)', '@media (max-width: 0px)', phone)
 (out / 'mobile.css').write_text(phone, encoding='utf-8')
-shutil.copy(app / 'static' / 'vlance-logo.png', out / 'cutly-logo.png')
-shutil.copy(app / 'static' / 'cutly-logo.svg', out / 'cutly-logo.svg')
+# The hero on phones (demo.js ?phone) loads the app's real phone layout on top: the unchanged copy
+shutil.copy(app / 'static' / 'mobile.css', out / 'mobile-phone.css')
+shutil.copy(app / 'static' / 'cutly-logo.png', out / 'cutly-logo.png')
 shutil.copy(app / 'static' / 'help-lauren.jpg', out / 'help-lauren.jpg')   # the picture in the New project page's blog cards
 (out / 'fonts').mkdir(exist_ok=True)
 for name in ('TikTokSans-Bold.ttf', 'TikTokSans-OFL.txt'):
