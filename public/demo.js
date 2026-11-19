@@ -10,7 +10,7 @@
   const PHONE = '(max-width: 600px)';
   function fit() {
     const phone = matchMedia(PHONE).matches;
-    const src = 'app-demo/index.html?v=hero7' + (phone ? '&phone' : '');
+    const src = 'app-demo/index.html?v=hero12' + (phone ? '&phone' : '');
     if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
     const narrow = innerWidth <= 760;
     const w = phone ? 390 : narrow ? 1100 : 1440;
