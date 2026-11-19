@@ -660,7 +660,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .gsap-slider { --slider-status: on; }
 .product-card { border-radius: 4px; }
 
-/* Less space between the editor demo and "See What You Can Create" (the owner, 2026-11-19). */
-#demo.demo { padding-bottom: 8px; }
-#showcase.block { padding-top: 16px; }
+/* Space above "See What You Can Create" equals the space above "What Creators Say" (the owner, 2026-11-19). */
+#demo.demo { padding-bottom: clamp(48px, 6vw, 72px); }
+#showcase.block { padding-top: clamp(48px, 6vw, 72px); }
 #showcase .showcase-panel { padding-top: 0 !important; }
+#showcase .center-head { margin-top: 45px; }
