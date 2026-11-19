@@ -661,6 +661,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .product-card { border-radius: 4px; }
 
 /* Less space between the editor demo and "See What You Can Create" (the owner, 2026-11-19). */
-#demo.demo { padding-bottom: 8px; }
-#showcase.block { padding-top: 16px; }
+#demo.demo { padding-bottom: 20px; }
+#showcase.block { padding-top: 44px; }
 #showcase .showcase-panel { padding-top: 0 !important; }
