@@ -244,3 +244,6 @@ body[data-feature="cuts"] #timelineScroll { height: 100vh !important; border-rad
 
 /* The newer app wraps the Transcript title, search and Show Cuts in .tr-sticky: the cut-mistakes picture shows only the text lines (the owner, 2026-11-19: it showed a cropped black header bar) */
 body[data-feature="mistakes"] .tr-sticky, body[data-feature="mistakes"] .tr-head, body[data-feature="mistakes"] #trCopy, body[data-feature="mistakes"] .tr-copy { display: none !important; }
+
+/* The Cutly logo stays on the AI's answers on the website. The app's own style.css hides the avatar (owner 2026-11-13); the website keeps it (owner 2026-11-19). */
+#tab-ai .msg.ai .ai-mark { display: grid !important; flex: none; width: 26px; height: 26px; }
