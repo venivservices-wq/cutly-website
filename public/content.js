@@ -50,8 +50,8 @@ window.SITE = {
     stats: [
       { label: 'Cost per video', title: '20x cheaper', vs: 'than an editor', dark: true,
         from: { name: 'Editor', value: '$5.00' }, to: { name: 'Cutly', value: '$0.25' } },
-      { label: 'Time per video', title: '6x faster', vs: 'than editing by hand',
-        from: { name: 'By hand', value: '30 min' }, to: { name: 'Cutly', value: '5 min' } }
+      { label: 'Time per 5 videos', title: '6x faster', vs: 'than editing by hand',
+        from: { name: 'By hand', value: '30 mins' }, to: { name: 'Cutly', value: '5 mins' } }
     ],
     wait: {
       label: 'Turnaround',

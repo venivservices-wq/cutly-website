@@ -31,3 +31,8 @@
   .auth-box { grid-template-columns: minmax(0, 1fr); width: min(480px, 100%); height: auto; max-height: 100%; overflow-y: auto; }
   .auth-right { padding: 56px 24px 32px; }
 }
+
+/* Login window on every screen: only the sign-in options, no editor picture (the owner, 2026-11-19) */
+.auth-left { display: none; }
+.auth-box { grid-template-columns: minmax(0, 1fr); width: min(480px, 100%); height: auto; max-height: 100%; overflow-y: auto; }
+.auth-right { padding: 56px 24px 32px; }

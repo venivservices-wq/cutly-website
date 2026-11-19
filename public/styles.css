@@ -492,13 +492,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* Zooms and Sound Effects picture (2026-11-14, the owner: the Custom Styles card's see-through look): a frosted glass card over the painted
    background, running off the right and bottom; the frame draws only what sits on the glass. Its corner must match #zsScene .zs-out in app-demo/demo-only.css (10% / 12%) */
-.tool-shot .tool-ui.fui-zoomsfx, .tool-shot .tool-ui.fui-enhance, .tool-shot .tool-ui.fui-transcript { inset: 0; border-radius: 0; background: transparent; }
-.fui-zoomsfx .fui-real, .fui-enhance .fui-real, .fui-transcript .fui-real { background: transparent; }
-.tool-shot:has(.fui-zoomsfx)::before, .tool-shot:has(.fui-enhance)::before, .tool-shot:has(.fui-transcript)::before { filter: blur(3px); opacity: .6; }
+.tool-shot .tool-ui.fui-enhance, .tool-shot .tool-ui.fui-transcript { inset: 0; border-radius: 0; background: transparent; }
+.fui-enhance .fui-real, .fui-transcript .fui-real { background: transparent; }
+.tool-shot:has(.fui-enhance)::before, .tool-shot:has(.fui-transcript)::before { filter: blur(3px); opacity: .6; }
 /* Sound Improvements and Color Correction and Edit with Text use the same glass (app-demo/demo-only.css #enScene, #txScene) */
 /* Edit Using the Timeline: the dark timeline runs edge to edge across the bottom, the painted background only shows as a strip on top */
 .tool-shot .tool-ui.fui-cuts { inset: 30% 0 0 0; border-radius: 0; }
-.tool-shot .tool-ui.fui-zoomsfx::before, .tool-shot .tool-ui.fui-enhance::before, .tool-shot .tool-ui.fui-transcript::before { content: ""; position: absolute; left: 10%; top: 12%; right: -10%; bottom: -10%; border-radius: 24px; background: rgba(255, 255, 255, .16); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.tool-shot .tool-ui.fui-enhance::before, .tool-shot .tool-ui.fui-transcript::before { content: ""; position: absolute; left: 10%; top: 12%; right: -10%; bottom: -10%; border-radius: 24px; background: rgba(255, 255, 255, .16); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
 /* Edit with Text: its glass starts further right and lower (the owner), the text runs off the right and bottom; matches #txScene .tx-out (18% / 22%) */
 .tool-shot .tool-ui.fui-transcript::before { left: 18%; top: 22%; }
 

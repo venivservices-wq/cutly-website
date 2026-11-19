@@ -108,11 +108,15 @@
      the clips, Track 3 sounds), each clip = its picture as a strip of frames with its sound under it */
   const TL = { RULER: 20, GAPY: 6, LANE: 22, CLIPH: 84, CLIPMAX: 128, SPLIT: 5 };
   const TL_PAD = 0.2;
+  // Phone (as the app's CapCut-style timeline): the playhead is a fixed line in the middle and the timeline slides under it;
+  // the scroll box has half its width of padding on both sides, and the track + buttons sit just before their lane (they slide away with it)
+  const PHONE = location.search.includes('phone');
+  const tlLead = () => (PHONE && matchMedia('(max-width: 820px)').matches ? Math.round($('timelineScroll').clientWidth / 2) : 0);
   const TRACKS = [{ id: 'o1' }, { id: 'z1' }, { id: 'v', video: true }, { id: 's1' }];
   const canvas = $('timeline');
   const base = document.createElement('canvas');
   const thumb = new Image();
-  thumb.src = 'video-thumb.jpg';
+  thumb.src = 'creator-1-full-thumb.jpg';
   thumb.onload = () => drawTimeline();
 
   function layout(clipH) {
@@ -152,6 +156,9 @@
     const spare = room - (layout(TL.CLIPH).contentEnd + TL.LANE + TL.GAPY * 2);
     const lay = layout(Math.max(TL.CLIPH, Math.min(TL.CLIPMAX, TL.CLIPH + spare)));
     const w = Math.ceil(len * (1 + TL_PAD) * S.pxPerSec);
+    const lead = tlLead();
+    wrap.style.paddingLeft = lead ? lead + 'px' : '';
+    wrap.style.paddingRight = lead ? Math.max(0, Math.round(lead - len * TL_PAD * S.pxPerSec)) + 'px' : '';
     const h = Math.max(lay.contentEnd + TL.LANE + TL.GAPY * 2, room);
     for (const c of [canvas, base]) { c.width = w * dpr; c.height = h * dpr; }
     canvas.style.width = w + 'px';
@@ -372,6 +379,20 @@
     const top = sc.offsetTop - sc.scrollTop;
     for (const c of box.querySelectorAll('.tl-ctl')) c.style.top = top + S.lay.lanes[c.dataset.id].y + 'px';
     $('tlNewTrack').style.top = top + S.lay.contentEnd + 'px';
+    if (tlLead()) {
+      // right before the start of their lane, as tall as the lane, sliding away with the timeline (app.js placeTlAdds)
+      const x0 = sc.offsetLeft + canvas.offsetLeft - sc.scrollLeft;
+      for (const c of box.querySelectorAll('.tl-ctl')) {
+        const ln = S.lay.lanes[c.dataset.id];
+        c.style.left = Math.round(x0 - 31) + 'px';
+        c.style.height = ln.h + 'px';
+        c.style.top = Math.round(top + ln.y) + 'px';
+        c.classList.toggle('hidden', x0 - 31 + 28 < sc.offsetLeft);
+      }
+      const nt = $('tlNewTrack');
+      nt.style.setProperty('left', Math.round(x0 - 21) + 'px', 'important');
+      nt.classList.toggle('hidden', x0 - 21 + 18 < sc.offsetLeft);
+    }
   }
 
   function drawPlayhead() {
@@ -385,6 +406,17 @@
     const H = canvas.height / dpr;
     // while it plays, a timeline wider than its window turns a whole page when the playhead reaches the right edge
     const sc = $('timelineScroll');
+    const lead = tlLead();
+    let fixed = $('phFixed');
+    if (lead) {
+      // the playhead is the fixed line in the middle; the timeline moves
+      if (!fixed) { fixed = document.createElement('div'); fixed.id = 'phFixed'; fixed.setAttribute('aria-hidden', 'true'); $('timelineWrap').appendChild(fixed); }
+      fixed.hidden = false;
+      fixed.style.left = sc.offsetLeft + lead + 'px'; fixed.style.top = sc.offsetTop + 'px'; fixed.style.height = sc.clientHeight + 'px';
+      if (Math.abs(sc.scrollLeft - px) > 0.15) { sc.scrollLeft = Math.max(0, px); placeGutter(); }
+      return;
+    }
+    if (fixed) fixed.hidden = true;
     if (S.playing && (px > sc.scrollLeft + sc.clientWidth - 6 || px < sc.scrollLeft)) sc.scrollLeft = Math.max(0, px - 8);
     g.fillStyle = '#ffffff';
     g.fillRect(px - 1, 0, 2, H);
@@ -472,7 +504,7 @@
     const box = document.createElement('div');
     box.className = 'demo-video';
     box.id = 'demoVideo';
-    box.innerHTML = '<img id="demoStill" src="video-start.jpg" alt="">';
+    box.innerHTML = '<img id="demoStill" src="creator-1-full.jpg" alt="">';
     $('frame').prepend(box);
   }
   function loadWistia() {
@@ -576,7 +608,7 @@
       el.className = 'video-item' + (mine && state ? ' on' : '');
       const busy = mine && state === 'busy';
       const tag = mine && state === 'new' ? '<span class="ready-tag" data-s="new">Uploaded</span>' : '<span class="ready-tag" data-s="ready">Edited</span>';
-      el.innerHTML = `<div class="thumb"><img src="video-thumb.jpg" alt=""></div><div class="item-text"><div class="name"><span>${name}</span><em>${busy ? '' : fmt(DURATION).replace(/\.\d$/, '')}</em></div>`
+      el.innerHTML = `<div class="thumb"><img src="creator-1-full-thumb.jpg" alt=""></div><div class="item-text"><div class="name"><span>${name}</span><em>${busy ? '' : fmt(DURATION).replace(/\.\d$/, '')}</em></div>`
         + (busy ? '<div class="state" data-s="busy">AI is editing</div>' : `<div class="state" data-s="ready">${tag}</div>`) + '</div>'
         + '<button class="item-del item-more" aria-label="More" tabindex="-1"><svg viewBox="0 0 16 16"><circle cx="3.5" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="12.5" cy="8" r="1.2"/></svg></button>';
       list.appendChild(el);
@@ -681,9 +713,9 @@
   // The chat so far: the video was edited by the AI once and two changes were asked for and done
   const HISTORY_FULL = [['ai', 'Your video is ready to preview.'], ['me', 'Cut the part where I stumble', 2.4], ['me', 'Make the captions a bit bigger', 5.1], ['ai', 'Editing complete! You can take a look!']];
   const HERO = !/[?&]feature=/.test(location.search);   // the website's big demo; the feature pictures keep the full chat, zooms and suggestions
-  const HISTORY = HERO ? [['ai', 'Your video is ready to preview.']] : HISTORY_FULL;
+  const HISTORY = HERO ? [['ai', 'Your video is ready to preview.'], ['me', 'Add a zoom here', 3.6], ['ai', 'Added the zoom.']] : HISTORY_FULL;   // the website's still frame shows a finished exchange (the owner, 2026-11-19)
   function edited() {
-    Object.assign(S, { edited: true, kept: KEPT.map((k) => k.slice()), zooms: HERO ? ZOOMS.filter((z, i) => i !== ZOOM_ASKED) : ZOOMS.slice(), sfx: HERO ? SOUNDS.filter((x) => x !== NEW_SOUND) : SOUNDS.slice(), overlays: OVERLAYS.slice(),
+    Object.assign(S, { edited: true, kept: KEPT.map((k) => k.slice()), zooms: ZOOMS.slice(), sfx: HERO ? SOUNDS.filter((x) => x !== NEW_SOUND) : SOUNDS.slice(), overlays: OVERLAYS.slice(),
       zoomAt: 0.32, sel: null, drag: null, whoosh: 0, head: 0, extraCut: 0 });
   }
 
@@ -1083,7 +1115,7 @@
   if (FEATURE) {
     document.body.classList.add('demo-feature');
     document.body.dataset.feature = FEATURE;
-    $('demoStill').src = 'video-still.jpg';
+    $('demoStill').src = 'creator-1-full.jpg';
     $('demoVideo').classList.remove('raw');
     reset();
     const tab = { transcript: 'transcript', ai: 'ai', mistakes: 'transcript' }[FEATURE];
@@ -1108,7 +1140,7 @@
       $('aiScroll').scrollTop = 0;
     }
     if (FEATURE === 'cuts') {
-      thumb.src = 'creator-1-thumb.jpg';   // a different creator in each feature picture (the owner, 2026-11-14)
+      thumb.src = 'creator-1-full-thumb.jpg';   // a different creator in each feature picture (the owner, 2026-11-14)
       // zoomed out so two cuts show, from the very start of the timeline so nothing is cut off at the left edge
       S.zoomAt = 0.28;
       S.head = KEPT[0][1] - KEPT[0][0];
@@ -1136,18 +1168,11 @@
       document.body.appendChild(sc);
     }
     if (FEATURE === 'zoomsfx') {
-      // the pushed-in video at the left, what the AI added at the right (the Overlays card's look)
+      // the same simple rows as the Overlays card: what the AI would add (zooms and sound effects), each with its moment and a +
+      const rows = [['Zoom in on the product', '0:12.2'], ['Add a whoosh sound', '0:19.9'], ['Zoom out after the reveal', '0:26.4']];
       const sc = document.createElement('div');
-      sc.id = 'zsScene';
-      // the sound's line sits under the second frame, where the arrow in the owner's note pointed (a bar every 6 px)
-      const HIT = 30;
-      const waveBars = Array.from({ length: 100 }, (_, k) => `<i class="${k === HIT ? 'hit' : ''}" style="height:${14 + Math.round(70 * Math.abs(Math.sin(k * 0.37) * Math.sin(k * 0.11 + 1)))}%"></i>`).join('');
-      sc.innerHTML = '<div class="zs-out"><div class="zs-in"><div class="zs-strip"><div class="zs-f"></div><div class="zs-f"></div><div class="zs-f"><em>150%</em></div></div>'
-        + '<div class="zs-wave">' + waveBars + '<span class="zs-pin" style="left:' + (HIT * 6 + 12) + 'px"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7v2M5 5v6M8 2.5v11M11 5v6M14 7v2"/></svg>Whoosh</span></div></div></div>';
-      // laid out for a 480 px wide frame, zoomed to the real one so it keeps its size on the card
-      const zsFit = () => { sc.querySelector('.zs-in').style.zoom = Math.max(1, innerWidth / 480); };
-      addEventListener('resize', zsFit);
-      zsFit();
+      sc.id = 'ovScene';
+      sc.innerHTML = '<div class="ov-title">Zooms and sounds</div>' + rows.map(([t, at]) => `<div class="ov-row"><span class="ov-txt">${t}<i>${at}</i></span><span class="ov-plus"><svg viewBox="0 0 16 16"><path d="M8 3.5v9M3.5 8h9"/></svg></span></div>`).join('');
       document.body.appendChild(sc);
     }
     if (FEATURE === 'zooms') {
@@ -1216,7 +1241,7 @@
   // ?still: a single finished frame with no animation (used in the login window)
   if (location.search.includes('still')) {
     document.body.classList.add('demo-still');
-    $('demoStill').src = 'video-still.jpg';
+    $('demoStill').src = 'creator-1-full.jpg';
     showStage('player');
     buildProjects('ready');
     S.edited = true;
@@ -1229,6 +1254,8 @@
     $('render').disabled = false;
     $('aiDisclaimer').classList.remove('hidden');
     addMessage('ai', READY[0]);
+    { const c = addMessage('me', 'Add a zoom here', fmt(3.6)); c.classList.add('done'); c.querySelector('.msg-meta').insertAdjacentHTML('beforeend', TICK); }
+    addMessage('ai', 'Added the zoom.');
     setRun('idle');
     setLengths();
     setTime(PAUSE_AT);
@@ -1245,7 +1272,7 @@
     return;
   }
 
-  loadWistia();
+  // loadWistia();   // the hosted video is the old creator; the picture is the Creator 1 still until there is a Creator 1 video (owner, 2026-11-19)
   let started = false;
   // The demo is a product film the visitor chose to open the page for, so it plays even with the system's reduced-motion setting on
   addEventListener('message', (e) => {

@@ -32,7 +32,7 @@ body.demo-still, .demo-still .stage, .demo-still .topbar, .demo-still .timeline-
 .tr-keys kbd.demo-lit { color: #0a0a0a; background: #f2f2f3; }
 /* The picture: a still without captions, then the Wistia video, then the canvas its frames are drawn on. Both fade in after the edit. */
 .demo-video { position: absolute; inset: 0; overflow: hidden; }
-.demo-video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.demo-video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 .demo-video wistia-player { position: absolute; inset: 0; display: block; width: 100%; height: 100%; transition: opacity .4s; }
 .demo-video.raw wistia-player { opacity: 0; }
 #view { transition: opacity .4s; }
@@ -82,12 +82,12 @@ body[data-feature="mistakes"] #transcript { padding: 58px 0 0 44px; margin-right
 body[data-feature="mistakes"] .mk-line { margin: 0 0 16px; padding: 12px 16px; border-radius: 12px; background: #1b1c1f; }
 body[data-feature="mistakes"] .mk-line .w.cut { display: inline !important; visibility: visible !important; padding: 1px 6px; margin: 0 1px; border-radius: 6px; background: rgba(229, 72, 77, .16); color: #f08285; text-decoration: line-through; text-decoration-color: rgba(240, 130, 133, .8); text-decoration-thickness: 2px; }
 
-body[data-feature="zoomsfx"] .stage, body[data-feature="zoomsfx"] .timeline-wrap, body[data-feature="zoomsfx"] #panel, body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel { display: none !important; }
+body[data-feature="zoomsfx"] .stage, body[data-feature="zoomsfx"] .timeline-wrap, body[data-feature="zoomsfx"] #panel, body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel, body[data-feature="zoomsfx"] .stage, body[data-feature="zoomsfx"] .timeline-wrap, body[data-feature="zoomsfx"] #panel { display: none !important; }
 
 
 
 /* Overlays and B-roll card: the AI's suggestions as large rows */
-body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel { display: none !important; }
+body[data-feature="overlays"] .stage, body[data-feature="overlays"] .timeline-wrap, body[data-feature="overlays"] #panel, body[data-feature="zoomsfx"] .stage, body[data-feature="zoomsfx"] .timeline-wrap, body[data-feature="zoomsfx"] #panel { display: none !important; }
 #ovScene { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 14px 30px 18px 32px; background: #111214; font-family: Inter, sans-serif; }
 #ovScene .ov-title { padding-left: 4px; font-size: 14px; font-weight: 600; color: #6f727a; }
 #ovScene .ov-row { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 18px; border-radius: 12px; background: #1b1c1f; }
@@ -181,14 +181,6 @@ body[data-feature="ai"] .ai-say { text-wrap: balance; }
 /* ?phone: the scrub strip is filled with thumbnails by the app's script, which the demo does not run; empty it showed only its playhead */
 .demo-phone #mScrub { display: none !important; }
 
-/* Zooms and Sound Effects (2026-11-14, glass): the frame is see-through; the glass card itself is drawn by the page (styles.css .fui-zoomsfx::before,
-   corner at 10% / 12%). .zs-out sits on that corner; .zs-in is laid out for a 480 px wide frame and zoomed to the real width (demo.js). */
-html:has(body[data-feature="zoomsfx"]), body[data-feature="zoomsfx"] { background: transparent !important; }
-body[data-feature="zoomsfx"] > *:not(#zsScene) { display: none !important; }
-#zsScene { position: fixed; inset: 0; overflow: hidden; background: transparent; font-family: Inter, sans-serif; color: #fff; }
-#zsScene .zs-out { position: absolute; left: 10%; top: 12%; }
-#zsScene .zs-in { padding: 34px 0 0 34px; }
-/* the zoom: the same moment three times, each closer; big enough that the last runs off the right edge.
    the sound: a white wave under them, running off the right and bottom; the sound effect's line sits under the last frame (where the zoom lands) */
 #zsScene .zs-strip { display: flex; gap: 12px; }
 #zsScene .zs-f { position: relative; flex: none; width: 140px; height: 166px; border-radius: 16px; overflow: hidden; background: url(creator-3.jpg) 50% 12% / cover no-repeat; }
@@ -244,3 +236,6 @@ body[data-feature="cuts"] #timelineScroll { height: 100vh !important; border-rad
 
 /* The newer app wraps the Transcript title, search and Show Cuts in .tr-sticky: the cut-mistakes picture shows only the text lines (the owner, 2026-11-19: it showed a cropped black header bar) */
 body[data-feature="mistakes"] .tr-sticky, body[data-feature="mistakes"] .tr-head, body[data-feature="mistakes"] #trCopy, body[data-feature="mistakes"] .tr-copy { display: none !important; }
+
+/* The Cutly logo stays on the AI's answers on the website. The app's own style.css hides the avatar (owner 2026-11-13); the website keeps it (owner 2026-11-19). */
+#tab-ai .msg.ai .ai-mark { display: grid !important; flex: none; width: 26px; height: 26px; }
