@@ -234,3 +234,13 @@ body[data-feature="transcript"] > *:not(#txScene) { display: none !important; }
    (styles.css .fui-cuts puts the frame there) */
 body[data-feature="cuts"] .timeline-wrap { padding: 0 !important; }
 body[data-feature="cuts"] #timelineScroll { height: 100vh !important; border-radius: 0 !important; }
+
+/* The Projects list is closed in the website picture: only the video, the timeline and the chat show (the owner, 2026-11-19). The column stays in the grid at width 0, so the video and timeline keep their places. */
+@media (min-width: 821px) {
+  #layout { --left-w: 0px !important; }
+  #layout .videos { overflow: hidden !important; padding: 0 !important; border: 0 !important; visibility: hidden; }
+  #splitLeft { display: none !important; }
+}
+
+/* The newer app wraps the Transcript title, search and Show Cuts in .tr-sticky: the cut-mistakes picture shows only the text lines (the owner, 2026-11-19: it showed a cropped black header bar) */
+body[data-feature="mistakes"] .tr-sticky, body[data-feature="mistakes"] .tr-head, body[data-feature="mistakes"] #trCopy, body[data-feature="mistakes"] .tr-copy { display: none !important; }

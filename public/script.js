@@ -16,15 +16,8 @@
     b.addEventListener('pointerleave', () => { inside = false; tx = b.offsetWidth / 2; ty = b.offsetHeight / 2; });
   });
 
-  /* Client videos: a ring of cards seen at an angle. It turns by itself, with the page scroll and when dragged;
-     only the cards facing you play, so the whole ring never runs at once. */
-  const RING_N = S.showcase.length;
-  $('showcaseList').style.setProperty('--n', RING_N);
-  $('showcaseList').innerHTML = S.showcase.map((c, i) => `<figure class="showcase-card" style="--i:${i}">
-    <video muted loop playsinline preload="none" data-wistia="${c.wistia}"></video>
-    <figcaption>${sceneHtml(c.face, i + 70)}<span><strong>${c.client}</strong>${c.followers} followers</span></figcaption>
-  </figure>`).join('');
-  // Each video's file and cover image come from Wistia's media details, looked up by ID
+  /* Example videos: one straight row, side by side. Only the ones on screen play (muted, looping); a click turns one's sound on. */
+  $('showcaseList').innerHTML = S.showcase.map((c) => `<div data-gsap-slider-item="" class="gsap-slider__item"><div class="product-card"><div class="product-card__before"></div><video muted loop playsinline preload="none" data-wistia="${c.wistia}"></video></div></div>`).join('');
   const showcaseVideos = [...document.querySelectorAll('#showcaseList video')];
   // Only an https address on Wistia's own hosts may become a video file or a cover picture
   const wistiaUrl = (u) => { try { const x = new URL(u); return x.protocol === 'https:' && /(^|\.)wistia\.(com|net)$/.test(x.hostname) ? x.href : ''; } catch (e) { return ''; } };
@@ -32,109 +25,13 @@
     fetch(`https://fast.wistia.com/embed/medias/${id}.json`).then((r) => r.json()).then(({ media }) => {
       const assets = Array.isArray(media && media.assets) ? media.assets : [];
       const mp4s = assets.filter((a) => a.container === 'mp4' && wistiaUrl(a.url)).sort((a, b) => a.height - b.height);
-      const file = mp4s.find((a) => a.height >= 960) || mp4s[mp4s.length - 1];
+      const file = mp4s.find((a) => a.height >= 540) || mp4s[mp4s.length - 1];
       const still = assets.find((a) => a.type === 'still_image' && wistiaUrl(a.url));
       showcaseVideos.filter((v) => v.dataset.wistia === id).forEach((v) => {
         if (still) v.poster = still.url;
-        if (file) v.src = file.url;
+        if (file) { v.src = file.url; if (v.dataset.on) v.play().catch(() => {}); }
       });
     }).catch(() => { /* the dark card stays as it is */ });
-  }
-  // The ring turns only when the visitor drags it or uses the arrows, and always settles with one card straight in front, playing
-  {
-    const stage = $('showcaseStage'), ring = $('showcaseList');
-    const step = 360 / RING_N;
-    let spin = 0, goal = 0, drag = null, raf = 0, shown = -1;
-    const mod = (n) => ((n % RING_N) + RING_N) % RING_N;
-    // A straight row: the card in front is a little bigger, the others sit beside it at normal size
-    const cards = [...ring.children];
-    // On a phone only one card shows, full size; its neighbours slide in from off the stage
-    const solo = matchMedia('(max-width: 600px)');
-    const draw = () => {
-      const w = cards[0].offsetWidth, p = spin / step;
-      if (solo.matches) {
-        const room = stage.offsetWidth;
-        cards.forEach((c, i) => {
-          const o = ((i - p + RING_N / 2) % RING_N + RING_N) % RING_N - RING_N / 2, a = Math.abs(o);
-          c.style.opacity = Math.max(0, 1 - a).toFixed(2);
-          c.style.transform = `translateX(${(o * (room + w) / 2).toFixed(1)}px)`;
-          c.style.zIndex = Math.round(100 - a * 10);
-          c.style.visibility = a >= 1 ? 'hidden' : '';
-        });
-        return;
-      }
-      cards.forEach((c, i) => {
-        const o = ((i - p + RING_N / 2) % RING_N + RING_N) % RING_N - RING_N / 2, a = Math.abs(o);
-        const gap = 20, sc = Math.max(0.88, 1.14 - 0.26 * a);
-        // the middle card is bigger, so the first step out is wider; every later step is one side card plus the gap
-        const x = Math.sign(o) * (Math.min(a, 1) * (w * 1.01 + gap) + Math.max(a - 1, 0) * (w * 0.88 + gap));
-        c.style.opacity = (a <= 1 ? 1 - 0.25 * a : Math.max(0, 0.75 - (a - 1) * 1.5)).toFixed(2);
-        c.style.transform = `translateX(${x.toFixed(1)}px) scale(${sc.toFixed(3)})`;
-        c.style.zIndex = Math.round(100 - a * 10);
-        c.style.visibility = a > 1.5 ? 'hidden' : '';
-      });
-    };
-    addEventListener('resize', draw);
-    // Plays only the card in front (with sound once the visitor has tapped it), pauses the rest
-    function playFront() {
-      const front = mod(Math.round(spin / step));
-      if (front === shown) return;
-      shown = front;
-      showcaseVideos.forEach((v, i) => {
-        v.closest('.showcase-card').classList.toggle('front', i === front);
-        if (i === front) { v.muted = !stage.classList.contains('sound'); v.play().catch(() => {}); }
-        else { v.pause(); v.muted = true; }
-      });
-    }
-    // Glides to the goal angle
-    function glide() {
-      const d = goal - spin;
-      if (Math.abs(d) < 0.05) { spin = goal; draw(); raf = 0; playFront(); return; }
-      spin += d * 0.14; draw();
-      if (Math.abs(spin / step - Math.round(spin / step)) < 0.04 || Math.abs(d) < step * 0.5) playFront();
-      raf = requestAnimationFrame(glide);
-    }
-    const go = (to) => { goal = to * step; if (matchMedia('(prefers-reduced-motion: reduce)').matches) { spin = goal; draw(); playFront(); } else if (!raf) raf = requestAnimationFrame(glide); };
-    const here = () => Math.round(goal / step);
-    $('ringPrev').addEventListener('click', () => go(here() - 1));
-    $('ringNext').addEventListener('click', () => go(here() + 1));
-    stage.parentElement.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') { go(here() - 1); e.preventDefault(); }
-      if (e.key === 'ArrowRight') { go(here() + 1); e.preventDefault(); }
-    });
-    // Dragging with mouse, finger or pen; up and down still scrolls the page on a phone. Letting go settles on the nearest card.
-    let moved = 0;
-    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, spin, dx: 0, at: Math.round(goal / step) }; moved = 0; if (raf) { cancelAnimationFrame(raf); raf = 0; } stage.setPointerCapture(e.pointerId); stage.classList.add('grab'); });
-    // On a phone the card follows the finger one to one (a whole card's slide = one step), and a short swipe is enough (the owner, 2026-11-14:
-    // it used to take a drag across the whole screen)
-    const SWIPE = 40;
-    stage.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      drag.dx = e.clientX - drag.x;
-      moved = Math.max(moved, Math.abs(drag.dx));
-      const perPx = solo.matches ? step / ((stage.offsetWidth + cards[0].offsetWidth) / 2) : 0.13;
-      spin = goal = drag.spin - drag.dx * perPx; draw();
-    });
-    const end = () => {
-      if (!drag) return;
-      const { dx, at } = drag;
-      drag = null; stage.classList.remove('grab');
-      if (solo.matches && Math.abs(dx) >= SWIPE) go(at + (dx < 0 ? 1 : -1));
-      else go(Math.round(spin / step));
-    };
-    stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
-    // A tap on the front video turns its sound on or off; a tap on a side card brings it to the front
-    stage.addEventListener('click', (e) => {
-      if (moved > 6) return;
-      const card = e.target.closest('.showcase-card');
-      if (!card) return;
-      const i = [...ring.children].indexOf(card);
-      if (i === shown) { stage.classList.toggle('sound'); const v = showcaseVideos[i]; v.muted = !stage.classList.contains('sound'); v.play().catch(() => {}); }
-      else { const d = mod(i - here() ); go(here() + (d > RING_N / 2 ? d - RING_N : d)); }
-    });
-    // The video file arrives after the first look: start the front one then
-    showcaseVideos.forEach((v) => v.addEventListener('loadeddata', () => { shown = -1; playFront(); }));
-    draw(); playFront();
   }
 
   /* The site's painted card backgrounds, used by the reviews, the why section and pricing. Each is a small landscape: a sky, a misty band and a wavy hill,
@@ -290,4 +187,89 @@
     });
   }, { rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.fade-in').forEach((el) => seen.observe(el));
+})();
+
+// Hero flow: a fluid gradient drawn by the graphics card. The picture is a warped colour field (a new random one each visit); the pointer swirls it and
+// pushes it along, and it keeps flowing for a moment after the pointer stops, then settles (the loop stops itself). Scrolling pushes it too (phones).
+(() => {
+  const box = document.querySelector('.hero-flow'), cv = box && box.querySelector('canvas');
+  if (!cv) return;
+  const calm = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const gl = cv.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+  if (!gl) return;
+  const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+  const FS = `precision mediump float;
+uniform vec2 uRes, uM; uniform float uV, uT, uS;
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  float asp = uRes.x / uRes.y;
+  vec2 p = (uv - 0.5) * vec2(asp, 1.0) * 2.1;
+  vec2 m = (uM - 0.5) * vec2(asp, 1.0) * 2.1;
+  vec2 d = p - m; float inf = exp(-dot(d, d) * 1.5);
+  p += vec2(-d.y, d.x) * inf * 0.45;
+  float s = uS, T = uT;
+  vec2 q = p;
+  q += 0.60 * vec2(sin(q.y * 1.6 + T * 0.9 + s * 6.0), cos(q.x * 1.4 - T * 0.7 + s * 3.0));
+  q += 0.34 * vec2(sin(q.y * 3.0 - T * 0.6 + s * 2.0), cos(q.x * 2.6 + T * 0.8 + s * 5.0));
+  q += 0.15 * vec2(sin(q.y * 5.1 + T * 0.5 + s), cos(q.x * 4.5 - T * 0.4 + s * 4.0));
+  float f1 = sin(q.x * 1.25 + q.y * 0.85 + s) * 0.5 + 0.5;
+  float f2 = sin(q.x * 0.95 - q.y * 1.35 + s * 2.0 + 1.7) * 0.5 + 0.5;
+  float f3 = sin(length(q - vec2(0.5 * sin(s * 4.0), 0.25)) * 2.0 + s * 3.0) * 0.5 + 0.5;
+  vec3 base = vec3(0.965, 0.968, 0.99);
+  vec3 c = base;
+  c = mix(c, vec3(0.74, 0.68, 1.00), smoothstep(0.28, 0.78, f2));               // lavender (soft but defined edge)
+  c = mix(c, vec3(0.16, 0.70, 1.00), smoothstep(0.50, 0.92, f3) * 0.92);        // sky
+  c = mix(c, vec3(0.16, 0.36, 1.00), smoothstep(0.40, 0.88, f1) * 0.7);               // electric blue
+  c = mix(c, vec3(0.07, 0.17, 0.80), smoothstep(0.66, 1.00, f1) * 0.4);        // deep royal blue core
+  c = mix(c, vec3(0.52, 0.26, 0.96), smoothstep(0.55, 1.00, f2 * f3 + 0.12) * 0.5);   // violet where they overlap
+  float veil = smoothstep(1.05, 0.12, length((uv - vec2(0.5, 0.40)) * vec2(0.8, 1.25)));   // the colour thins out behind the headline so the text stays easy to read
+  c = mix(c, base, veil * 0.94);
+  c = mix(base, c, 0.78);   // one overall softness so no part is much stronger than the rest
+  gl_FragColor = vec4(c, 1.0);
+}`;
+  const sh = (type, src) => { const x = gl.createShader(type); gl.shaderSource(x, src); gl.compileShader(x); return gl.getShaderParameter(x, gl.COMPILE_STATUS) ? x : null; };
+  const vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return;
+  const prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  gl.useProgram(prog);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = (n) => gl.getUniformLocation(prog, n);
+  const uRes = U('uRes'), uM = U('uM'), uV = U('uV'), uT = U('uT'), uS = U('uS');
+  const seed = (typeof window.__hfSeed === 'number') ? window.__hfSeed : 5.8;   // fixed: the same shape on every visit
+  let T = seed * 2.3, mx = 0.5, my = 0.6, tx = 0.5, ty = 0.6, V = 0, push = 0, raf = 0, last = 0, lastY = scrollY;
+  const size = () => {
+    const w = Math.max(2, Math.ceil(box.clientWidth * 0.5)), h = Math.max(2, Math.ceil(box.clientHeight * 0.5));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
+  };
+  const draw = () => {
+    size();
+    gl.uniform2f(uRes, cv.width, cv.height); gl.uniform2f(uM, mx, my); gl.uniform1f(uV, 0); gl.uniform1f(uT, T % 200); gl.uniform1f(uS, seed);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  // Everything is eased by TIME (not per frame), so a fast or slow screen moves the same, and nothing follows the raw pointer jumps:
+  // the pointer's place glides to the target (about a third of a second), the flow speed rises slowly with how fast it glides and fades out over ~2 seconds.
+  const frame = (now) => {
+    raf = 0;
+    const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016); last = now;
+    const px = mx, py = my, k = 1 - Math.exp(-dt / 0.35);
+    mx += (tx - mx) * k; my += (ty - my) * k;
+    push *= Math.exp(-dt / 1.1);
+    const want = Math.min(0.8, Math.hypot(mx - px, my - py) / dt * 1.2 + push);
+    V += (want - V) * (1 - Math.exp(-dt / (want > V ? 0.7 : 2.0)));
+    T += V * dt;
+    draw();
+    if (V > 0.004 || push > 0.004 || Math.abs(tx - mx) + Math.abs(ty - my) > 0.0006) raf = requestAnimationFrame(frame); else last = 0;
+  };
+  const kick = () => { if (!calm && !raf) raf = requestAnimationFrame(frame); };
+  window.addEventListener('pointermove', (e) => {
+    const r = box.getBoundingClientRect();
+    tx = Math.max(-0.2, Math.min(1.2, (e.clientX - r.left) / r.width)); ty = Math.max(-0.2, Math.min(1.2, 1 - (e.clientY - r.top) / r.height)); kick();
+  }, { passive: true });
+  window.addEventListener('scroll', () => { const y = scrollY; push = Math.min(0.3, push + Math.abs(y - lastY) * 0.0015); lastY = y; kick(); }, { passive: true });
+  window.addEventListener('resize', () => { draw(); }, { passive: true });
+  draw();
+  box.classList.add('hf-on');
 })();

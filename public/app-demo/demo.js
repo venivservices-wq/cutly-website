@@ -1266,7 +1266,7 @@
       })();
     }
   });
-  // phone layout: the phone buttons show and the timeline stays closed (the app opens it with Edit)
-  if (location.search.includes('phone')) document.body.classList.add('demo-phone', 'tl-closed');
+  // phone layout: the app's Edit view is shown, so the timeline is open under the video (the owner, 2026-11-19)
+  if (location.search.includes('phone')) { document.body.classList.add('demo-phone', 'm-edit'); document.body.classList.remove('tl-closed'); }
   if (window.parent !== window) window.parent.postMessage('demo-ready', location.origin === 'null' ? '*' : location.origin);
 })();

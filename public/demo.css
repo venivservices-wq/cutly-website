@@ -4,3 +4,6 @@
 .ve-scaler { position: relative; overflow: hidden; border-radius: 8px; background: #0a0a0a; pointer-events: none; }
 .ve-frame { position: absolute; left: 0; top: 0; border: 0; display: block; transform-origin: 0 0; pointer-events: none; }
 .ve-open { position: absolute; inset: 0; width: 100%; border-radius: inherit; cursor: pointer; }
+
+/* Editor frame: plain solid black, no gradient, no glow, no shadow, no border (the owner, 2026-11-19). */
+.ve-shell { background: #000; border: 0; box-shadow: none; }

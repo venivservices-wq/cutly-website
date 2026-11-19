@@ -11,9 +11,9 @@
   :root { --accent: #cfcfcf; }
   #play, #aiAdd, #aiRun { background: #cfcfcf !important; border-color: #cfcfcf !important; color: #0a0a0a !important; }
   #aiRun.idle { background: transparent !important; }
-  :root { --m-tl-h: min(40dvh, 290px); --m-bg: #000000; }   /* the desktop's background: top bar, chat box area */
-  html, body { height: 100dvh; overscroll-behavior-x: none; }   /* no swipe-back / pull from the page edge where the browser lets us stop it */
-  body { -webkit-text-size-adjust: 100%; overscroll-behavior: none; background: var(--m-bg); }
+  :root { --m-tl-h: min(40dvh, 290px); --m-bg: #010101; }   /* the desktop's background: top bar, chat box area */
+  html, body { height: 100dvh; overscroll-behavior-x: none; }   /* no swipe-back from the page edge where the browser lets us stop it */
+  body { -webkit-text-size-adjust: 100%; overscroll-behavior-x: none; overscroll-behavior-y: auto; background: var(--m-bg); }
   .layout { background: var(--m-bg); }
   .m-only { display: inline-flex; }
   button, select, [role="button"] { touch-action: manipulation; }
@@ -21,7 +21,7 @@
 
   /* ---- top bar: no bar. Small round buttons float over the video (logo = projects at the left;
      undo, redo, export and ... at the right), so the video gets the whole height. */
-  .topbar { position: relative; flex: 0 0 auto; z-index: 30; padding: 4px 10px 4px; padding-top: calc(env(safe-area-inset-top, 0px) + 12px); gap: 6px; min-height: 0; background: var(--m-bg) !important; border-bottom: 0 !important; }   /* its own row ABOVE the video: nothing sits on the picture */
+  .topbar { position: relative; flex: 0 0 auto; z-index: 30; padding: 8px 10px 8px; padding-top: calc(env(safe-area-inset-top, 0px) + 8px); gap: 6px; min-height: 0; background: var(--m-bg) !important; border-bottom: 0 !important; }   /* its own row ABOVE the video: nothing sits on the picture */
   .topbar > * { pointer-events: auto; }
   .topbar .spacer { pointer-events: none; }
   .brand-d { display: none !important; }
@@ -58,7 +58,7 @@
   /* ---- the video and its play bar: play + time; Preview edit and Add only while editing */
   .player { gap: 6px; width: 100%; position: relative; --m-rw: min(100%, max(var(--m-fw, 100%), 320px)); }   /* the row is the video's width, but never narrower than its buttons need */
   .frame { max-width: 100%; }
-  .preview-note, .preview-making { display: none !important; }
+  .preview-making { display: none !important; }
   .transport { gap: 12px; padding: 4px 16px 4px 4px; }
   .transport .time { min-width: 0; font-size: 12px; white-space: nowrap; }
   .transport .switch, .transport .stage-plus { display: none; }
@@ -82,9 +82,10 @@
   .m-fab:active { background: rgba(255,255,255,0.14); }
   .m-fab:disabled { opacity: 0.35; pointer-events: none; }   /* Edit and Chat wait for the first AI edit */
   #mEditBtn .i-done { display: none; }
-  body.m-edit #mEditBtn { background: #cfcfcf; color: #0a0a0a; }
-  body.m-edit #mEditBtn .i-edit { display: none; }
-  body.m-edit #mEditBtn .i-done { display: block; }
+  /* Done (the owner, 2026-11-19): white square button, 36 px, 6 px corners, no X icon, no border */
+  body.m-edit #mEditBtn { background: #f2f2f2; color: #111; border-radius: 6px; padding: 0 14px; font-size: 14px; font-weight: 500; }
+  body.m-edit #mEditBtn:active { background: #d9d9dc; }
+  body.m-edit #mEditBtn .i-edit, body.m-edit #mEditBtn .i-done, body.m-edit #mEditBtn i { display: none; }
   body.ai-busy .m-fabs { display: none; }
   body.m-edit #mChatBtn { display: none; }
   /* Chat: grayish white, on the right */
@@ -113,7 +114,9 @@
   #tab-ai #aiRun.idle, body:not(.m-chat) #tab-ai #aiRun { display: none !important; }   /* the sheet has it: tapping the box opens the chat */
   body:not(.m-chat) #tab-ai #aiSugs { display: none !important; }   /* suggestions only show in the open chat */
   body:not(.m-chat) .peek { max-height: 34dvh; }
-  body.m-typing #tab-ai #aiSugs, body.m-typing #tab-ai .ai-empty { display: none !important; }   /* typing: nothing but the message */
+  body.m-typing #tab-ai #aiSugs, body.m-typing #tab-ai .ai-empty { display: none !important; }
+  html body.m-typing:not(.m-chat) .topbar { display: none !important; }
+  html body.m-typing:not(.m-chat):not(.m-edit) .m-fabs { display: none !important; }   /* typing: the Edit / Chat buttons step aside too, so the keyboard leaves the video room */   /* typing a comment on the video: the menu / undo / Export bar steps aside for more room (owner, 2026-11-19) */   /* typing: nothing but the message */
   #tab-ai .ai-compose textarea { max-height: 40dvh !important; overflow-y: auto; }
 
   body:not(.m-chat) .ai-compose textarea { min-height: 28px; }
@@ -125,7 +128,7 @@
     padding-top: env(safe-area-inset-top); background: var(--m-bg); animation: m-in 0.28s cubic-bezier(0.4, 0, 0.2, 1); }
   @keyframes m-in { from { transform: translateX(100%); } to { transform: none; } }
   body.ai-busy .panel { display: none; }
-  .panel > .tabs-bar, .panel > .tabs, .panel > .tab:not(#tab-ai) { display: none !important; }   /* the phone chat is Ask AI only */
+  body:not(.m-edit) .panel > .tabs-bar, body:not(.m-edit) .panel > .tabs, body:not(.m-edit) .panel > .tab:not(#tab-ai) { display: none !important; }   /* the phone chat is Ask AI only */
   .m-sheet-head { display: flex; flex: none; position: relative; align-items: center; justify-content: flex-start; gap: 10px; height: 50px; padding: 0 10px; margin-top: max(0.5rem, 1.2dvh); touch-action: pan-y; }
   .m-grab { font-size: 15px; font-weight: 600; color: #f2f2f2; line-height: 1; }
   .m-sheet-x { position: static; flex: none; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; background: #101011; color: #fff; align-items: center; justify-content: center; display: inline-flex; }
@@ -179,10 +182,10 @@
   .np-posts-wrap { display: block; }
   .np-posts { flex-direction: column; gap: 8px; overflow: visible; scroll-snap-type: none; }
   .np-prev, .np-next { display: none !important; }
-  .np-post { flex: none; width: 100%; display: grid; grid-template-columns: 104px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; column-gap: 12px; padding: 6px; border-radius: 12px; }
-  .np-art { grid-row: 1 / 3; width: 104px; margin: 0; border-radius: 8px; }
-  .np-post b { align-self: end; min-height: 0; padding: 0; font-size: 13px; }
-  .np-desc { align-self: start; margin-top: 3px; padding: 0; font-size: 11.5px; }
+  .np-post { flex: none; width: 100%; display: grid; grid-template-columns: 150px minmax(0, 1fr); grid-template-rows: auto auto; align-content: center; align-items: center; column-gap: 14px; padding: 6px; border-radius: 12px; }
+  .np-art { grid-row: 1 / 3; width: 150px; margin: 0; border-radius: 8px; aspect-ratio: 32 / 15; }   /* phones only: every picture in the website's 32:15 shape */
+  .np-post b { grid-row: 1 / 3; align-self: center; min-height: 0; padding: 0; font-size: 13.5px; line-height: 1.3; }   /* the title sits in the middle of the picture's height */
+  .np-desc { display: none; }
   .modal-box, .xp-box, .ovwin-card { max-width: calc(100vw - 20px); }
 
   .ai-empty > span { display: none !important; }   /* empty chat: just the icon and "No comments yet" */
@@ -332,6 +335,13 @@
   .m-tools button:active { background: rgba(255,255,255,0.06); color: #f2f2f2; }
   /* Transcript / Captions open as the page; Ask AI is not part of editing */
   body.m-edit.m-chat .tabs button[data-tab="ai"] { display: none; }
+  /* hold and drag selects like any phone text: one smooth soft highlight, no dark bars between the words (their side padding was left unpainted) */
+  html body #tab-transcript .transcript .w { padding-left: 0 !important; padding-right: 0 !important; border-radius: 0; -webkit-tap-highlight-color: transparent; }
+  html body #tab-transcript .transcript ::selection { background: rgba(255,255,255,0.26); color: #fff; }
+  html body #tab-transcript .transcript { caret-color: #facc15; }
+  html body #tab-transcript .tr-bar .tr-keys.tr-touch { display: grid !important; }
+  html body #tab-transcript .tr-bar .tr-keys:not(.tr-touch) { display: none !important; }   /* no mouse / keyboard keys on a phone: finger gestures instead */
+  html body.m-edit.m-chat .panel > .tabs-bar, html body.m-edit.m-chat .panel .tabs { display: none !important; }   /* the Transcript / Captions switch is not shown on the phone: each has its own tool button (owner, 2026-11-19) */
 }
 
 /* phone editing, round 2: aligned and lower top bar, no track names, + at the edge, calmer zoom row, lower tool row */
@@ -344,7 +354,7 @@
   .tl-ctl { width: 34px !important; padding-left: 0 !important; gap: 0 !important; }
   .tl-ctl .tl-name, .tl-ctl .tl-sp { display: none !important; }
   .tl-ctl .tl-grip { width: 10px; }
-  #timelineScroll { margin-left: 36px !important; }
+  #timelineScroll { margin-left: 0 !important; }   /* owner 2026-11-19: no black strip left of the timeline (the track + now rides with the timeline) */
   /* the strip above the timeline: help is in the top bar, a round-thumb zoom slider, smaller time and Check spots */
   body.m-edit:not(.no-project) #tlHelp.tl-help { display: none !important; }
   .timeline-wrap .lengths, .timeline-wrap .lengths .len-chip, .timeline-wrap .lengths .len-chip b, .timeline-wrap .lengths b { font-size: 11px !important; margin-right: 0; }
@@ -501,6 +511,7 @@
   #planDlg .pp-nav::-webkit-scrollbar { display: none; }
   #planDlg .pp-nav button { flex: none; height: 40px; padding: 0 14px; border-radius: 999px; }
   #planDlg .pp-main { padding: 18px 16px calc(env(safe-area-inset-bottom, 0px) + 28px); }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-head { padding-left: 16px; }   /* Back lines up with the content (16px) */
   #planDlg .pp-row { min-height: 56px; }
   #planDlg .pp-btn.pp-wide { height: 48px; }
 }
@@ -538,4 +549,203 @@
   .ovwin-foot .ovwin-go { order: -1; flex: 1 1 100%; white-space: nowrap; }
   .ovwin-gap { display: none; }
   .ovwin-foot .ovwin-ghost { flex: 1 1 0; }
+}
+
+/* Settings page on a phone (the owner, 2026-11-14): the same page as the desktop (flat sections, hairlines, the Styles page's type), with the desktop's big gaps (56px) scaled down for a small screen, full width, touch-size buttons and a tab row that never cuts a tab off half way */
+@media (max-width: 820px) {
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-nav { flex-direction: row; gap: 6px; padding: 10px 12px; border-right: 0; border-bottom: 1px solid var(--ui-sep); overflow-x: auto; scroll-snap-type: x proximity; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-nav button { flex: none; height: 38px; padding: 0 14px; border-radius: 999px; scroll-snap-align: center; font-size: 14px; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-nav::after { content: ""; flex: 0 0 16px; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main { padding: 4px 16px calc(env(safe-area-inset-bottom, 0px) + 32px) !important; scrollbar-gutter: auto; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main section { max-width: none !important; }
+  /* titles and the gaps between sections: about half of the desktop's */
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 { margin-top: 24px !important; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .bl-box { padding: 18px 0 !important; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .bl-box:not(.hidden) ~ .bl-box:not(.hidden) { padding-top: 28px !important; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 + .bl-box, :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 + .bl-box.hidden + .bl-box { padding-top: 6px !important; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(#plCancelBox, .cl-danger) { padding-top: 28px !important; }
+  /* a row: the words take what the button leaves, the button keeps its size and is easy to hit */
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main :is(.cl-row, .bl-line) { gap: 14px; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main :is(.cl-t, .bl-lab) { flex: 1 1 0; min-width: 0; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main :is(.cl-t > span, .bl-sub) { max-width: none !important; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main :is(.cl-v, .bl-b) { flex: none; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .bl-b { height: 40px !important; padding: 0 16px !important; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main .cl-v { max-width: 52%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+  :not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main #prEmail { max-width: 64%; overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; word-break: break-all; }
+  /* Storage and Privacy get the same page title as Plan and Billing and Profile */
+  :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="storage"], [data-pp-sec="privacy"]) > h2 { margin: 24px 0 8px !important; font-size: 18px !important; line-height: 26px !important; font-weight: 600 !important; }
+}
+
+/* Storage on a phone (the Storage popup and the Storage tab of Settings share .st-box), the owner 2026-11-14: everything on one left edge, the four buttons in a 2 x 2 grid of equal touch-size buttons, each video a plain row (no inset card) with a hairline, its buttons full width under it */
+@media (max-width: 820px) {
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-own span { text-wrap: pretty; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-own { margin-top: 10px; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 8px; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-chips .pk-chip { width: 100%; height: 40px; padding: 0 10px; justify-content: center; text-align: center; font-size: 14px; white-space: nowrap; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-list { margin: 0 -4px 0 0; padding-right: 4px; gap: 0; }
+  :not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row { gap: 12px; padding: 14px 0 !important; border-radius: 0 !important; border-top: 1px solid var(--ui-sep) !important; }
+  :not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row:first-child { border-top: 0 !important; }
+  :not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row:hover { background: transparent !important; }
+  :not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row.picked { background: rgba(255,255,255,0.05) !important; box-shadow: -8px 0 0 rgba(255,255,255,0.05), 8px 0 0 rgba(255,255,255,0.05); }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-top { gap: 12px; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-top .thumb { width: 48px; height: 64px; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-acts { gap: 8px; }
+  :not(#ui):not(#ui2):not(#ui3) .st-box .st-act { height: 40px; font-size: 14px; }
+}
+
+/* "/" commands on a phone: a small list that sits above the chat box and the keyboard (the owner, 2026-11-14) */
+@media (max-width: 720px) {
+  :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu { padding: 6px 0 6px 6px !important; border-radius: 10px; }
+  :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu .sm-head { height: 20px !important; font-size: 10px !important; }
+  :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu .cmd-row { padding: 5px 8px !important; gap: 0; }
+  :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu .cmd-name { font-size: 13px; }
+  :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu .cmd-note { font-size: 11px; }
+  :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu .cmd-row.opt, :not(#ui):not(#ui2):not(#ui3) #aiCmdMenu .cmd-row.val { height: 32px !important; }
+}
+
+/* the time line under a message shows only after a tap on the message (the owner, 2026-11-14) */
+@media (max-width: 720px) {
+  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.me.tap-meta:not(.show-meta) > .msg-meta { display: none !important; }
+  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.me .bubble { cursor: pointer; }
+}
+
+/* the public app says "beta 1.0" on phones too, next to the logo on the start page (the owner, 2026-11-14) */
+@media (max-width: 720px) {
+  body.public-app.no-project .topbar .app-version { display: inline !important; margin-left: 6px; font-size: 12px; color: #a3a3a3 !important; }
+}
+
+/* phone timeline, CapCut's way: the playhead stays in the middle and the empty space before time 0 holds the extra options (they slide away when the timeline moves; app.js applyTlLead / centerOnPlayhead) */
+.tl-options { display: none; }
+@media (max-width: 820px) {
+  .tl-options:not([hidden]) { display: flex; gap: 6px; position: absolute; left: 7px; z-index: 2; box-sizing: border-box; }
+  .tl-opt { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0 4px; border: 0; border-radius: 6px; background: #101011; color: #cfcfcf; font: inherit; font-size: 11px; cursor: pointer; }
+  .tl-opt b { font-size: 18px; font-weight: 400; line-height: 1; }
+  .tl-opt:hover { background: #08080a; }
+}
+
+/* phone timeline: a finger drag pans the timeline natively (smooth, no jank); the canvas used to block it with touch-action: none (owner 2026-11-19) */
+@media (max-width: 820px) { #timeline { touch-action: pan-x pan-y; } .timeline-scroll { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; } }
+
+/* phone timeline (owner 2026-11-19): the track buttons ride with the timeline (app.js placeTlAdds) and the scroll bars are gone */
+@media (max-width: 820px) {
+  .tl-ctls { width: 100% !important; }
+  .timeline-scroll { scrollbar-width: none !important; -ms-overflow-style: none; }
+  .timeline-scroll::-webkit-scrollbar { display: none !important; width: 0; height: 0; }
+}
+
+/* phone timeline options: smaller buttons (owner 2026-11-19) */
+@media (max-width: 820px) {
+  .tl-options:not([hidden]) { width: auto !important; height: 54px !important; gap: 6px; }
+  .tl-opt { flex: none; width: 52px; font-size: 10px; gap: 3px; padding: 0 2px; }
+  .tl-opt b { font-size: 14px; }
+}
+
+/* phone: the timeline moves by finger and seeks, so the grab bars of mobile.js are gone too (the "black bar") */
+@media (max-width: 820px) { .m-tlbar, .m-tlbar:not([hidden]) { display: none !important; } }
+
+/* the full-page player (m-big) also covers the editing tools row, when it is opened from the editor (owner 2026-11-19) */
+@media (max-width: 820px) { body.m-big .m-tools { display: none !important; } }
+
+/* owner 2026-11-19: the Cut tool is red with the split-in-half icon; the track + is a quiet rounded square (option 1, squared) */
+@media (max-width: 820px) {
+  .m-tools button.mt-red { color: #f27478; }
+  .m-tools button.mt-red:active { background: rgba(242,116,120,0.14); color: #ff8e92; }
+  .tl-ctl { width: 40px !important; }
+  .tl-ctl .tl-add, .tl-newtrack { width: 26px !important; height: 26px !important; min-width: 26px !important; border: 0 !important; border-radius: 7px !important; background: #1f1f1f !important; }
+  .tl-ctl .tl-add svg, .tl-newtrack svg { width: 13px !important; height: 13px !important; stroke: #f2f2f2 !important; stroke-width: 2; }
+  .tl-ctl .tl-add:active, .tl-newtrack:active { background: #2e2e2e !important; }
+}
+
+/* the track + squares: smaller (owner 2026-11-19) */
+@media (max-width: 820px) {
+  .tl-ctl { width: 32px !important; }
+  .tl-ctl .tl-add, .tl-newtrack { width: 20px !important; height: 20px !important; min-width: 20px !important; border-radius: 5px !important; }
+  .tl-ctl .tl-add svg, .tl-newtrack svg { width: 10px !important; height: 10px !important; }
+}
+
+/* editor on a phone: no time readout beside the play button (owner 2026-11-19; the timeline ruler shows the time) */
+@media (max-width: 820px) { body.m-edit .transport .time { display: none !important; } }
+
+/* the full-page player hides the editor's own expand button (it showed as a dark square behind the bar, owner 2026-11-19) */
+@media (max-width: 820px) { body.m-big .m-edexpand { display: none !important; } }
+
+/* phone timeline: finger handles over chips and the selected clip's edges (app.js placeHits); invisible, bigger than the marks, no browser panning inside them */
+#tlHits { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 4; }
+.tl-hit { position: absolute; touch-action: none; -webkit-tap-highlight-color: transparent; }
+@media (min-width: 821px) { #tlHits { display: none; } }
+
+/* owner 2026-11-19: the track + is smaller and the colour of the track lanes (white 3.5% over #040404 = #0d0d0d); the buttons are as tall as their lane and centred in it (flex) */
+@media (max-width: 820px) {
+  .tl-ctl { align-items: center !important; width: 28px !important; }   /* grip 10 + plus 18: the plus ends 3 px before the lane (app.js placeTlAdds) */
+  .tl-ctl .tl-add, .tl-newtrack { width: 18px !important; height: 18px !important; min-width: 18px !important; border-radius: 4px !important; background: #0d0d0d !important; }
+  .tl-ctl .tl-add svg, .tl-newtrack svg { width: 12px !important; height: 12px !important; stroke-width: 2.2; }
+  .tl-ctl .tl-add:active, .tl-newtrack:active { background: #1a1a1a !important; }
+}
+
+/* the phone's playhead: a fixed white line with its grip, in the middle of the timeline box (app.js syncFixedHead) */
+#phFixed { position: absolute; width: 2px; margin-left: -1px; background: #fff; pointer-events: none; z-index: 6; }
+#phFixed::before { content: ""; position: absolute; top: 0; left: -5px; width: 12px; height: 15px; background: #fff; border-radius: 0 0 5px 5px; }
+#phFixed[hidden] { display: none; }
+
+/* the phone's black is 98% black, #050505 (the owner, 2026-11-19, to try): the page, the video area and the timeline */
+@media (max-width: 820px) {
+  body, .layout, .stage, .timeline-wrap, .timeline-scroll { background: #050505 !important; }
+}
+
+/* the preview note on a phone (the owner, 2026-11-19: say it here too): the same words as on a wide screen, a slim strip right under the video, shown from the first play,
+   closed with its X for the rest of the session (app.js already does both) */
+@media (max-width: 820px) {
+  .preview-note, .preview-note.no-room { position: relative !important; top: auto !important; left: auto !important; width: 100% !important; max-width: var(--m-rw, 100%); box-sizing: border-box; order: 5; margin: 0 auto; padding: 8px 38px 8px 12px !important; border-radius: 8px !important; background: #101011 !important; }
+  .preview-note:not(.show) { display: none !important; }
+  .preview-note.show, .preview-note.show.no-room { display: flex !important; }
+  .preview-note span { font-size: 12px !important; line-height: 17px !important; color: #a8a8a8 !important; }
+  .preview-note .pn-close { top: 50% !important; right: 8px !important; transform: translateY(-50%); }
+  body.m-big .preview-note { display: none !important; }
+}
+
+/* owner 2026-11-19: every tool in the row the same width, so the gaps between them are equal (Transcript was wider than the rest) */
+.m-tools button { flex: 1 0 76px !important; width: 76px !important; min-width: 0 !important; box-sizing: border-box; padding-left: 0 !important; padding-right: 0 !important; white-space: nowrap; }
+
+/* owner 2026-11-19: the phone view without the editor (video, Edit / Chat) shows the time beside Play; the editing view does not */
+@media (max-width: 820px) { body:not(.m-edit) .transport .time { display: inline-block !important; color: #a8a8a8; font-size: 12.5px; font-weight: 500; white-space: nowrap; padding: 0 4px 0 2px; } }
+
+/* Captions panel on a phone (the owner, 2026-11-19): bigger looks and controls (the panel's own size tokens, raised), and the Text section with everything below
+   it behind a More settings button */
+@media (max-width: 820px) {
+  html body #tab-captions { --ui-ctl-h: 48px; --ui-ctl-h-lg: 52px; --ui-row-h: 60px; --ui-font: 16px; --ui-font-sm: 14px; }
+  html body #tab-captions .cx-head b { font-size: 22px; }
+  html body #tab-captions .cx-head .knob { width: 44px; height: 26px; }
+  html body #tab-captions .cx-head .knob::after { width: 20px; height: 20px; top: 3px; left: 3px; }
+  html body #tab-captions .cx-head input:checked + .knob::after { transform: translateX(18px); }
+  html body #tab-captions .cx-act { height: 44px; font-size: 15px; }
+  html body #tab-captions .cs-quick.cx-swatches { gap: 10px; }
+  html body #tab-captions .cx-swatches .cs-q-view, html body #tab-captions .cx-swatches .cs-more-box { height: 84px; border-radius: 14px; }
+  html body #tab-captions .cx-swatches .cs-more-box { font-size: 15px; }
+  html body #tab-captions .ix-head { font-size: 17px; }
+  html body #tab-captions .ix-label, html body #tab-captions .ix-row > span { font-size: 15px; }
+  html body #tab-captions .ix-field { height: 52px; border-radius: 12px; padding: 0 14px; }
+  html body #tab-captions .ix-field input, html body #tab-captions .ix-field .ix-pre, html body #tab-captions .ix-field .ix-unit { font-size: 17px; }
+  html body #tab-captions .ix-row { min-height: 60px; }
+  html body #tab-captions .ix-row select, html body #tab-captions .ix-row .dd-btn, html body #tab-captions .ix-color { height: 52px; font-size: 16px; border-radius: 12px; }
+  html body #tab-captions .ix-btns button { height: 52px; }
+  html body #tab-captions .cx-more { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 56px; margin: 14px 0 6px; padding: 0 16px; border: 0; border-radius: 14px; background: rgba(255,255,255,0.07); color: #f2f2f2; font: 600 16px Inter, system-ui, sans-serif; }
+  html body #tab-captions .cx-more svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+  html body #tab-captions .cx-more[aria-expanded="true"] svg { transform: rotate(180deg); }
+  html body #tab-captions:not(.cx-open) > .cx-text, html body #tab-captions:not(.cx-open) > .cx-group { display: none !important; }
+}
+@media (min-width: 821px) { #tab-captions .cx-more { display: none !important; } }
+.m-tools button[hidden] { display: none !important; }   /* a hidden tool stays hidden (the row's own display rule would show it) */
+/* Typing a comment on a phone (owner, 2026-11-19): the keyboard takes most of the screen, so the play button leaves its own row and sits ON the video, in the middle of the picture,
+   with no time; the player shrinks to the picture and the strip, the video gets the room */
+@media (max-width: 820px) {
+  html body.m-typing:not(.m-chat):not(.m-edit) .player { position: relative; }
+  html body.m-typing:not(.m-chat):not(.m-edit) .player > .transport { position: absolute !important; left: var(--pb-x, 50%) !important; top: var(--pb-y, 35%) !important; bottom: auto !important; transform: translate(-50%, -50%); width: auto !important; height: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; gap: 0 !important; background: transparent !important; z-index: 8; }
+  html body.m-typing:not(.m-chat):not(.m-edit) .player > .transport .time, html body.m-typing:not(.m-chat):not(.m-edit) .player > .transport .tp-l, html body.m-typing:not(.m-chat):not(.m-edit) .player > .transport .switch { display: none !important; }
+  html body.m-typing:not(.m-chat):not(.m-edit) .player > .transport .playbtn { width: 44px !important; height: 44px !important; border-radius: 50% !important; background: rgba(20,20,20,0.72) !important; color: #fff !important; backdrop-filter: blur(6px); }
+  html body.m-typing:not(.m-chat):not(.m-edit) .player > .transport .playbtn svg { width: 18px !important; height: 18px !important; fill: currentColor; }
+}
+/* the preview note comes in on the first play: it goes UNDER the whole button row (play + Edit + Chat stay together on one line); the Edit / Chat buttons line up with the play bar
+   instead of the player's bottom edge (their top is measured in mobile.js, --fab-top) */
+@media (max-width: 820px) {
+  html body:not(.m-edit) .player:has(.preview-note.show) > .m-fabs { bottom: auto !important; top: var(--fab-top, auto) !important; }
 }
