@@ -1,0 +1,751 @@
+/* ===== Cutly UI tokens: the ONE place the shared look is set (owner, 2026-11-13) ============================================
+   Panels (panelui.css), menus (menuui.css), the Captions tab and every dropdown read these variables. Change one here and the
+   whole app follows. Nothing in the app should hold its own colour, size or radius for a control: use a token.
+   DROPDOWNS: exactly two styles, both below. "field" (the default, every dropdown) and "wide" (add class dd-wide: a full-width
+   picker such as a preset or style list). The list that opens is always the same darker panel. */
+:root {
+  --ui-panel: #101010;            /* a panel / popup / menu */
+  --ui-radius: 8px;               /* a panel's corners */
+  --ui-ctl-radius: 6px;           /* buttons, fields, bars, dropdowns */
+  --ui-ctl-h: 32px;               /* a control's height */
+  --ui-ctl-h-lg: 36px;            /* the wide picker's height */
+  --ui-ctl-w: 124px;              /* the column every control on the right of a label shares */
+  --ui-pad: 16px;                 /* space on the sides of a panel */
+  --ui-font: 13px;                /* every control's text */
+  --ui-fill: rgba(255,255,255,0.06);      /* a field or bar */
+  --ui-fill-2: rgba(255,255,255,0.08);    /* a focused field, the picked option */
+  --ui-hover: rgba(255,255,255,0.10);     /* a control on hover */
+  --ui-hover-2: rgba(255,255,255,0.14);
+  --ui-text: #e2e2e2;
+  --ui-text-strong: #f2f2f2;      /* names and numbers */
+  --ui-text-dim: #a3a3a3;         /* labels */
+  --ui-text-faint: #7d7d7d;
+  --ui-text-quiet: #8a8a8a;       /* units, quiet buttons */
+  --ui-text-off: #555555;         /* disabled */
+  --ui-on: #cfcfcf;               /* the picked control, the one light action */
+  --ui-on-text: #0a0a0a;
+  --ui-danger: #f27478;
+  --ui-menu-bg: #060606;          /* the list a dropdown opens: darker than the panel */
+  --ui-sep: rgba(255,255,255,0.06);
+  /* input dialogs (Add text, Save new preset ...): ONE look, the Add text panel's. Any new "type something and press the button" popup uses these */
+  --ui-dialog-bg: #050505;
+  --ui-dialog-radius: 8px;
+  --ui-dialog-border: rgba(255,255,255,0.09);
+  --ui-dialog-pad: 16px;
+  --ui-dialog-title: 15px;
+  --ui-input-h: 58px;             /* the big field and the big button of such a dialog */
+  --ui-input-font: 15px;
+  /* settings panels (Settings popup: Storage, Plan, Profile, Styles ... and any new one): cards, rows and buttons, ONE set of values */
+  --ui-card-bg: var(--ui-fill);
+  --ui-card-radius: var(--ui-radius);
+  --ui-card-pad: 16px;
+  --ui-card-gap: 12px;            /* between cards */
+  --ui-row-h: 52px;               /* a row inside a card */
+  --ui-h2: 16px;                  /* a section's title */
+  --ui-btn-bg: var(--ui-fill-2);
+  --ui-btn-bg-hover: var(--ui-hover-2);
+  --ui-btn-danger-bg: rgba(242,116,120,0.14);
+  --ui-btn-danger-bg-hover: rgba(242,116,120,0.22);
+  --ui-card-danger-bg: rgba(242,116,120,0.07);
+  --ui-danger-dim: rgba(242,116,120,0.72);   /* the small text of a danger card */
+}
+
+/* ---- dropdown, style 1 "field": the button is a fill, the list is the darker panel, options never touch ---- */
+:not(#ui):not(#ui2) .dd { position: relative; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) > .dd-btn { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; width: 100%; min-width: 0 !important; max-width: none !important; height: var(--ui-ctl-h) !important; padding: 0 8px 0 12px !important; border: 0 !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-fill) !important; box-shadow: none !important; font-size: var(--ui-font) !important; font-weight: 600 !important; color: var(--ui-text-strong) !important; text-align: left; cursor: pointer; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) > .dd-btn:hover { background: var(--ui-hover) !important; }
+:not(#ui):not(#ui2) .dd.open:not(.topbar *) > .dd-btn { background: var(--ui-fill-2) !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) > .dd-btn span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) > .dd-btn svg { flex: none; width: 14px !important; height: 14px !important; fill: none; stroke: var(--ui-text-quiet) !important; stroke-width: 1.6 !important; stroke-linecap: round; stroke-linejoin: round; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) > .dd-menu { top: calc(100% + 4px) !important; left: 0 !important; right: auto !important; width: 100% !important; min-width: 0 !important; max-width: none !important; max-height: 280px; overflow-y: auto; padding: 4px !important; flex-direction: column; gap: 2px; border: 0 !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-menu-bg) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) > .dd-menu:not(.hidden) { display: flex; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item { display: flex; align-items: center; justify-content: flex-start; gap: 8px; min-height: var(--ui-ctl-h); padding: 0 8px !important; border-radius: 4px !important; background: transparent; cursor: pointer; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item:hover { background: var(--ui-fill) !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item.on { background: var(--ui-fill-2) !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item > div { flex: 1; min-width: 0; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item b { font-size: var(--ui-font) !important; font-weight: 500 !important; color: var(--ui-text-dim) !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item:hover b, :not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item.on b { color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item i { font-size: 11.5px; color: var(--ui-text-faint) !important; }
+:not(#ui):not(#ui2) .dd:not(.topbar *) .dd-item svg { display: none !important; }   /* the picked option shows by its fill, not a tick */
+/* Model dropdown on the New project page (owner, 2026-11-18): roomier rows, the two-line text never sits against the edge */
+:not(#ui):not(#ui2) #npModelRow .dd:not(.topbar *) > .dd-menu { padding: 6px 4px !important; gap: 4px !important; }
+:not(#ui):not(#ui2) #npModelRow .dd:not(.topbar *) .dd-item { min-height: 50px; padding: 8px 8px !important; border-radius: 6px !important; }
+:not(#ui):not(#ui2) #npModelRow .dd:not(.topbar *) .dd-item > div { display: flex; flex-direction: column; gap: 3px; }
+/* ---- dropdown, style 2 "wide": the same, taller, for a full-width picker (presets, style lists) ---- */
+:not(#ui):not(#ui2) .dd.dd-wide > .dd-btn, :not(#ui):not(#ui2) .preset-pick .dd > .dd-btn, :not(#ui):not(#ui2) .cp-pick .dd > .dd-btn, :not(#ui):not(#ui2) .su-pre-pick .dd > .dd-btn { height: var(--ui-ctl-h-lg) !important; }
+:not(#ui):not(#ui2) .dd.dd-wide, :not(#ui):not(#ui2) .preset-pick .dd, :not(#ui):not(#ui2) .cp-pick .dd, :not(#ui):not(#ui2) .su-pre-pick .dd { width: 100%; }
+
+/* ---- input dialog: every popup that asks for a text (Add text, Save new preset) is built from the tokens above ---- */
+:is(#hookDlg, #presetDlg) .hk-box { background: var(--ui-dialog-bg) !important; border: 1px solid var(--ui-dialog-border) !important; border-radius: var(--ui-dialog-radius) !important; padding: var(--ui-dialog-pad) !important; }
+:is(#hookDlg, #presetDlg) .hk-head b { font-size: var(--ui-dialog-title); color: var(--ui-text-strong); }
+:is(#hookDlg, #presetDlg) .hk-name { height: var(--ui-input-h) !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-fill) !important; color: var(--ui-text-strong) !important; font-size: var(--ui-input-font) !important; }
+:is(#hookDlg, #presetDlg) .hk-name:focus { background: var(--ui-fill-2) !important; }
+:is(#hookDlg, #presetDlg) .hk-add { height: var(--ui-input-h) !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-on) !important; color: var(--ui-on-text) !important; font-size: var(--ui-input-font) !important; }
+:is(#hookDlg, #presetDlg) .hk-add:disabled { background: var(--ui-fill-2) !important; color: var(--ui-text-dim) !important; }
+
+/* Storage popup: the same dialog frame, text and fills as the input dialogs (owner, 2026-11-13) */
+#storageDlg .modal-box.st-box { background: var(--ui-dialog-bg) !important; border: 1px solid var(--ui-dialog-border) !important; border-radius: var(--ui-dialog-radius) !important; padding: var(--ui-dialog-pad) !important; }
+#storageDlg .st-box .modal-head b { font-size: var(--ui-dialog-title); color: var(--ui-text-strong); }
+#storageDlg .st-box :is(.st-sum, .st-msg, .st-row) { border-radius: var(--ui-card-radius); background: var(--ui-card-bg); }
+#storageDlg .st-box .st-row:hover { background: var(--ui-fill); }
+#storageDlg .st-box .st-row.picked { background: var(--ui-fill-2); }
+#storageDlg .st-box .st-act { border-radius: var(--ui-ctl-radius); background: var(--ui-btn-bg); color: var(--ui-text-strong); }
+#storageDlg .st-box .st-act:hover { background: var(--ui-btn-bg-hover); }
+#storageDlg .st-box .st-act.danger { color: var(--ui-danger); }
+#storageDlg .st-box .st-name b, #storageDlg .st-sum-top b { color: var(--ui-text-strong); }
+#storageDlg .st-box .st-name span, #storageDlg .st-box .st-own { color: var(--ui-text-faint); }
+
+/* ---- Settings is a popup (owner, 2026-11-13), not a page: a centred box over a dimmed app, the nav on the left, the section on the right.
+   Same markup as before (#planDlg); only the frame changed. Looks come from the dialog tokens. Phones keep the full screen. ---- */
+:not(#ui):not(#ui2) .plan-page { display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,0.62); }
+:not(#ui):not(#ui2) .plan-page.hidden { display: none; }
+.plan-page .pp-box { display: flex; flex-direction: column; width: min(1000px, 100%); height: min(720px, 100%); overflow: hidden; border: 1px solid var(--ui-dialog-border); border-radius: var(--ui-dialog-radius); background: var(--ui-panel); box-shadow: none; }
+.plan-page .pp-head { height: 52px; padding: 0 12px 0 20px; border-bottom: 1px solid var(--ui-sep); }
+.plan-page .pp-head #plTitle { position: static; transform: none; left: auto; order: 1; font-size: var(--ui-dialog-title); }
+.plan-page .pp-head .pp-back { display: none; }
+.plan-page .pp-head .iconbtn { order: 2; width: 28px; height: 28px; border-radius: var(--ui-ctl-radius); }
+.plan-page .pp-body { grid-template-columns: 220px minmax(0, 1fr); }
+.plan-page .pp-nav { gap: 2px; padding: 12px; border-right: 1px solid var(--ui-sep); }
+.plan-page .pp-nav button { height: var(--ui-ctl-h-lg); padding: 0 10px; gap: 10px; border-radius: var(--ui-ctl-radius); font-size: var(--ui-font); color: var(--ui-text-dim); }
+.plan-page .pp-nav button:hover { background: var(--ui-fill); color: var(--ui-text-strong); }
+.plan-page .pp-nav button.on { background: var(--ui-fill-2); color: var(--ui-text-strong); }
+.plan-page .pp-nav svg { width: 16px; height: 16px; }
+.plan-page .pp-main { padding: 24px 28px; }
+@media (max-width: 720px) {
+  :not(#ui):not(#ui2) .plan-page { padding: 0; background: var(--ui-panel); }
+  .plan-page .pp-box { width: 100%; height: 100%; border: 0; border-radius: 0; }
+  .plan-page .pp-head .pp-back { display: inline-flex; order: 0; }
+  .plan-page .pp-head #plTitle { position: absolute; left: 50%; transform: translateX(-50%); }
+  .plan-page .pp-body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+}
+
+/* ---- Settings popup, content pass (owner, 2026-11-13): one calm look for every section, all from the tokens ---- */
+.plan-page, .plan-page * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) transparent; }
+.plan-page ::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
+.plan-page ::-webkit-scrollbar-thumb { border-radius: 4px; background: rgba(255,255,255,0.18); }
+.plan-page ::-webkit-scrollbar-button { display: none; }
+.plan-page .pp-nav button:hover { background: var(--ui-fill) !important; }
+.plan-page .pp-nav button.on, .plan-page .pp-nav button.on:hover { background: var(--ui-hover) !important; color: var(--ui-text-strong) !important; }
+.plan-page .pp-main { padding: 24px 28px 28px !important; }
+.plan-page .pp-main section { max-width: 640px !important; }
+.plan-page .pp-main h2 { margin: 0 0 16px !important; font-size: var(--ui-h2) !important; font-weight: 600 !important; letter-spacing: 0 !important; color: var(--ui-text-strong) !important; }
+.plan-page .pp-main .bl-box, .plan-page .pp-main .bl-plain { margin: 0 0 var(--ui-card-gap) !important; padding: 4px var(--ui-card-pad) !important; border: 0 !important; border-radius: var(--ui-card-radius) !important; background: var(--ui-card-bg) !important; }
+.plan-page .pp-main .bl-plain { background: var(--ui-card-danger-bg) !important; }
+.plan-page .pp-main .bl-box h3, .plan-page .pp-main .bl-plain h3 { margin: 0 !important; padding: 0 !important; border: 0 !important; font-size: var(--ui-font) !important; font-weight: 600 !important; color: var(--ui-text-strong) !important; }
+.plan-page .pp-main .bl-plain h3 { color: var(--ui-danger) !important; }
+.plan-page .pp-main .bl-line, .plan-page .pp-main .bl-kv { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: var(--ui-row-h); padding: 8px 0 !important; margin: 0 !important; border-radius: 0 !important; background: transparent !important; font-size: var(--ui-font) !important; color: var(--ui-text) !important; }
+.plan-page .pp-main .bl-line + .bl-line, .plan-page .pp-main .bl-kv + .bl-kv, .plan-page .pp-main .bl-line + .bl-kv, .plan-page .pp-main .bl-kv + .bl-line { border-top: 1px solid var(--ui-sep) !important; }
+.plan-page .pp-main .bl-kv { justify-content: flex-start; }
+.plan-page .pp-main .bl-kv > span { min-width: 120px !important; font-size: var(--ui-font) !important; color: var(--ui-text-dim) !important; }
+.plan-page .pp-main .bl-kv > b { font-size: var(--ui-font) !important; font-weight: 500 !important; color: var(--ui-text-strong) !important; text-align: left !important; }
+.plan-page .pp-main .bl-lab { font-size: var(--ui-font) !important; color: var(--ui-text) !important; }
+.plan-page .pp-main .bl-sub { display: block; margin: 2px 0 0 !important; font-size: 12px !important; line-height: 1.4; color: var(--ui-text-faint) !important; }
+.plan-page .pp-main .bl-plain .bl-sub { color: var(--ui-text-dim) !important; }
+.plan-page .pp-main a.bl-linkrow { justify-content: flex-start; color: var(--ui-text) !important; text-decoration: none; }
+.plan-page .pp-main a.bl-linkrow:hover { color: var(--ui-text-strong) !important; }
+.plan-page .pp-main a.bl-linkrow svg { flex: none; width: 14px; height: 14px; margin: 0 !important; fill: none; stroke: var(--ui-text-quiet); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.plan-page .pp-main .bl-b { flex: none; height: var(--ui-ctl-h) !important; padding: 0 14px !important; border: 0 !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-btn-bg) !important; color: var(--ui-text-strong) !important; font-size: var(--ui-font) !important; font-weight: 600 !important; }
+.plan-page .pp-main .bl-b:hover { background: var(--ui-btn-bg-hover) !important; }
+.plan-page .pp-main .bl-b.bl-main { background: var(--ui-on) !important; color: var(--ui-on-text) !important; }
+.plan-page .pp-main .bl-b.bl-main:hover { background: #e2e2e2 !important; }
+.plan-page .pp-main .bl-b.bl-red { background: var(--ui-btn-danger-bg) !important; color: var(--ui-danger) !important; }
+.plan-page .pp-main .bl-b.bl-red:hover { background: var(--ui-btn-danger-bg-hover) !important; }
+.plan-page .pp-main .bl-who { display: flex; align-items: center; gap: 14px; padding: 12px 0; }
+.plan-page .pp-main .bl-who .pp-avatar { width: 48px; height: 48px; font-size: 18px; background: var(--ui-hover); }
+.plan-page .pp-main .bl-who b { display: block; font-size: var(--ui-font); color: var(--ui-text-strong); }
+.plan-page .pp-main .bl-who span:not(.pp-avatar) { font-size: 12px; color: var(--ui-text-dim); }
+.plan-page .pp-main .bl-bignum { font-size: 24px !important; font-weight: 600; color: var(--ui-text-strong); }
+.plan-page .pp-main table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.plan-page .pp-main th { padding: 8px 0; text-align: left; font-weight: 500; color: var(--ui-text-faint); }
+.plan-page .pp-main td { padding: 10px 0; border-top: 1px solid var(--ui-sep); color: var(--ui-text); }
+.plan-page .pp-main .bl-pill { height: 20px; font-size: 11px; }
+
+/* Storage section: the same cards, rows and buttons as every other settings section */
+.plan-page .pp-main .st-sum { margin: 0 0 var(--ui-card-gap) !important; padding: var(--ui-card-pad) !important; border-radius: var(--ui-card-radius) !important; background: var(--ui-card-bg) !important; }
+.plan-page .pp-main .st-sum-top b, .plan-page .pp-main #stSumText { font-size: var(--ui-font) !important; font-weight: 600; color: var(--ui-text-strong) !important; }
+.plan-page .pp-main .st-own { margin: 10px 0 0 !important; font-size: 12px !important; color: var(--ui-text-faint) !important; }
+.plan-page .pp-main .st-msg { margin: 0 0 var(--ui-card-gap) !important; border-radius: var(--ui-card-radius) !important; background: var(--ui-card-bg) !important; font-size: var(--ui-font) !important; }
+.plan-page .pp-main #ppStorageHost .st-sum { margin-bottom: var(--ui-card-gap) !important; }
+.plan-page .pp-main .st-chips { gap: 8px !important; margin: 0 0 var(--ui-card-gap) !important; }
+.plan-page .pp-main .st-chips .pk-chip { height: var(--ui-ctl-h) !important; padding: 0 14px !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-btn-bg) !important; color: var(--ui-text-strong) !important; font-size: var(--ui-font) !important; font-weight: 600 !important; }
+.plan-page .pp-main .st-chips .pk-chip:hover:not(:disabled) { background: var(--ui-btn-bg-hover) !important; }
+.plan-page .pp-main .st-chips #stAll { background: var(--ui-on) !important; color: var(--ui-on-text) !important; }
+.plan-page .pp-main .st-chips .pk-chip.red { background: var(--ui-btn-danger-bg) !important; color: var(--ui-danger) !important; }
+.plan-page .pp-main .st-chips .pk-chip:disabled { background: var(--ui-fill) !important; color: var(--ui-text-off) !important; }
+.plan-page .pp-main .st-list { gap: 0 !important; border-radius: var(--ui-card-radius); background: var(--ui-card-bg); padding: 4px var(--ui-card-pad) !important; }
+.plan-page .pp-main .st-row { padding: 10px 0 !important; border-radius: 0 !important; background: transparent !important; }
+.plan-page .pp-main .st-row + .st-row { border-top: 1px solid var(--ui-sep); }
+.plan-page .pp-main .st-row.picked { background: var(--ui-hover) !important; }
+.plan-page .pp-main .st-name b { font-size: var(--ui-font) !important; color: var(--ui-text-strong) !important; }
+.plan-page .pp-main .st-name span { font-size: 12px !important; color: var(--ui-text-faint) !important; }
+/* every settings section sits in the middle of its window (owner, 2026-11-13) */
+.plan-page .pp-main section { margin-left: auto !important; margin-right: auto !important; }
+
+/* danger cards (Delete account, Cancel plan, any future one): ONE look - red tint, red title, red small text, red button */
+.plan-page .pp-main :is(.bl-plain, #plCancelBox) { background: var(--ui-card-danger-bg) !important; }
+.plan-page .pp-main :is(.bl-plain, #plCancelBox) h3 { color: var(--ui-danger) !important; }
+.plan-page .pp-main :is(.bl-plain, #plCancelBox) .bl-sub { color: var(--ui-danger-dim) !important; }
+
+/* Styles section (the upload-profile panel, moved into the popup): the Captions tab's layout - flat sections split by hairlines, label left, control right in one column, no cards (owner, 2026-11-13) */
+:not(#ui):not(#ui2) .plan-page #tab-settings, .plan-page #ppStylesHost { padding: 0 !important; background: transparent !important; overflow: visible !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card { margin: 0 !important; padding: 0 !important; border: 0 !important; border-bottom: 1px solid var(--ui-sep) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-head { min-height: var(--ui-row-h); padding: 0 !important; background: transparent !important; font-size: var(--ui-font) !important; font-weight: 600 !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-head .ps-ico { display: none; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-inner { padding: 0 0 12px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: var(--ui-row-h); margin: 0; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar::before { content: "Style"; flex: 1; font-size: var(--ui-font); color: var(--ui-text-dim); }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar { justify-content: flex-start !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick { width: 160px !important; flex: none; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: var(--ui-row-h); margin: 0; padding: 0 !important; background: transparent !important; height: auto !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name .ps-pre { flex: 1; font-size: var(--ui-font) !important; color: var(--ui-text-dim) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input { width: 200px; margin-right: 0; flex: none; height: var(--ui-ctl-h) !important; padding: 0 12px !important; border: 0; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-fill) !important; color: var(--ui-text-strong) !important; font-size: var(--ui-font) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-name { font-size: var(--ui-font) !important; color: var(--ui-text-dim) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-action button, :not(#ui):not(#ui2) .plan-page #tab-settings .ss-actions button { height: var(--ui-ctl-h) !important; padding: 0 14px !important; border: 0 !important; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-fill) !important; color: var(--ui-text-strong) !important; font-size: var(--ui-font) !important; font-weight: 600 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn { display: block !important; width: 200px !important; margin: 4px 0 8px auto !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn:hover:not(:disabled), :not(#ui):not(#ui2) .plan-page #tab-settings .ss-actions button:hover:not(:disabled) { background: var(--ui-hover) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn:disabled, :not(#ui):not(#ui2) .plan-page #tab-settings .ss-actions button:disabled { background: transparent !important; color: var(--ui-text-off) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-sq { width: var(--ui-ctl-h); height: var(--ui-ctl-h); border-radius: var(--ui-ctl-radius); background: var(--ui-fill); }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-action { position: static !important; margin: 0 !important; padding: 16px 0 0 !important; background: transparent !important; border: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-actions { display: flex !important; justify-content: flex-end; gap: 8px; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-ayo { display: none; }
+/* the Cuts / AI edit cards: title left, its control in the 200px column on the right, notes and extra rows under */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) { display: grid !important; grid-template-columns: 1fr 200px; align-items: center; padding: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head { grid-column: 1; grid-row: 1; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-seg, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-rows:first-of-type:not(.jl-only):not(.settle-only), :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-stepper { grid-column: 2; grid-row: 1; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-note, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-rows.jl-only, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-rows.settle-only, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > :is(.ps-rows, .ps-note):not(:first-of-type) { grid-column: 1 / -1; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg { display: flex !important; width: 200px; height: var(--ui-ctl-h) !important; margin: 0 !important; padding: 2px !important; gap: 2px; border-radius: var(--ui-ctl-radius) !important; background: var(--ui-fill) !important; box-sizing: border-box; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button { flex: 1; height: auto !important; min-width: 0; padding: 0 4px !important; border: 0 !important; border-radius: 4px !important; background: transparent !important; color: var(--ui-text-dim) !important; font-size: 12px !important; font-weight: 600 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button.on { background: var(--ui-on) !important; color: var(--ui-on-text) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-rows { margin: 0 !important; padding: 0 !important; background: transparent !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row { display: flex !important; align-items: center; justify-content: space-between; min-height: var(--ui-row-h); margin: 0 !important; padding: 0 !important; background: transparent !important; border: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper { display: flex !important; align-items: center; justify-content: space-between; padding: 2px !important; box-sizing: border-box; width: 200px; height: var(--ui-ctl-h); border-radius: var(--ui-ctl-radius); background: var(--ui-fill) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-note { margin: 0 0 12px !important; padding: 0 !important; font-size: 12px !important; color: var(--ui-text-faint) !important; }
+
+
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button { width: 28px !important; height: 28px !important; border-radius: 4px !important; background: var(--ui-fill-2) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper b { flex: 1; text-align: center; font-size: var(--ui-font); color: var(--ui-text-strong); }
+
+/* flatten every inner box so only the hairlines divide the sections */
+:not(#ui):not(#ui2) .plan-page #tab-settings :is(#ssCuts, #ssPanels, .ss-body, .ss-inner, #tab-auto, #ssCuts .ps-panel) { margin: 0 !important; padding: 0 !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-inner { padding-bottom: 12px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-capsw { margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-capsw .ps-row { padding: 0 !important; background: transparent !important; border-radius: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head:has(+ .ps-rows) { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head + .ps-rows { grid-column: 1 / -1; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-acc { border-bottom: 1px solid var(--ui-sep) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts .ps-card:last-child { border-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar { display: flex !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-head { display: flex !important; align-items: center !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-head .ps-chev { margin-left: auto !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > :is(.ps-head, .ps-seg, .ps-stepper) { align-self: center !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name { display: flex !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-head { margin: 0 !important; }
+
+/* Settings sections are flat like the Captions tab: no card backgrounds, only hairlines (owner, 2026-11-13: "i dont like the back panel style") */
+.plan-page .pp-main :is(.bl-box, .bl-plain, #plCancelBox, .st-sum, .st-msg, .st-list) { margin: 0 0 28px !important; padding: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+.plan-page .pp-main .bl-box > :is(.bl-line, .bl-kv, .bl-who):first-child { border-top: 0 !important; }
+.plan-page .pp-main .bl-box > :is(.bl-line, .bl-kv) { border-top: 1px solid var(--ui-sep) !important; }
+.plan-page .pp-main .bl-box > :first-child { border-top: 0 !important; }
+.plan-page .pp-main .bl-plain { padding: 0 !important; border-top: 1px solid var(--ui-sep) !important; }
+.plan-page .pp-main .st-row { padding: 12px 0 !important; }
+.plan-page .pp-main .st-sum { padding-bottom: 16px !important; border-bottom: 1px solid var(--ui-sep); }
+.plan-page .pp-main .pv-intro { margin: -4px 0 20px; font-size: var(--ui-font); line-height: 1.55; color: var(--ui-text-dim); }
+.plan-page .pp-main .pv-intro a { color: var(--ui-text); text-decoration: underline; text-decoration-color: var(--ui-text-quiet); text-underline-offset: 2px; }
+.plan-page .pp-main .pv-h { margin: 8px 0 4px; font-size: var(--ui-h2); font-weight: 600; color: var(--ui-text-strong); }
+.plan-page .pp-main .pv-row { border-top: 1px solid var(--ui-sep); }
+.plan-page .pp-main .pv-row:first-child { border-top: 0; }
+.plan-page .pp-main .pv-row summary { display: flex; align-items: center; justify-content: space-between; min-height: var(--ui-row-h); cursor: pointer; list-style: none; }
+.plan-page .pp-main .pv-row summary::-webkit-details-marker { display: none; }
+.plan-page .pp-main .pv-chev { width: 14px; height: 14px; fill: none; stroke: var(--ui-text-quiet); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.15s; }
+.plan-page .pp-main .pv-row[open] .pv-chev { transform: rotate(90deg); }
+.plan-page .pp-main .pv-row p { margin: 0 0 14px; font-size: 12.5px; line-height: 1.55; color: var(--ui-text-dim); }
+.plan-page .pp-main .bl-who { border-bottom: 0 !important; }
+.plan-page .pp-main .bl-line > div:not([class]) { flex: 1 1 auto; min-width: 0; }
+.plan-page .pp-main .bl-line .bl-sub { max-width: none !important; text-wrap: pretty; }
+
+
+/* one rule set for every Settings page (owner, 2026-11-13: buttons, alignment and font sizes were each doing their own thing) */
+.plan-page .pp-main .bl-box, .plan-page .pp-main .bl-plain { margin-bottom: 32px !important; }
+/* heading row: title + note on the left, one button on the right, a hairline under it */
+.plan-page .pp-main .bl-line:has(> div > h3) { min-height: 64px; padding: 12px 0 !important; border-top: 0 !important; border-bottom: 1px solid var(--ui-sep) !important; }
+.plan-page .pp-main .bl-line:has(> div > h3) + * { border-top: 0 !important; }
+.plan-page .pp-main .bl-box h3, .plan-page .pp-main .bl-plain h3 { font-size: 14px !important; line-height: 1.3 !important; }
+.plan-page .pp-main .bl-line .bl-sub { margin: 2px 0 0 !important; }
+/* value rows: label in a fixed column, value on the same line for every page */
+.plan-page .pp-main .bl-kv { min-height: var(--ui-row-h); gap: 16px; }
+.plan-page .pp-main .bl-kv > span:first-child { flex: none; width: 160px; min-width: 0 !important; }
+.plan-page .pp-main .bl-kv > b, .plan-page .pp-main .bl-kv > b * { font-size: var(--ui-font) !important; font-weight: 500 !important; color: var(--ui-text-strong); }
+.plan-page .pp-main .bl-kv > b { flex: 1 1 auto; display: flex; align-items: center; gap: 8px; }
+.plan-page .pp-main .bl-kv .bl-price { color: var(--ui-text-dim) !important; font-weight: 400 !important; }
+.plan-page .pp-main .bl-kv .bl-btns { margin-left: auto; display: flex; gap: 8px; }
+.plan-page .pp-main .bl-kv > span:last-child:empty { display: none; }
+/* every button on these pages is the same size */
+.plan-page .pp-main :is(.bl-b, .bl-btns button) { min-width: 0; height: var(--ui-ctl-h) !important; padding: 0 14px !important; font-size: var(--ui-font) !important; font-weight: 600 !important; line-height: 1; white-space: nowrap; border-radius: var(--ui-ctl-radius) !important; }
+.plan-page .pp-main table th { font-size: 12px; }
+.plan-page .pp-main table td { font-size: var(--ui-font); }
+/* a heading row that is the only row (Delete account, Cancel plan) has nothing under it, so no line */
+.plan-page .pp-main .bl-line:has(> div > h3):only-child { border-bottom: 0 !important; }
+/* every answer sits on the right edge, opposite its label (owner, 2026-11-13) */
+.plan-page .pp-main .bl-kv > b { justify-content: flex-end !important; text-align: right !important; }
+.plan-page .pp-main .bl-kv .bl-btns { margin-left: 0; }
+.plan-page .pp-main .bl-kv > span:first-child { flex: 1 1 auto; width: auto; }
+.plan-page .pp-main .bl-kv > b { flex: 0 1 auto; }
+/* Storage page: no line under the summary, even spacing, hairlines only between the video rows */
+.plan-page .pp-main .st-sum { margin: 0 0 24px !important; padding: 0 !important; border-bottom: 0 !important; }
+.plan-page .pp-main .st-sum-top { margin: 0 0 12px !important; }
+.plan-page .pp-main .st-own { margin: 12px 0 0 !important; line-height: 1.5; }
+.plan-page .pp-main .st-chips { margin: 0 0 8px !important; }
+.plan-page .pp-main .st-list { margin: 0 !important; }
+.plan-page .pp-main .st-row { padding: 14px 0 !important; border-top: 0; }
+.plan-page .pp-main .st-row + .st-row { border-top: 1px solid var(--ui-sep) !important; }
+.plan-page .pp-main .st-row:first-child { padding-top: 8px !important; }
+
+/* Styles page: every section stays open, no tabs to click (owner, 2026-11-13) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold.closed > .ss-inner,
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold.closed > :not(.ps-head) { display: block !important; max-height: none !important; opacity: 1 !important; visibility: visible !important; overflow: visible !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts.ss-body, :not(#ui):not(#ui2) .plan-page #tab-settings .ss-body { display: block !important; max-height: none !important; height: auto !important; opacity: 1 !important; overflow: visible !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold > .ps-head { pointer-events: none; cursor: default; margin-top: 8px !important; font-size: 14px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold > .ps-head .ps-chev { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold > .ps-head { border: 0 !important; }
+/* the three profile controls: one width, one height, trash inside the column */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick { width: 160px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd-btn { width: 100% !important; height: var(--ui-ctl-h-lg) !important; min-height: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .ps-sq { width: var(--ui-ctl-h-lg) !important; height: var(--ui-ctl-h-lg) !important; margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input { width: 200px !important; height: var(--ui-ctl-h-lg) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn { width: 200px !important; height: var(--ui-ctl-h-lg) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar { gap: 8px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick { width: 156px !important; }
+
+/* Styles page: three clear sections (Caption style, Cuts, AI edit), each with air above, a bigger title and one line; rows inside are all the same label style */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold { margin: 0 !important; padding: 32px 0 0 !important; border-bottom: 0 !important; border-top: 1px solid var(--ui-sep) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold > .ps-head { min-height: 0 !important; margin: 0 0 8px !important; padding: 0 !important; font-size: var(--ui-h2) !important; font-weight: 600 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold:first-of-type { padding-top: 0 !important; border-top: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card.fold .ss-inner { padding-bottom: 32px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head { font-size: var(--ui-font) !important; font-weight: 400 !important; color: var(--ui-text-dim) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) { border-bottom: 1px solid var(--ui-sep) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts .ps-card:not(.fold):last-child { border-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-acc { padding-bottom: 8px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssPanels > .ps-card.ss-acc { padding: 32px 0 0 !important; border-top: 1px solid var(--ui-sep) !important; border-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssPanels > .ps-card.ss-acc > .ps-head { margin: 0 0 8px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCaptionStyle > .ss-inner { padding-bottom: 32px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts { padding-bottom: 32px !important; }
+
+/* Styles page: the trash icon is gone (Delete profile is its own red row); the name is plain text you type in, no box */
+:not(#ui):not(#ui2) .plan-page #tab-settings #creatorDelete { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick { width: 200px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input { background: transparent !important; padding: 0 !important; text-align: right; box-shadow: none !important; outline: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input:focus { color: #fff !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-danger { margin: 0 0 24px !important; padding-top: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-danger .bl-b:disabled { opacity: 0.4; }
+
+/* Caption presets in the Styles page = the Captions tab's own card, shown open and without its summary bar */
+:not(#ui):not(#ui2) .plan-page #ssCapPresets #capPresets { margin: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets #capPresets > summary { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets #capPresets .cp-body { display: block !important; padding: 0 !important; }
+
+/* Styles page, rethought (owner, 2026-11-13: boxed inputs and fluff text): controls are plain text on the row - no fills, no boxes - and the explaining notes are gone */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-note { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg { width: auto !important; height: auto !important; padding: 0 !important; gap: 22px !important; background: transparent !important; justify-content: flex-end; justify-self: end; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button { flex: none !important; height: 28px !important; padding: 0 !important; border-radius: 0 !important; background: transparent !important; color: var(--ui-text-quiet) !important; font-size: var(--ui-font) !important; font-weight: 500 !important; box-shadow: none !important; border-bottom: 2px solid transparent !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button:hover { color: var(--ui-text) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button.on { background: transparent !important; color: var(--ui-text-strong) !important; border-bottom-color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper { width: auto !important; height: auto !important; padding: 0 !important; gap: 14px; background: transparent !important; justify-content: flex-end; justify-self: end; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button { width: 28px !important; height: 28px !important; background: transparent !important; color: var(--ui-text-quiet) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button:hover { background: var(--ui-hover) !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper b { flex: none; min-width: 56px; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn { width: auto !important; background: transparent !important; padding: 0 !important; color: var(--ui-text-dim) !important; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ui-text-quiet); }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn:hover { color: var(--ui-text-strong) !important; background: transparent !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-notes textarea { background: transparent !important; border: 0 !important; border-bottom: 1px solid var(--ui-sep) !important; border-radius: 0 !important; padding-left: 0 !important; }
+/* the Caption presets card inside Styles: same plain rows (label left, plain text right), buttons as text links */
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-row { display: flex !important; align-items: center; justify-content: flex-end; gap: 8px; min-height: var(--ui-row-h); margin: 0 !important; border-top: 1px solid var(--ui-sep); }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-row::before { content: "Preset"; margin-right: auto; font-size: var(--ui-font); color: var(--ui-text-dim); }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-del { width: 28px !important; height: 28px !important; background: transparent !important; flex: none; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-name { display: flex !important; align-items: center; justify-content: space-between; min-height: var(--ui-row-h); padding: 0 !important; background: transparent !important; border-top: 1px solid var(--ui-sep); }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-name.hidden { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-name input { width: 200px; height: var(--ui-ctl-h); padding: 0 !important; border: 0 !important; background: transparent !important; text-align: right; color: var(--ui-text-strong); font-size: var(--ui-font); }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts { display: flex !important; justify-content: flex-end; gap: 20px; padding: 8px 0 0; margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts button { width: auto !important; height: var(--ui-ctl-h) !important; padding: 0 !important; background: transparent !important; color: var(--ui-text-dim) !important; font-size: var(--ui-font) !important; font-weight: 600 !important; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ui-text-quiet); }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts button:hover:not(:disabled) { color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts button:disabled { opacity: 0.35; text-decoration: none; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts button { flex: none !important; }
+
+/* Styles page profile dropdown: nothing lights up behind the button, the list is plain text on the panel colour (owner, 2026-11-13) */
+:not(#ui):not(#ui2) .plan-page #tab-settings #presetSave { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name { display: flex !important; }
+
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick { width: 200px !important; }/* dropdown hover: rounded like every control, a soft fill (was a square grey block) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .dd-btn { border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .dd-btn:hover, :not(#ui):not(#ui2) .plan-page #tab-settings .dd.open .dd-btn { background: var(--ui-hover) !important; }
+/* the Default style can't be renamed: its rename row is greyed out */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name:has(input[readonly]) { opacity: 0.4; cursor: not-allowed; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input[readonly] { cursor: not-allowed; pointer-events: none; }
+
+/* Caption presets in Styles, redesigned (owner, 2026-11-13): no tile backgrounds, the picked look is outlined, rows line up with the rest */
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-quick .cs-q, :not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-quick .cs-more { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-quick .cs-q.on { box-shadow: inset 0 0 0 1.5px var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-quick .cs-q:hover:not(.on) { box-shadow: inset 0 0 0 1px var(--ui-text-quiet) !important; }
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-more .cs-more-box { border: 0 !important; background: transparent !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick { width: 200px !important; flex: none; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick .dd { width: 100% !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-row { border-top: 0 !important; }
+:not(#ui):not(#ui2) .plan-page .ss-newcap { display: flex; justify-content: flex-end; padding: 4px 0 0; }
+:not(#ui):not(#ui2) .plan-page .ss-newcap button { height: var(--ui-ctl-h); padding: 0; border: 0; background: transparent; color: var(--ui-text-dim); font: 600 var(--ui-font) var(--ui-font-family, inherit); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--ui-text-quiet); cursor: pointer; }
+:not(#ui):not(#ui2) .plan-page .ss-newcap button:hover { color: var(--ui-text-strong); }
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-quick .cs-q .cs-q-view { background: transparent !important; }
+
+/* toggle rows like Anthropic's settings: label in white, a short grey line under it, the switch on the right (owner, 2026-11-13) */
+:not(#ui):not(#ui2) .plan-page #tab-settings label.switch.ps-row { min-height: 64px; padding: 10px 0 !important; border-bottom: 1px solid var(--ui-sep); gap: 16px; }
+:not(#ui):not(#ui2) .plan-page #tab-settings label.switch.ps-row:last-child { border-bottom: 0; }
+:not(#ui):not(#ui2) .plan-page #tab-settings label.switch .ps-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+:not(#ui):not(#ui2) .plan-page #tab-settings label.switch .ps-name b { font-size: var(--ui-font); font-weight: 500; color: var(--ui-text-strong); }
+:not(#ui):not(#ui2) .plan-page #tab-settings label.switch .ps-name small { font-size: 12px; line-height: 1.4; color: var(--ui-text-faint); }
+
+/* Plan and Billing rows copied from Claude's settings (owner, 2026-11-13): white name, grey description under it, button or value on the right, thin line between rows */
+.plan-page .pp-box { width: min(860px, 100%) !important; }
+.plan-page .pp-main section { max-width: 560px !important; }
+.plan-page .pp-main .cl-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; padding: 12px 0; border-top: 1px solid var(--ui-sep); }
+.plan-page .pp-main .cl-row:first-child, .plan-page .pp-main .cl-sec + .cl-row { border-top: 0; }
+.plan-page .pp-main .cl-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.plan-page .pp-main .cl-t > b { font-size: var(--ui-font); font-weight: 500; color: var(--ui-text-strong); }
+.plan-page .pp-main .cl-t > span { font-size: 12.5px; line-height: 1.45; color: var(--ui-text-faint); }
+.plan-page .pp-main .cl-v { font-size: var(--ui-font); font-weight: 500; color: var(--ui-text-strong); }
+.plan-page .pp-main .cl-sec { display: flex; flex-direction: column; gap: 2px; padding: 0 0 12px; }
+.plan-page .pp-main .cl-sec b { font-size: 14px; font-weight: 600; color: var(--ui-text-strong); }
+.plan-page .pp-main .cl-sec span { font-size: 12.5px; color: var(--ui-text-faint); }
+
+/* ===== Claude's settings design, copied one to one (owner, 2026-11-13) ===== */
+/* descriptions under the Cuts rows only show in the Settings window */
+.ps-name small { display: none; }
+.plan-page .ps-name { display: flex; flex-direction: column; gap: 2px; }
+.plan-page .ps-name small { display: block; font-size: 12.5px; line-height: 1.45; color: var(--ui-text-faint); }
+.plan-page .ps-name b { font-size: var(--ui-font); font-weight: 500; color: var(--ui-text-strong); }
+/* a row: name (white) + description (grey) on the left, its control on the right */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) { grid-template-columns: 1fr auto !important; column-gap: 16px; padding: 12px 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head { grid-row: 1; min-height: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head:has(+ select + .ps-seg, + .ps-seg) { color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-note { display: block !important; grid-column: 1 !important; grid-row: 2; margin: 0 !important; font-size: 12.5px !important; color: var(--ui-text-faint) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-note:empty { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-seg { grid-column: 2 !important; grid-row: 1 / span 2 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-head { font-weight: 500 !important; color: var(--ui-text-strong) !important; font-size: var(--ui-font) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row { min-height: 64px; padding: 10px 0 !important; border-top: 1px solid var(--ui-sep); }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:not(.fold) > .ps-rows > .ps-row:first-child { border-top: 0; }
+/* Claude's segmented control: a filled track, the picked option is a raised pill */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg { width: auto !important; height: 36px !important; padding: 2px !important; gap: 2px !important; border-radius: 8px !important; background: var(--ui-fill) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button { height: 32px !important; padding: 0 14px !important; border: 0 !important; border-radius: 6px !important; background: transparent !important; color: var(--ui-text) !important; font-size: var(--ui-font) !important; font-weight: 500 !important; border-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button.on { background: var(--ui-hover-2) !important; color: var(--ui-text-strong) !important; border-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper { height: 36px !important; padding: 2px !important; border-radius: 8px !important; background: var(--ui-fill) !important; gap: 4px; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button { width: 32px !important; height: 32px !important; border-radius: 6px !important; background: transparent !important; color: var(--ui-text) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button:hover { background: var(--ui-hover) !important; }
+/* a text field is a filled box on the right, like Claude's "Branch prefix" */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input { width: 200px !important; height: 36px !important; padding: 0 14px !important; border-radius: 8px !important; background: var(--ui-fill) !important; text-align: left !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-btn { background: var(--ui-btn-bg) !important; padding: 0 14px !important; height: 36px !important; border-radius: 8px !important; text-decoration: none !important; color: var(--ui-text-strong) !important; }
+/* Profile page */
+.plan-page .pp-main .cl-row .pp-avatar { width: 40px; height: 40px; flex: none; font-size: 16px; background: var(--ui-hover); }
+.plan-page .pp-main .cl-danger .cl-t > b, .plan-page .pp-main .cl-danger .cl-t > span { color: var(--ui-danger) !important; }
+.plan-page .pp-main .cl-danger .cl-t > span { color: var(--ui-danger-dim) !important; }
+.plan-page .pp-main .cl-danger .cl-row { border-top: 1px solid var(--ui-sep); }
+
+/* ===== numbers read from Claude's own Settings window (read only, 2026-11-13): name 14px / 400 white, description 14px / 400 at 57% white,
+   section title 15px / 580, buttons 28px tall 14px / 435 radius 8, nav item 32px radius 8 14px / 435, switch 36 x 20 ===== */
+.plan-page { --cl-name: rgba(255,255,255,0.93); --cl-desc: rgba(255,255,255,0.57); }
+.plan-page .pp-main .cl-t > b, .plan-page .pp-main .cl-v, .plan-page .ps-name b, .plan-page label.switch .ps-name b { font-size: 14px !important; font-weight: 400 !important; line-height: 20px; color: var(--cl-name) !important; }
+.plan-page .pp-main .cl-t > span, .plan-page .ps-name small, .plan-page label.switch .ps-name small, .plan-page #tab-settings .ps-note { font-size: 14px !important; font-weight: 400 !important; line-height: 20px !important; color: var(--cl-desc) !important; }
+.plan-page .pp-main h2, .plan-page .pp-main .cl-sec b, .plan-page .pp-main .pv-h, .plan-page .pp-main .bl-box h3 { font-size: 15px !important; font-weight: 580 !important; line-height: 20px; }
+.plan-page .pp-main .cl-sec span { font-size: 14px; color: var(--cl-desc); }
+.plan-page .pp-main .bl-b, .plan-page .pp-main .bl-btns button, .plan-page #tab-settings .ps-btn { height: 28px !important; padding: 0 12px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 435 !important; }
+.plan-page .pp-nav button { height: 32px !important; padding: 0 8px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 435 !important; }
+.plan-page .pp-main .cl-row { min-height: 66px; }
+.plan-page #tab-settings .ps-seg button { font-size: 14px !important; font-weight: 435 !important; }
+.plan-page .pp-main .st-sum { margin-bottom: 40px !important; }
+
+/* Caption presets, option 1 (owner's pick, 2026-11-13): Claude rows */
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle .cs-quick[data-target="preset"], :not(#ui):not(#ui2) .plan-page #ssCaptionStyle .ps-label { display: none !important; }
+.plan-page .ss-pick { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px 0 12px; border: 0; border-radius: 8px; background: var(--ui-btn-bg); color: var(--ui-text-strong); font: 435 14px var(--ui-font-family, inherit); cursor: pointer; }
+.plan-page .ss-pick:hover { background: var(--ui-btn-bg-hover); }
+.plan-page .ss-pick svg { width: 14px; height: 14px; fill: none; stroke: var(--ui-text-dim); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.plan-page #ssCaptionStyle .cl-row { border-top: 1px solid var(--ui-sep); }
+.plan-page #ssCapPresets { position: relative; border-top: 1px solid var(--ui-sep); }
+.plan-page #ssCapPresets .ss-mp { position: absolute; left: 0; top: 12px; z-index: 1; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-row { min-height: 66px !important; padding: 12px 0 !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-row::before { content: none !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick { width: 200px !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts { padding: 0 0 12px; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-acts button { height: 28px !important; padding: 0 12px !important; border-radius: 8px !important; background: var(--ui-btn-bg) !important; text-decoration: none !important; font-size: 14px !important; font-weight: 435 !important; color: var(--ui-text-strong) !important; }
+.plan-page .pp-main .st-chips { margin-bottom: 28px !important; }
+.plan-page .pp-main .st-row:first-child { padding-top: 14px !important; }
+
+/* Caption presets: one corner radius (8px) and one control height (28px) for every control, the trash is its own row */
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-del { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick { width: auto !important; min-width: 160px; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick .dd, :not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick .dd-btn { height: 28px !important; min-height: 0 !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 435 !important; padding: 0 8px 0 12px !important; }
+:not(#ui):not(#ui2) .plan-page #ssCapPresets .cp-pick .dd { width: 100% !important; }
+.plan-page .ss-pick, .plan-page .bl-b, .plan-page #ssCapPresets .cp-acts button { border-radius: 8px !important; }
+.plan-page #tab-settings .switch .knob, .plan-page #tab-settings .switch { border-radius: 8px; }
+.plan-page #ssDelPreset:disabled { opacity: 0.4; }
+.plan-page #ssCapPresets .cp-acts { justify-content: flex-end; }
+
+/* Caption presets: with Show captions off, every other caption row is greyed out and locked */
+#ssCaptionStyle.caps-off .ss-inner > :not(.ss-capsw) { opacity: .4 !important; filter: grayscale(1); pointer-events: none !important; user-select: none; }
+
+/* Styles page: the Style dropdown and the Style Name box are the same compact size as the other controls (28px, 160px, 8px corners) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick { width: 160px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd-btn { height: 28px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 435 !important; padding: 0 8px 0 12px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input { width: 160px !important; height: 28px !important; padding: 0 12px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 435 !important; }
+
+/* Styles page: no "Notes for the AI" box (the element stays, the code reads it) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-notes { display: none !important; }
+
+/* the dropdown wrapper carries no padding, only its button does (it was pushing every dropdown 8px in from the right line) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .preset-pick .dd, :not(#ui):not(#ui2) .plan-page #tab-settings .cp-pick .dd, .cp-pick .dd { padding: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd { padding: 0 !important; }
+
+/* caption styles window opened from Settings > Styles: above the Settings popup */
+.cs.as-modal.over-settings { z-index: 450; }
+
+/* Styles page: no caption section (captions are their own thing, in the Captions tab) */
+:not(#ui):not(#ui2) .plan-page #ssCaptionStyle { display: none !important; }
+
+/* Styles > Cuts: every row is the same: name (white 14px) + short grey description on the left, one control on the right.
+   Segmented controls and steppers share one size, track colour, corner radius and inner padding. */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-rows > .ps-row, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-segrow { display: flex !important; align-items: center; justify-content: space-between; gap: 16px; min-height: 66px; padding: 12px 0 !important; margin: 0 !important; background: transparent !important; border-radius: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row .ps-name { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row .ps-name b { font-size: 14px !important; font-weight: 400 !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row .ps-name small { font-size: 14px !important; font-weight: 400 !important; color: var(--ui-text-dim) !important; line-height: 1.4; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper { flex: none; height: 32px !important; padding: 2px !important; gap: 2px !important; border-radius: 8px !important; background: var(--ui-fill) !important; box-sizing: border-box !important; align-items: center; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg { width: auto !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper { width: 140px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button { height: 28px !important; border-radius: 6px !important; font-size: 14px !important; font-weight: 435 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg button { padding: 0 12px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper button { width: 28px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper b { font-size: 14px !important; font-weight: 435 !important; }
+
+/* Styles > Cuts: a category is just its rows (the row names are the labels); double the space between categories */
+:not(#ui):not(#ui2) .plan-page #ssCuts .ps-card { display: block !important; padding: 24px 0 !important; margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #ssCuts .ps-card > .ps-head { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #ssCuts .ps-card > .ps-rows, :not(#ui):not(#ui2) .plan-page #ssCuts .ps-card > .ps-segrow { margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #ssCuts .ps-card > .ps-segrow { width: 100% !important; max-width: none !important; box-sizing: border-box; }
+
+/* every control in Styles > Cuts ends on the same right line: a category is one full-width column, nothing is placed in grid columns */
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts section.ps-card { display: block !important; grid-template-columns: none !important; padding: 24px 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts section.ps-card > * { grid-column: auto !important; grid-row: auto !important; width: 100% !important; max-width: none !important; box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts .ps-seg, :not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts .ps-stepper { width: auto !important; margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts .ps-stepper { width: 140px !important; }
+
+/* Styles: section titles (Cuts, AI edit ...) a bit bigger, close to their first option, with more room above them */
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssPanels > section.ps-card, :not(#ui):not(#ui2) .plan-page #tab-settings > section.ps-card:has(> .ps-head), :not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:has(> .ps-head):not(#ssCuts .ps-card) { padding-top: 56px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card > .ps-head { font-size: 18px !important; margin-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-card:has(> .ps-head) > .ps-rows > .ps-row:first-child { min-height: 0 !important; padding-top: 6px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts section.ps-card:first-child { padding-top: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts section.ps-card:first-child > .ps-rows > .ps-row:first-child, :not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts section.ps-card:first-child > .ps-segrow:first-child { min-height: 0 !important; padding-top: 6px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings #ssCuts { padding-bottom: 8px; }
+
+/* no orphan words: descriptions wrap evenly (the last line is never a single word) */
+.plan-page .ps-name small, .plan-page .cl-t span, .plan-page .cl-t b, .plan-page .ps-name b, .plan-page .bl-sub, .plan-page .pv-intro { text-wrap: pretty; }
+.plan-page .ps-name small, .plan-page .cl-t span { text-wrap: balance; }
+
+/* Styles page: a "Styles" title above the Style / Style Name rows, same look as the Cuts title */
+:not(#ui):not(#ui2) .plan-page #tab-settings > section.ps-card:first-child { display: block !important; padding-top: 0 !important; padding-bottom: 24px !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings > section.ps-card:first-child > .ps-head { display: flex !important; min-height: 0 !important; margin: 0 0 6px !important; font-size: 18px !important; font-weight: 600 !important; color: var(--ui-text-strong) !important; }
+
+/* every option row: flex, control vertically centred on the text block (same line height for name and description, no stray margins) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row { display: flex !important; align-items: center !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row > :is(.ps-seg, .ps-stepper, .knob, input, button) { align-self: center !important; margin-top: 0 !important; margin-bottom: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row .ps-name { align-self: center; justify-content: center; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-row .ps-name b, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-row .ps-name small { line-height: 1.4 !important; margin: 0 !important; padding: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-rows > .ps-row:first-child { padding-bottom: 12px !important; }
+
+/* ============ CONTROL KIT (Settings popup) ============
+   One definition per kind of control, reused everywhere: stepper (- value +), segmented switch, dropdown, text box, button.
+   Same outer height (32px), corner radius (8px), fill and font (14px / 435); inner parts 26px with 4px corners, 3px in from the edge on every side (owner, 2026-11-13: the picked part needs room on its right too, and smaller corners); stepper, dropdown and text box are 160px wide.
+   Never style a single option by itself: change it here. */
+:root { --k-h: 32px; --k-r: 8px; --k-pad: 3px; --k-in-h: 26px; --k-in-r: 4px; --k-w: 160px; --k-bg: var(--ui-fill); --k-font: 14px; --k-weight: 435; }
+:not(#ui):not(#ui2) .plan-page #tab-settings :is(.ps-stepper, .ps-seg, .ss-pick, .dd-btn, .ss-name input, .bl-b, .cp-acts button) { box-sizing: border-box !important; height: var(--k-h) !important; min-height: 0 !important; border-radius: var(--k-r) !important; font-size: var(--k-font) !important; font-weight: var(--k-weight) !important; line-height: 1 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings :is(.ps-stepper, .ps-seg) { background: var(--k-bg) !important; padding: var(--k-pad) !important; border: 0 !important; margin: 0 !important; }
+/* stepper: [-] value [+] on a 3-column grid, everything centred */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper { display: grid !important; grid-template-columns: var(--k-in-h) 1fr var(--k-in-h) !important; align-items: center !important; justify-items: center !important; gap: 0 !important; width: var(--k-w) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper > button { display: grid !important; place-items: center !important; width: var(--k-in-h) !important; height: var(--k-in-h) !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important; border: 0 !important; border-radius: var(--k-in-r) !important; background: transparent !important; color: var(--ui-text) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper > button:hover { background: var(--ui-hover) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper > button svg { display: block !important; width: 14px !important; height: 14px !important; margin: 0 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-stepper > b { display: block !important; width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; text-align: center !important; line-height: var(--k-in-h) !important; font-size: var(--k-font) !important; font-weight: var(--k-weight) !important; color: var(--ui-text-strong) !important; }
+/* segmented switch */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg { display: flex !important; align-items: center !important; gap: 2px !important; width: auto !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg > button { display: grid !important; place-items: center !important; height: var(--k-in-h) !important; padding: 0 12px !important; margin: 0 !important; border: 0 !important; border-radius: var(--k-in-r) !important; background: transparent !important; color: var(--ui-text) !important; font-size: var(--k-font) !important; font-weight: var(--k-weight) !important; line-height: 1 !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-seg > button.on { background: var(--ui-hover-2) !important; color: var(--ui-text-strong) !important; }
+/* dropdown, text box, button: one fill, same inner padding, text centred on the line */
+:not(#ui):not(#ui2) .plan-page #tab-settings :is(.ss-pick, .dd-btn, .ss-name input) { background: var(--k-bg) !important; border: 0 !important; padding: 0 12px !important; color: var(--ui-text-strong) !important; display: flex; align-items: center; }
+:not(#ui):not(#ui2) .plan-page #tab-settings :is(.ss-pick, .dd-btn) { justify-content: space-between !important; gap: 8px; }
+:not(#ui):not(#ui2) .plan-page #tab-settings :is(.preset-pick, .cp-pick) .dd, :not(#ui):not(#ui2) .plan-page #tab-settings :is(.preset-pick, .cp-pick) .dd-btn, :not(#ui):not(#ui2) .plan-page #tab-settings .ss-name input { width: var(--k-w) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-name input { padding: 0 12px !important; text-align: left !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .bl-b { display: inline-flex !important; align-items: center; justify-content: center; padding: 0 14px !important; }
+/* kit, higher specificity for the controls older rules sized by hand */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd-btn, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input, :not(#ui):not(#ui2) .plan-page #tab-settings .cp-pick .dd-btn, :not(#ui):not(#ui2) .plan-page #tab-settings .cp-pick .dd, :not(#ui):not(#ui2) .plan-page #tab-settings .cl-row .ss-pick { height: var(--k-h) !important; border-radius: var(--k-r) !important; font-size: var(--k-font) !important; font-weight: var(--k-weight) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ps-presetbar .preset-pick .dd-btn, :not(#ui):not(#ui2) .plan-page #tab-settings .ps-field.ss-name input { padding: 0 12px !important; width: var(--k-w) !important; }
+
+/* NUMBER STEPPERS (Cuts tab, Settings > Styles, upload page): drag sideways anywhere on the box to change, click the number to type it (app.js numberStepper) */
+:not(#ui):not(#ui2) .ps-stepper, :not(#ui):not(#ui2) .su-step { cursor: ew-resize; touch-action: none; user-select: none; }
+:not(#ui):not(#ui2) .ps-stepper b, :not(#ui):not(#ui2) .su-step b { cursor: ew-resize; outline: none; border-radius: 4px; }
+:not(#ui):not(#ui2) .ps-stepper b:focus, :not(#ui):not(#ui2) .su-step b:focus { cursor: text; user-select: text; background: var(--ui-hover); }
+body.num-dragging, body.num-dragging * { cursor: ew-resize !important; user-select: none !important; }
+
+/* Settings > Styles, owner 2026-11-13: Delete profile is its own section (hairline + the same room above as a section title),
+   greyed out with Default picked (only "The Default profile can't be deleted." is said) */
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-danger { margin: 0 0 24px !important; padding-top: 40px !important; border-top: 1px solid var(--ui-line, rgba(255,255,255,0.06)) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-danger.off h3, :not(#ui):not(#ui2) .plan-page #tab-settings .ss-danger.off .bl-sub { color: var(--ui-text-quiet) !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings .ss-danger .bl-b:disabled { opacity: 1 !important; background: var(--ui-fill) !important; color: var(--ui-text-quiet) !important; cursor: default !important; }
+
+/* Settings > Styles, owner 2026-11-13: Cancel / Update / Save new profile are never at the end of the page. Once something changed
+   they appear as a small popup pinned to the bottom of the Settings window, seen wherever you scroll (app.js syncPresetBar sets .dirty) */
+:not(#ui):not(#ui2) .plan-page #tab-settings > .ps-action:not(.dirty) { display: none !important; }
+:not(#ui):not(#ui2) .plan-page #tab-settings > .ps-action.dirty { position: sticky !important; bottom: 12px; z-index: 6; display: flex !important; width: fit-content !important; margin: 24px auto 0 !important; padding: 8px !important; border-radius: 12px; background: #1a1a1a !important; border: 1px solid rgba(255,255,255,0.1) !important; animation: ssBarUp 0.24s cubic-bezier(.2,.8,.2,1); }
+:not(#ui):not(#ui2) .plan-page #tab-settings > .ps-action.dirty .ss-actions { margin: 0 !important; width: auto !important; gap: 8px; }
+@keyframes ssBarUp { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Zoom on every cut is removed from the panel (owner, 2026-11-13); the older "section.ps-card { display: block }" rules must not bring it back */
+:not(#ui):not(#ui2):not(#ui3):not(#ui4) .plan-page section#autoZoomCard.hidden, #autoZoomCard.hidden { display: none !important; }
+
+/* Settings, owner 2026-11-13: every option's description wraps at the same width (some ran long, some short) */
+:not(#ui):not(#ui2):not(#ui3) .plan-page #tab-settings :is(.ps-name small, .bl-sub) { display: block; max-width: 330px !important; text-wrap: pretty !important; }   /* pretty = fill each line, but no single word left alone on the last one */
+
+/* a link inside a Settings description ("View available commands on this page") */
+:not(#ui):not(#ui2):not(#ui3) .plan-page #tab-settings .ps-name small a.ps-link { color: var(--ui-text-strong); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+/* ============ Plan and Billing + Profile follow the Styles page (owner, 2026-11-13) ============
+   Same page title (18 / 600, 56px above it), section titles (16 / 600, a hairline and 56px above each section), rows
+   (name 14 / 400 strong, description 14 / 400 dim, at most 330px wide, no hairlines between rows), the control kit's
+   button (32px, 14 / 435) and a danger section like Delete profile. */
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 { margin: 56px 0 8px !important; font-size: 18px !important; font-weight: 600 !important; line-height: 26px !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .bl-box { margin: 0 !important; padding: 24px 0 !important; border: 0 !important; background: transparent !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .bl-box:not(.hidden) ~ .bl-box:not(.hidden) { padding-top: 56px !important; border-top: 1px solid rgba(255,255,255,0.06) !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(.cl-row, .bl-line) { padding: 12px 0 !important; border-top: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .cl-sec { padding: 0 0 8px !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(.cl-sec > b, .bl-line h3) { display: block; font-size: 16px !important; font-weight: 600 !important; line-height: 23px !important; color: var(--ui-text-strong) !important; margin: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(.cl-t > b, .cl-v) { font-size: 14px !important; font-weight: 400 !important; line-height: 20px !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(.cl-t > span, .cl-t > span *, .cl-sec > span, .bl-sub, .bl-empty) { font-size: 14px !important; font-weight: 400 !important; line-height: 20px !important; color: var(--ui-text-dim) !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(.cl-t > span, .cl-sec > span, .bl-sub) { display: block; max-width: 330px !important; text-wrap: pretty !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) #plName { font-size: 16px; font-weight: 600; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) .bl-b { box-sizing: border-box !important; height: 32px !important; padding: 0 14px !important; border-radius: 8px !important; font-size: 14px !important; font-weight: 435 !important; }
+/* danger sections (Cancel plan, Delete account) look like Styles' Delete profile: red name, softer red line */
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(#plCancelBox h3, .cl-danger .cl-t > b) { font-size: 14px !important; font-weight: 600 !important; line-height: 18px !important; color: #f27478 !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(#plCancelBox .bl-sub, .cl-danger .cl-t > span) { font-size: 12px !important; line-height: 17px !important; color: rgba(242,116,120,0.72) !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) :is(#plCancelBox, .cl-danger) { padding-top: 40px !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 { margin-bottom: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 + .bl-box, :not(#ui):not(#ui2):not(#ui3) .plan-page :is([data-pp-sec="plan"], [data-pp-sec="profile"]) > h2 + .bl-box.hidden + .bl-box { padding-top: 4px !important; }
+/* a short page (no scrollbar) must not sit a few px further right than a long one: always keep the scrollbar's room */
+:not(#ui):not(#ui2):not(#ui3) .plan-page .pp-main { scrollbar-gutter: stable; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] > #plAlert + .bl-box { padding-top: 4px !important; }
+
+/* ⋯ menu (top bar): the same panel colour as the chat's + menu (owner, 2026-11-13): flat --ui-panel, no gradient, no blur */
+:not(#ui):not(#ui2):not(#ui3) #moreMenu { background: var(--ui-panel) !important; background-image: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* Export video popup: the bigger popups follow the Add text panel (owner, 2026-11-13): its frame (--ui-dialog-*: #050505, 1px faint
+   border, 8px corners), white 6% tiles with the inner corner size, the light button = --ui-on */
+:not(#ui):not(#ui2):not(#ui3) #exportDlg .xp-box { background: var(--ui-dialog-bg) !important; border: 1px solid var(--ui-dialog-border) !important; border-radius: var(--ui-dialog-radius) !important; box-shadow: none !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-box { background: var(--ui-dialog-bg) !important; border: 1px solid var(--ui-dialog-border) !important; border-radius: var(--ui-dialog-radius) !important; box-shadow: none !important; }
+:not(#ui):not(#ui2):not(#ui3) #exportDlg :is(.xp-field, .xp-row, #xpAdvanced > summary, #xpAdvanced) { background-color: var(--ui-fill) !important; border-color: transparent !important; border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(.xp-field, .xp-row, #xpAdvanced > summary, #xpAdvanced) { background-color: var(--ui-fill) !important; border-color: transparent !important; border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #exportDlg #xpAdvanced .xp-row, :not(#ui):not(#ui2):not(#ui3) #exportDlg #xpAdvanced > summary { background-color: transparent !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg #xpAdvanced .xp-row, :not(#ui):not(#ui2):not(#ui3) #xqDlg #xpAdvanced > summary { background-color: transparent !important; }
+:not(#ui):not(#ui2):not(#ui3) #exportDlg .xp-seg { border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-seg { border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #exportDlg .xp-seg button { border-radius: 6px !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-seg button { border-radius: 6px !important; }
+:not(#ui):not(#ui2):not(#ui3) #exportDlg .xp-cancel { background: var(--ui-fill) !important; border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-cancel { background: var(--ui-fill) !important; border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #exportDlg .xp-go { background: var(--ui-on) !important; border-color: var(--ui-on) !important; color: var(--ui-on-text) !important; border-radius: var(--ui-ctl-radius) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-go { background: var(--ui-on) !important; border-color: var(--ui-on) !important; color: var(--ui-on-text) !important; border-radius: var(--ui-ctl-radius) !important; }
+
+/* An added text open in the Captions tab (owner, 2026-11-13): the WHOLE caption panel stays, working on that text; above it only the
+   text box and "Keep on screen for the whole video" (no look tiles: the panel picks the look); caption-only rows are greyed */
+:not(#ui):not(#ui2):not(#ui3) #tab-captions.hook-ctl #hookEdit :is(.hk-label, .hk-looks) { display: none !important; }
+:not(#ui):not(#ui2):not(#ui3) #tab-captions.hook-ctl #hookEdit { margin-bottom: 16px; }
+:not(#ui):not(#ui2):not(#ui3) #tab-captions.hook-ctl .cap-only { opacity: 0.4 !important; pointer-events: none !important; }
+/* double-click typing on the video: the picture hides behind a box in the text's own font and colours */
+#overlays .ovl.typing > :not(.hook-typing) { visibility: hidden; }
+#overlays .hook-typing { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; white-space: pre-wrap; line-height: 1.15; font-weight: 400; border-radius: 6px; outline: 1.5px solid rgba(255,255,255,0.95); outline-offset: 4px; cursor: text; user-select: text; -webkit-user-select: text; caret-color: currentColor; pointer-events: auto; z-index: 3; }
+
+/* Storage: a tick box on every video, like the project list's Select (owner, 2026-11-13); Export N hides the name box (each video keeps its own name) */
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-row .st-top { align-items: center; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-row .pick-box { position: static; transform: none; flex: none; width: 20px; height: 20px; margin-right: 4px; border-radius: 6px; border: 2px solid #8a8a8a; background: transparent; display: grid; place-items: center; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-row .pick-box svg { width: 14px; height: 14px; fill: none; stroke: #06210f; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-row.picked .pick-box { border-color: #4ade80; background: #4ade80; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-row.picked .pick-box svg { opacity: 1; }
+#exportDlg.xp-batch .xp-field { display: none !important; }
+:is(#storageDlg, #ppStorageHost) .st-row { cursor: pointer; }
+:not(#ui):not(#ui2):not(#ui3) #ppStorageHost .st-box .st-row.picked { background: var(--ui-fill-2) !important; }
+
+/* Select bar in the project list: the buttons wrap onto a second line instead of running off the edge (owner, 2026-11-13) */
+:not(#ui):not(#ui2):not(#ui3) #pickBar.pick-chips { flex-wrap: wrap !important; row-gap: 6px !important; }
+:not(#ui):not(#ui2):not(#ui3) #pickBar.pick-chips > * { flex: 0 0 auto !important; white-space: nowrap; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-chips { flex-wrap: wrap !important; row-gap: 8px; }
+/* clicking a row to tick it never starts a text selection or a picture drag (a faint mark could stay on a ticked row) */
+:is(#storageDlg, #ppStorageHost) .st-row, #videoList .video-item { -webkit-user-select: none; user-select: none; }
+:is(#storageDlg, #ppStorageHost) .st-row img, #videoList .video-item img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
+:not(#ui):not(#ui2):not(#ui3) #pickBar #pickAll { order: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) #pickBar #pickDownload { order: 1 !important; }
+:not(#ui):not(#ui2):not(#ui3) #pickBar #pickExport { order: 2 !important; }
+:not(#ui):not(#ui2):not(#ui3) #pickBar #pickDelete { order: 3 !important; }
+:not(#ui):not(#ui2):not(#ui3) #pickBar #pickCancel { order: 4 !important; }
+
+/* Storage rows (owner, 2026-11-13): each row is its own card with room inside, so a ticked row's highlight never touches the tick box
+   or the buttons; a small gap between rows instead of hairlines; the highlight is a solid colour (nothing behind shows through) */
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-list { display: flex !important; flex-direction: column; gap: 4px !important; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row { padding: 12px 14px !important; margin: 0 !important; border: 0 !important; border-radius: 8px !important; background: transparent !important; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row:hover { background: #181818 !important; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-box .st-row.picked { background: #1f1f1f !important; }
+:not(#ui):not(#ui2):not(#ui3) :is(#storageDlg, #ppStorageHost) .st-row .pick-box { margin-right: 8px !important; }
+
+/* failed video (owner, 2026-11-13): a card in the middle of the stage with one Retry; everything around it greyed and not clickable,
+   the project list stays usable. Same frame as the bigger popups (the Add text panel). */
+body.video-failed :is(#player, #panel, #timelineWrap, #render, .topbar .dd, #tlToggle) { opacity: 0.35 !important; pointer-events: none !important; filter: grayscale(0.4); }
+.fail-card { position: absolute; z-index: 30; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(360px, calc(100% - 32px)); box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: var(--ui-dialog-pad); border: 1px solid var(--ui-dialog-border); border-radius: var(--ui-dialog-radius); background: var(--ui-dialog-bg); text-align: left; }
+.fail-card.hidden { display: none !important; }
+.fail-card b { font-size: var(--ui-dialog-title); font-weight: 600; color: var(--ui-text-strong); }
+.fail-card p { margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: var(--ui-text-dim); overflow-wrap: anywhere; max-height: 7.5em; overflow: auto; }
+.fail-card p:empty { display: none; }
+.fail-retry { height: 40px; border: 0; border-radius: var(--ui-ctl-radius); background: var(--ui-on); color: var(--ui-on-text); font-size: 14px; font-weight: 600; cursor: pointer; }
+.fail-retry:hover { filter: brightness(1.06); }
+
+/* Plan and Billing, owner 2026-11-14: the credits box follows the page (no side padding, the page's type and button), and a table box
+   (Invoices, Credit history) keeps its two hairlines (under the title, under the list) with the empty-state line centred between them */
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred { padding: 16px 0 24px !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred .bl-line { padding: 0 !important; min-height: 0; align-items: center; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred .bl-k { display: block; margin: 0 0 4px; font-size: 14px; line-height: 20px; font-weight: 400; color: var(--ui-text-dim); }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred .bl-bignum { display: block; font-size: 24px !important; line-height: 30px; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred .bl-main { background: var(--ui-on) !important; color: var(--ui-on-text) !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred .bl-meter { margin: 16px 0 10px; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-cred .bl-sub { margin: 0 !important; max-width: none !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-box:has(> table) { padding-bottom: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-box:has(> table) > .bl-line { padding: 0 0 14px !important; min-height: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-box:has(> table) > table { width: 100%; border-collapse: collapse; }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-box > table td.bl-empty { padding: 16px 0 !important; border-top: 1px solid var(--ui-sep); }
+:not(#ui):not(#ui2):not(#ui3) .plan-page [data-pp-sec="plan"] .bl-box > .bl-line + table:has(td.bl-empty) { margin-top: 0; }
+:root { --ui-css: 1; }   /* marker: index.html fetches this sheet again if the page loaded without it */
+
+/* Export panel settings = the Captions tab's grid (the owner, 2026-11-20: "make these panels look the same, no weird backgrounds"): flat sections split by a hairline, rows 40px, label left / control right, controls are fills, no tiles, no hover wash on More settings */
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) { margin: 0 !important; padding: 8px 0 8px !important; border: 0 !important; border-top: 1px solid rgba(255,255,255,0.06) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-rows { display: block !important; margin: 0 !important; padding: 0 !important; background: transparent !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-row { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; min-height: 40px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-row:hover { background: transparent !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-row .grow-label { flex: 1; font-size: 13px !important; font-weight: 500 !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-seg { border-radius: 6px !important; background: var(--ui-fill) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-seg button { border-radius: 4px !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg #xqAdv > summary { display: flex !important; align-items: center !important; justify-content: space-between !important; min-height: 40px !important; padding: 0 !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; font-size: 13px !important; font-weight: 600 !important; color: var(--ui-text-strong) !important; cursor: pointer; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg #xqAdv > summary:hover { background: transparent !important; color: var(--ui-text-strong) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg #xqAdv .xp-more-body { padding: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-row, :not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-row:hover { background-color: transparent !important; background: transparent !important; }
+
+/* Export panel controls = the Settings control kit (the owner, 2026-11-20: "it should look like these options" in Settings > Styles): the segmented switch is 32px tall, 8px corners, 3px in, parts 26px with 4px corners, 14px text, the picked part a soft grey; rows have air (52px) so controls never touch */
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-row { min-height: 52px !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-row .grow-label { font-size: 14px !important; font-weight: 400 !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-seg { display: flex !important; align-items: center !important; gap: 2px !important; box-sizing: border-box !important; height: var(--k-h) !important; padding: var(--k-pad) !important; margin: 0 !important; border: 0 !important; border-radius: var(--k-r) !important; background: var(--k-bg) !important; width: auto !important; flex: none; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-seg > button { display: grid !important; place-items: center !important; height: var(--k-in-h) !important; min-width: 0 !important; padding: 0 12px !important; margin: 0 !important; border: 0 !important; border-radius: var(--k-in-r) !important; background: transparent !important; box-shadow: none !important; color: var(--ui-text) !important; font-size: var(--k-font) !important; font-weight: var(--k-weight) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-seg > button:hover { background: var(--ui-hover) !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-seg > button.on, :not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv) .xp-seg > button[aria-pressed="true"] { background: var(--ui-hover-2) !important; color: var(--ui-text-strong) !important; }
+/* Export panel background = the Settings popup's (--ui-panel), the owner, 2026-11-20 */
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-box { background: var(--ui-panel) !important; }
+
+/* Export panel: no hairlines (the owner, 2026-11-20: "these hr lines are annoying") */
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv, .xp-foot) { border-top: 0 !important; border-bottom: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg .xp-foot::before { display: none !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg #xqAdv > summary { border: 0 !important; }
+:not(#ui):not(#ui2):not(#ui3) #xqDlg :is(#xqSettings, #xqAdv)[hidden] { display: none !important; }

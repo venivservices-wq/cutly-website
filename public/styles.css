@@ -662,6 +662,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* Space above "See What You Can Create" equals the space above "What Creators Say" (the owner, 2026-11-19). */
 #demo.demo { padding-bottom: clamp(48px, 6vw, 72px); }
-#showcase.block { padding-top: clamp(48px, 6vw, 72px); }
+#showcase.block { padding-top: clamp(36px, 4.5vw, 54px); }
 #showcase .showcase-panel { padding-top: 0 !important; }
 #showcase .center-head { margin-top: 45px; }

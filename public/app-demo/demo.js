@@ -106,13 +106,14 @@
 
   /* The Basic timeline, as drawTimelineBase in the app: a ruler, lanes for the tracks (Track 1 pictures, Track 2 zooms,
      the clips, Track 3 sounds), each clip = its picture as a strip of frames with its sound under it */
-  const TL = { RULER: 20, GAPY: 6, LANE: 22, CLIPH: 84, CLIPMAX: 128, SPLIT: 5 };
+  const TL = { RULER: 28, GAPY: 8, k: 1, get LANE() { return PHONE_TL() ? 22 : Math.round(28 * this.k); }, CLIPH: 84, CLIPMAX: 128, SPLIT: 5 };   // as the app's TL (Version 363): ruler 28, 8 px between rows, lanes 28 (a shorter area shrinks everything down to 60%)
+  const PHONE_TL = () => matchMedia('(max-width: 820px)').matches;
   const TL_PAD = 0.2;
   // Phone (as the app's CapCut-style timeline): the playhead is a fixed line in the middle and the timeline slides under it;
   // the scroll box has half its width of padding on both sides, and the track + buttons sit just before their lane (they slide away with it)
   const PHONE = location.search.includes('phone');
   const tlLead = () => (PHONE && matchMedia('(max-width: 820px)').matches ? Math.round($('timelineScroll').clientWidth / 2) : 0);
-  const TRACKS = [{ id: 'o1' }, { id: 'z1' }, { id: 'v', video: true }, { id: 's1' }];
+  const TRACKS = [{ id: 'o1' }, { id: 'z1' }, { id: 'c1', cap: true }, { id: 'v', video: true }, { id: 's1' }];   // as the app's default stack: pictures, zooms, captions (always right above the video), the clips, sounds
   const canvas = $('timeline');
   const base = document.createElement('canvas');
   const thumb = new Image();
@@ -145,20 +146,38 @@
   const xToSrc = (px) => (S.edited ? tlToSrc(px / S.pxPerSec) : px / S.pxPerSec);
   const srcToX = (sec) => (S.edited ? srcToTl(sec) : sec) * S.pxPerSec;
 
+  // The empty room after the end of the edit, as the app's tlTail: at least 20 s, so there is always space to pull a clip past the end
+  const tlTail = (len) => Math.max(len * 0.2, 20);
+  const RULER_GAP = 90;   // px at least between two time numbers on the ruler (as the app)
+  // A sound effect's own wave (the app reads it from the library file): a quick hit that dies away, the same shape for the same name
+  function sfxPeaks(name) {
+    let h = 7;
+    for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 9973;
+    const rand = () => (h = (h * 16807) % 2147483647) / 2147483647;
+    return Array.from({ length: 80 }, (_, i) => Math.min(1, (0.35 + rand() * 0.65) * Math.exp(-i / 38)));
+  }
+
   function drawTimeline() {
     const wrap = $('timelineScroll');
     if (!wrap.clientWidth || document.body.classList.contains('tl-closed') && !document.body.classList.contains('ai-busy')) return;
     const len = axisLength();
     S.pxPerSec = zoomPx(wrap.clientWidth, len);
-    if ($('tlZoomBar')) $('tlZoomBar').value = Math.round(S.zoomAt * 100);
+    const bar = $('tlZoomBar');
+    if (bar) { bar.value = Math.round(S.zoomAt * 100); bar.style.setProperty('--zp', bar.value + '%'); }
     const dpr = window.devicePixelRatio || 1;
     const room = Math.floor(wrap.clientHeight - 20);
-    const spare = room - (layout(TL.CLIPH).contentEnd + TL.LANE + TL.GAPY * 2);
-    const lay = layout(Math.max(TL.CLIPH, Math.min(TL.CLIPMAX, TL.CLIPH + spare)));
-    const w = Math.ceil(len * (1 + TL_PAD) * S.pxPerSec);
+    // a shorter timeline area shrinks everything in it together, down to 60% (as the app)
+    TL.k = 1;
+    const need1 = layout(TL.CLIPH).contentEnd + TL.LANE + TL.GAPY * 2;
+    TL.k = PHONE_TL() ? 1 : Math.max(0.6, Math.min(1, room / need1));
+    const baseClip = Math.round(TL.CLIPH * TL.k);
+    const spare = room - (layout(baseClip).contentEnd + TL.LANE + TL.GAPY * 2);
+    const lay = layout(TL.k < 1 ? baseClip : Math.max(TL.CLIPH, Math.min(TL.CLIPMAX, TL.CLIPH + spare)));
+    const tail = tlTail(len);
+    const w = Math.ceil((len + tail) * S.pxPerSec) + 16;
     const lead = tlLead();
     wrap.style.paddingLeft = lead ? lead + 'px' : '';
-    wrap.style.paddingRight = lead ? Math.max(0, Math.round(lead - len * TL_PAD * S.pxPerSec)) + 'px' : '';
+    wrap.style.paddingRight = lead ? Math.max(0, Math.round(lead - tail * S.pxPerSec)) + 'px' : '';
     const h = Math.max(lay.contentEnd + TL.LANE + TL.GAPY * 2, room);
     for (const c of [canvas, base]) { c.width = w * dpr; c.height = h * dpr; }
     canvas.style.width = w + 'px';
@@ -167,26 +186,27 @@
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.fillStyle = '#040404';
     g.fillRect(0, 0, w, h);
-    const { RULER, GAPY, SPLIT } = TL;
+    const { RULER, SPLIT } = TL;
     const { clipY, clipH } = lay;
     const SFXH = TL.LANE;
     const ZH = TL.LANE;
-    const sndH = Math.max(20, Math.round((clipH - SPLIT) * 0.3));
+    const sndH = Math.max(20, TL.LANE, Math.round((clipH - SPLIT) * 0.3));
     const picH = clipH - SPLIT - sndH;
     const sndY = clipY + picH + SPLIT;
     const xEnd = len * S.pxPerSec;
     const toEnd = (x0, wdt, least) => Math.max(Math.min(least, wdt), Math.min(wdt, xEnd - x0));
 
+    // every track's row: a flat dark lane, 6 px corners
     for (const l of lay.order) {
       if (l.video) continue;
       g.beginPath();
-      g.roundRect(0, l.y, w, l.h, 4);
-      g.fillStyle = 'rgba(255,255,255,0.035)';
+      g.roundRect(0, l.y, w, l.h, 6);
+      g.fillStyle = '#151515';
       g.fill();
     }
 
     // clips: the edited view = one block per kept clip, 6px apart; the original = one block
-    const GAPW = 3;
+    const GAPW = PHONE_TL() ? 4 : 3;
     const blocks = [];
     if (S.edited) {
       let at = 0;
@@ -199,9 +219,9 @@
     spans.forEach(([x0, x1]) => {
       const cw = Math.max(2, x1 - x0);
       g.save();
-      g.beginPath(); g.roundRect(x0, sndY, cw, sndH, 4);
+      g.beginPath(); g.roundRect(x0, sndY, cw, sndH, 6);
       g.fillStyle = 'rgba(255,255,255,0.07)'; g.fill();
-      g.beginPath(); g.roundRect(x0, clipY, cw, picH, 4); g.clip();
+      g.beginPath(); g.roundRect(x0, clipY, cw, picH, 6); g.clip();
       g.fillStyle = 'rgba(255,255,255,0.07)'; g.fillRect(x0, clipY, cw, picH);
       if (thumb.complete && thumb.naturalWidth) {   // the picture: frames at their own shape, left to right
         const dw = thumb.naturalWidth * picH / thumb.naturalHeight;
@@ -209,45 +229,46 @@
       }
       g.restore();
     });
-    // the sound: separate mirrored bars on a dark green block, brighter where it's louder
+    // the sound: one clean filled shape rising from the bottom of a dark green block (as the app)
     const per = WAVE.length / DURATION;
-    const mid = sndY + sndH / 2;
-    const ampW = sndH / 2 - 2;
+    const ampW = sndH - 6;
     spans.forEach(([x0, x1]) => {
       const cw = Math.max(2, x1 - x0);
       g.save();
-      g.beginPath(); g.roundRect(x0, sndY, cw, sndH, 4); g.clip();
+      g.beginPath(); g.roundRect(x0, sndY, cw, sndH, 6); g.clip();
       g.fillStyle = '#0c2a22'; g.fillRect(x0, sndY, cw, sndH);
-      for (let px = x0 + 3; px + 2 < x1 - 2; px += 4) {
+      const bot = sndY + sndH - 2, STEP = 2;
+      g.beginPath(); g.moveTo(x0 + 2, bot);
+      let lastPx = x0 + 2;
+      for (let px = x0 + 2; px <= x1 - 2; px += STEP) {
         const i0 = Math.floor(xToSrc(px) * per);
-        const i1 = Math.max(i0 + 1, Math.floor(xToSrc(px + 4) * per));
+        const i1 = Math.max(i0 + 1, Math.floor(xToSrc(px + STEP) * per));
         let peak = 0;
         for (let i = i0; i < i1 && i < WAVE.length; i++) peak = Math.max(peak, WAVE[i]);
-        const v = Math.pow(Math.min(1, peak * 1.15), 0.8);
-        const hh = Math.max(1, v * ampW);
-        g.fillStyle = `rgba(76,193,150,${(0.3 + 0.7 * Math.min(1, v * 1.4)).toFixed(2)})`;
-        g.fillRect(px, mid - hh, 2, hh * 2);
+        if (i1 - i0 <= 1) { const f = xToSrc(px) * per - i0; const a = WAVE[i0] || 0; const b = WAVE[Math.min(WAVE.length - 1, i0 + 1)] || 0; peak = a + (b - a) * f; }
+        g.lineTo(px, bot - Math.pow(Math.min(1, peak * 1.3), 0.7) * ampW); lastPx = px;
       }
+      g.lineTo(lastPx, bot); g.closePath(); g.fillStyle = '#4cc196'; g.fill();
       g.restore();
     });
 
-    // zooms: yellow chips in their own track, as long as the zoom
+    // zooms: terracotta chips in their own track, as long as the zoom
     g.font = '600 11px Inter, Segoe UI';
     g.textBaseline = 'middle';
     for (const z of [...S.zooms].sort((p, q) => p.start - q.start)) {
       const x0 = srcToX(z.start) + 1;
       const wz = toEnd(x0, Math.max(8, srcToX(z.end) - srcToX(z.start) - 2), 8);
       const y0 = lay.lanes.z1.y;
-      const hot = S.drag === z;   // held / just added: bright, like the app's chip while it is dragged
-      g.beginPath(); g.roundRect(x0, y0, wz, ZH, 4);
-      g.fillStyle = hot ? '#facc15' : 'rgba(250,204,21,0.18)'; g.fill();
-      const ink = hot ? '#422006' : '#facc15';
+      const hot = S.drag === z;   // held / just added: pale, like the app's chip while it is dragged
+      g.beginPath(); g.roundRect(x0, y0, wz, ZH, 6);
+      g.fillStyle = hot ? '#efc9b3' : '#6e3b25'; g.fill();
+      const ink = hot ? '#2a1208' : '#f6e1d4';
       const label = `${Math.round(z.scale)}%`;
       const tw = g.measureText(label).width;
-      if (wz < 24 + tw + 8 && wz >= tw + 12) {
+      if (wz < 34 + tw + 8 && wz >= tw + 12) {
         g.fillStyle = ink; g.fillText(label, x0 + (wz - tw) / 2, y0 + ZH / 2 + 0.5);
-      } else if (wz >= 24) {
-        const cx = x0 + 12;
+      } else if (wz >= 34) {
+        const cx = x0 + 22;
         const cy = y0 + ZH / 2;
         const R = 4.4;
         g.strokeStyle = ink; g.lineWidth = 1.5; g.lineCap = 'round';
@@ -256,93 +277,129 @@
         if (z.type !== 'punch') { g.moveTo(cx - 3.4, cy - 1); g.lineTo(cx + 1.4, cy - 1); }
         if (z.type === 'push') { g.moveTo(cx - 1, cy - 3.4); g.lineTo(cx - 1, cy + 1.4); }
         g.stroke(); g.lineCap = 'butt';
-        if (z.type === 'punch') { g.beginPath(); g.arc(cx - 1, cy - 1, 1.5, 0, Math.PI * 2); g.fillStyle = ink; g.fill(); }
-        if (wz >= 24 + tw + 8) { g.fillStyle = ink; g.fillText(label, x0 + 22, cy + 0.5); }
+        if (z.type === 'punch') { g.beginPath(); g.arc(cx - 1, cy - 1, 1.4, 0, Math.PI * 2); g.fillStyle = ink; g.fill(); }
+        if (34 + tw + 8 <= wz) { g.fillStyle = ink; g.fillText(label, x0 + 33, cy + 0.5); }
       }
     }
 
-    // overlays (pictures over the video): blue-violet chips in the top track, as long as they show
+    // overlays (pictures and added text over the video): grey chips in the top track, as long as they show
     for (const [a, b, name] of S.overlays) {
       const x0 = srcToX(a) + 1;
       const wo = toEnd(x0, Math.max(8, srcToX(b) - srcToX(a) - 2), 8);
       const y0 = lay.lanes.o1.y;
-      g.beginPath(); g.roundRect(x0, y0, wo, TL.LANE, 4);
-      g.fillStyle = 'rgba(139,92,246,0.32)'; g.fill();
-      const ink = '#c3a6ff';
-      const cx = x0 + 12;
+      g.beginPath(); g.roundRect(x0, y0, wo, TL.LANE, 6);
+      g.fillStyle = '#2d2f33'; g.fill();
+      const ink = '#d4d4d8';
+      const cx = x0 + 22;
       const cy = y0 + TL.LANE / 2;
       g.save(); g.beginPath(); g.rect(x0, y0, wo - 4, TL.LANE); g.clip();
-      if (wo >= 22) {   // a small picture icon: frame, sun, hill
+      if (wo >= 32 && /text/i.test(name)) {   // an added text: a "T"
+        g.strokeStyle = ink; g.lineWidth = 1.6; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(cx - 4.5, cy - 4); g.lineTo(cx + 4.5, cy - 4); g.moveTo(cx, cy - 4); g.lineTo(cx, cy + 4.5); g.stroke(); g.lineCap = 'butt';
+      } else if (wo >= 32) {   // a small picture icon: frame, sun, hill
         g.strokeStyle = ink; g.lineWidth = 1.3; g.lineJoin = 'round';
         g.beginPath(); g.roundRect(cx - 5, cy - 4.5, 10, 9, 2); g.stroke();
         g.beginPath(); g.moveTo(cx - 4.5, cy + 4); g.lineTo(cx - 1, cy + 0.5); g.lineTo(cx + 1.5, cy + 3); g.lineTo(cx + 5, cy); g.stroke();
         g.beginPath(); g.arc(cx - 1.6, cy - 1.6, 1.1, 0, Math.PI * 2); g.fillStyle = ink; g.fill();
       }
-      if (wo >= 40) { g.fillStyle = ink; g.fillText(name, x0 + 23, cy + 0.5); }
+      if (wo >= 50) { g.fillStyle = ink; g.fillText(name, x0 + 33, cy + 0.5); }
       g.restore();
     }
 
-    // sound effects: a soft green pill with a mini waveform and the name, a line from it through the clip at the moment
+    // captions: one deep purple chip per caption line in the track right above the video (the edited view only, as the app)
+    if (S.edited) {
+      const capY = lay.lanes.c1.y;
+      g.font = '500 12px Inter, Segoe UI';
+      for (let i = 0; i < SPOKEN.length; i += 4) {
+        const t0 = SPOKEN[i][0];
+        if (!S.kept.some(([a, b]) => t0 >= a && t0 < b)) continue;
+        const t1 = i + 4 < SPOKEN.length ? SPOKEN[i + 4][0] - 0.05 : DURATION;
+        const x0 = srcToX(t0) + 2;
+        const wc = Math.max(4, Math.min(srcToX(t1), xEnd) - srcToX(t0) - 4);
+        g.beginPath(); g.roundRect(x0, capY, wc, TL.LANE, 6); g.fillStyle = '#3a2b66'; g.fill();
+        if (wc >= 30) {
+          g.save(); g.beginPath(); g.rect(x0, capY, wc - 4, TL.LANE); g.clip();
+          g.fillStyle = '#ece8fb'; g.fillText(SPOKEN.slice(i, i + 4).map(([, wd]) => wd).join(' '), x0 + 9, capY + TL.LANE / 2 + 0.5);
+          g.restore();
+        }
+      }
+    }
+
+    // sound effects: a dark green chip with its own wave (filled from the bottom) and the name at the left; it starts on its moment
     const sfxXs = S.sfx.map((sec) => Math.round(srcToX(sec)) + 0.5).sort((p, q) => p - q);
     S.sfx.forEach((sec, i) => {
       const sx = Math.round(srcToX(sec)) + 0.5;
       const name = soundName(sec, i);
-      // a pill never runs into the next sound: it gets shorter instead (and the name is clipped to it)
+      g.font = '600 11px Inter, Segoe UI';
+      const bx = sx - 0.75;
+      // a chip never runs into the next sound: it gets shorter instead (and the name is clipped to it)
       const next = sfxXs.find((x) => x > sx + 0.5);
       const room = next === undefined ? Infinity : Math.max(SFXH, next - sx - 3);
-      const cw = Math.min(room, toEnd(sx - SFXH / 2, Math.min(150, 32 + g.measureText(name).width + 14), SFXH));
+      const cw = Math.min(room, toEnd(bx, Math.min(150, 12 + g.measureText(name).width + 22), SFXH));
       const by = lay.lanes.s1.y;
-      const bx = sx - SFXH / 2;
-      g.fillStyle = 'rgba(74,222,128,0.8)';
-      g.fillRect(sx - 0.75, clipY + clipH, 1.5, by - clipY - clipH);
-      g.beginPath(); g.arc(sx, clipY + clipH - 0.5, 2.6, 0, Math.PI * 2); g.fill();
       const hot = S.drag === 'sound' && sec === S.whoosh;
-      g.beginPath(); g.roundRect(bx, by, cw, SFXH, 4);
-      g.fillStyle = hot ? '#4ade80' : 'rgba(34,197,94,0.2)'; g.fill();
-      const cy = by + SFXH / 2;
-      g.fillStyle = hot ? '#052e16' : '#6ee7a0';
-      [[0, 4], [4, 10], [8, 6], [12, 2.5]].forEach(([dx, hh]) => { g.beginPath(); g.roundRect(bx + 11 + dx, cy - hh / 2, 2, hh, 1); g.fill(); });
-      g.save(); g.beginPath(); g.rect(bx, by, cw - 8, SFXH); g.clip();
-      g.fillText(name, bx + 32, cy + 0.5); g.restore();
+      g.beginPath(); g.roundRect(bx, by, cw, SFXH, 6);
+      g.fillStyle = hot ? '#bfeedb' : '#1d4a3b'; g.fill();
+      const pk = sfxPeaks(name);
+      g.save(); g.beginPath(); g.roundRect(bx, by, cw, SFXH, 6); g.clip();
+      g.fillStyle = hot ? 'rgba(12,42,34,0.35)' : '#3b9a7b';
+      g.beginPath(); g.moveTo(bx, by + SFXH);
+      for (let px = 0; px <= cw; px += 2) g.lineTo(bx + px, by + SFXH - Math.max(1, Math.pow(pk[Math.min(pk.length - 1, Math.floor(px / Math.max(1, cw) * pk.length))] || 0, 0.8) * SFXH * 0.5));
+      g.lineTo(bx + cw, by + SFXH); g.closePath(); g.fill();
+      g.restore();
+      g.save(); g.beginPath(); g.rect(bx, by, cw - 6, SFXH); g.clip();
+      g.fillStyle = hot ? '#0c2a22' : '#e3f7ee'; g.fillText(name, bx + 12, by + SFXH / 2 + 0.5); g.restore();
     });
     if (S.sel !== null && spans[S.sel]) {
+      // a selected clip, Kling's look as in the app: a white frame whose two sides are wide handles with a grey pill in each, nothing dimmed
       const [sx, ex] = spans[S.sel];
-      const sw = ex - sx;
-      const top = clipY - 3;
-      const hgt = clipH + 6;
-      g.fillStyle = 'rgba(0,0,0,0.62)';
-      g.fillRect(0, clipY, Math.max(0, sx), clipH);
-      g.fillRect(sx + sw, clipY, Math.max(0, w - sx - sw), clipH);
-      g.strokeStyle = '#ffffff'; g.lineWidth = 2.5;
-      g.beginPath(); g.roundRect(sx, top, sw, hgt, 5); g.stroke();
+      const sw = Math.max(4, ex - sx);
+      const top = clipY - 1;
+      const hgt = clipH + 2;
+      const hw = PHONE_TL() ? 0 : 11;
+      g.save();
       g.fillStyle = '#ffffff';
-      for (const gx of [sx, sx + sw]) { g.beginPath(); g.roundRect(gx - 3, clipY + clipH / 2 - 12, 6, 24, 3); g.fill(); }
+      if (hw && sw > 2 * hw + 10) {
+        g.beginPath(); g.roundRect(sx, top, sw, hgt, 6); g.roundRect(sx + hw, top + 3, sw - 2 * hw, hgt - 6, 5);
+        g.fill('evenodd');
+        g.fillStyle = '#9b9ba4';
+        const ph = Math.min(26, hgt * 0.3);
+        for (const px of [sx + hw / 2 - 1.25, sx + sw - hw / 2 - 1.25]) { g.beginPath(); g.roundRect(px, top + hgt / 2 - ph / 2, 2.5, ph, 6); g.fill(); }
+      } else { g.strokeStyle = '#ffffff'; g.lineWidth = 2.5; g.beginPath(); g.roundRect(sx + 1, top + 1, sw - 2, hgt - 2, 6); g.stroke(); }
+      g.restore();
+      if (PHONE_TL()) {
+        g.fillStyle = '#ffffff';
+        for (const gx of [sx, sx + sw]) { g.beginPath(); g.roundRect(gx - 5, clipY + clipH / 2 - 18, 10, 36, 6); g.fill(); }
+      }
       const [a, b] = S.kept[S.sel];
       const label = `${(b - a).toFixed(1)}s`;
-      g.font = '600 11px Inter, Segoe UI';
-      const lw = g.measureText(label).width + 16;
-      const zoomY = clipY - GAPY - ZH;
-      g.beginPath(); g.roundRect(sx, zoomY, lw, ZH, 7); g.fillStyle = '#ffffff'; g.fill();
-      g.fillStyle = '#0a0a0a'; g.fillText(label, sx + 8, zoomY + ZH / 2 + 0.5);
+      g.font = '600 10px Inter, Segoe UI';
+      const lw = Math.round(g.measureText(label).width) + 12;
+      const lh = 18;
+      const lx = sx + 6;
+      const ly = Math.round(top + 6);
+      g.beginPath(); g.roundRect(lx, ly, lw, lh, 6); g.fillStyle = '#ffffff'; g.fill();
+      g.fillStyle = '#0a0a0a'; g.fillText(label, lx + 6, ly + lh / 2 + 0.5);
       S.selBox = { x0: sx, x1: ex, y: clipY + clipH / 2 };
     }
     g.textBaseline = 'alphabetic';
 
-    // ruler on top: a few clear time labels, small ticks
+    // ruler on top (as the app): small grey "00:10" numbers, each just left of a faint full-height line at its moment,
+    // evenly spaced; one short tick halfway between two numbers; a faint hairline along the top
     g.fillStyle = '#040404'; g.fillRect(0, 0, w, RULER);
-    const step = S.pxPerSec > 60 ? 1 : S.pxPerSec > 15 ? 5 : 10;
-    const minor = step / 5;
-    g.font = '500 11px Inter, Segoe UI';
-    g.textBaseline = 'middle';
-    for (let k = 0; k * minor < len * (1 + TL_PAD); k++) {
-      const t = k * minor;
-      const major = k % 5 === 0;
-      const tx = t * S.pxPerSec;
-      g.fillStyle = major ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
-      g.fillRect(Math.round(tx), RULER - (major ? 7 : 4), 1, major ? 7 : 4);
-      if (major) { g.fillStyle = '#8a8a8a'; g.fillText(fmt(Math.round(t * 1000) / 1000).replace(/\.\d$/, ''), tx + 5, RULER / 2 - 1); }
+    const step = [1, 2, 5, 10, 15, 30, 60, 120, 300].find((s) => s * S.pxPerSec >= RULER_GAP) || 600;
+    const mmss = (t) => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.round(t % 60)).padStart(2, '0')}`;
+    g.fillStyle = '#1c1c1f'; g.fillRect(0, 0, w, 1);
+    g.font = '500 11px Inter, Segoe UI'; g.textAlign = 'right'; g.textBaseline = 'alphabetic';
+    const end = len + tail;
+    const minor = step / 2;
+    for (let k = 1; k * minor < end; k++) if (k % 2) { g.fillStyle = '#34343a'; g.fillRect(Math.round(k * minor * S.pxPerSec), Math.round(RULER / 2) - 3, 1, 6); }
+    for (let k = 1; k * step < end; k++) {
+      const tx = Math.round(k * step * S.pxPerSec);
+      g.fillStyle = '#34343a'; g.fillRect(tx, 1, 1, RULER - 1);
+      g.fillStyle = '#9a9aa3'; g.fillText(mmss(k * step), tx - 7, Math.round(RULER / 2 + 4));
     }
-    g.textBaseline = 'alphabetic';
+    g.textAlign = 'left';
     S.lay = lay;
     placeGutter();
     drawPlayhead();
@@ -363,7 +420,7 @@
         if (t.video) continue;
         num++;
         const c = document.createElement('div');
-        c.className = 'tl-ctl';
+        c.className = t.cap ? 'tl-ctl cap' : 'tl-ctl';   // the captions track: its grip and + are invisible (as the app)
         c.dataset.id = t.id;
         c.innerHTML = `<button class="tl-grip" type="button" tabindex="-1">${GRIP_SVG}</button><button class="tl-add gen" type="button" tabindex="-1">${PLUS_SVG}</button><span class="tl-name">Track ${num}</span>`;
         box.appendChild(c);
@@ -377,8 +434,9 @@
       box.appendChild(n);
     }
     const top = sc.offsetTop - sc.scrollTop;
-    for (const c of box.querySelectorAll('.tl-ctl')) c.style.top = top + S.lay.lanes[c.dataset.id].y + 'px';
-    $('tlNewTrack').style.top = top + S.lay.contentEnd + 'px';
+    // each row as tall as its track, so the + sits on the track's middle (as the app's placeTlAdds)
+    for (const c of box.querySelectorAll('.tl-ctl')) { const ln = S.lay.lanes[c.dataset.id]; c.style.height = ln.h + 'px'; c.style.top = Math.round(top + ln.y) + 'px'; }
+    $('tlNewTrack').style.top = top + S.lay.contentEnd + (TL.LANE - 22) / 2 + 'px';
     if (tlLead()) {
       // right before the start of their lane, as tall as the lane, sliding away with the timeline (app.js placeTlAdds)
       const x0 = sc.offsetLeft + canvas.offsetLeft - sc.scrollLeft;
@@ -418,11 +476,10 @@
     }
     if (fixed) fixed.hidden = true;
     if (S.playing && (px > sc.scrollLeft + sc.clientWidth - 6 || px < sc.scrollLeft)) sc.scrollLeft = Math.max(0, px - 8);
+    // a solid white line starting inside a small triangle head that hangs from the very top, its tip on the line (as the app)
     g.fillStyle = '#ffffff';
-    g.fillRect(px - 1, 0, 2, H);
-    g.beginPath();
-    g.roundRect(px - 6, 0, 12, 15, [0, 0, 5, 5]);
-    g.fill();
+    g.save(); g.strokeStyle = '#ffffff'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(px, 6); g.lineTo(px, H); g.stroke(); g.restore();
+    g.beginPath(); g.moveTo(px - 6.5, 0); g.lineTo(px + 6.5, 0); g.lineTo(px, 10); g.closePath(); g.fill();
   }
 
   /* The picture: the video in the animation, a still in the login window. It has its own captions. */

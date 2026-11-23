@@ -11,6 +11,8 @@ app = here.parent.parent / 'Cutly Video Editor' / 'app'
 
 shutil.copy(app / 'static' / 'style.css', out / 'style.css')
 shutil.copy(app / 'static' / 'panel-style.css', out / 'panel-style.css')   # the right-hand panels' look
+for name in ('ui.css', 'panelui.css', 'menuui.css'):   # the standard look of every panel, dropdown and menu (the app loads these after style.css)
+    shutil.copy(app / 'static' / name, out / name)
 # The demo is always the desktop editor, scaled down (the login window shows it 820 px wide, exactly where the app's phone
 # layout starts). mobile.css still holds desktop rules (it hides the phone pieces), so it is copied with its phone-width
 # rules switched off: every "@media (max-width: ...)" becomes one no window matches.
@@ -28,7 +30,7 @@ for name in ('TikTokSans-Bold.ttf', 'TikTokSans-OFL.txt'):
 html = (app / 'static' / 'index.html').read_text(encoding='utf-8')
 html = re.sub(r'<link rel="icon"[^>]*>\n', '', html)
 html = html.replace('/static/', '').replace('Vlance', 'Cutly')
-html = re.sub(r'<script src="[^"]*"></script>\n', '', html)
+html = re.sub(r'<script src="[^"]*"></script>(<!--[^\n]*-->)?\n', '', html)   # (the crash-data script has a comment after it)
 # Admin-only button: never part of the public demo
 html = re.sub(r'  <button class="train-btn[^\n]*\n', '', html)
 html = html.replace('</head>', '<link rel="stylesheet" href="demo-only.css">\n</head>')
@@ -37,7 +39,7 @@ html = html.replace('</body>', '<script src="demo.js"></script>\n</body>')
 ver = (app / 'VERSION').read_text(encoding='utf-8').strip()
 html = re.sub(r'(href|src)="([a-z0-9-]+\.(?:css|js))(?:\?v=[^"]*)?"', rf'\1="\2?v={ver}"', html)
 # the demo script changes on its own schedule (not with the app), so it has its own cache number
-html = html.replace(f'demo.js?v={ver}', f'demo.js?v={ver}-w18').replace(f'demo-only.css?v={ver}', f'demo-only.css?v={ver}-w9')
+html = html.replace(f'demo.js?v={ver}', f'demo.js?v={ver}-w19').replace(f'demo-only.css?v={ver}', f'demo-only.css?v={ver}-w9')
 (out / 'index.html').write_text(html, encoding='utf-8')
 
 # The caption looks (the Captions style window's cards) as data: the app's own list, run once here, so the demo draws the same looks
