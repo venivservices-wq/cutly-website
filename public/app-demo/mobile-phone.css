@@ -4,6 +4,7 @@
    Desktop is untouched: every rule sits in the media query, the .m-only pieces are hidden elsewhere.
    Look rules: STYLE.md (flat, no borders, no shadows, no gradients). Loaded last on purpose. */
 .m-only { display: none; }
+:root { --m-css: 1; }   /* marker: index.html fetches this sheet again if the page loaded without it */
 .qn-ic, .qn-sub, .fail-why { display: none; }   /* the bigger out-of-credits notice is a phone thing */
 @media (min-width: 821px) { #mProjects, .m-only { display: none !important; } }   /* the hamburger and the other phone pieces never show on desktop */
 
@@ -111,7 +112,7 @@
   body:not(.m-chat) #tab-ai .ai-scroll, body:not(.m-chat) #tab-ai .ai-empty { display: none !important; }
   body:not(.m-chat) #tab-ai { display: flex !important; flex-direction: column; padding: 0; overflow: visible; flex: none; }
   body:not(.m-chat) #tab-ai .ai-foot { padding: clamp(0.7rem, 1.8dvh, 1.1rem) 10px 4px; padding-bottom: max(10px, env(safe-area-inset-bottom)); gap: 8px; }
-  #tab-ai #aiRun.idle, body:not(.m-chat) #tab-ai #aiRun { display: none !important; }   /* the sheet has it: tapping the box opens the chat */
+  #tab-ai #aiRun.idle, body:not(.m-chat) #tab-ai #aiRun.running { display: none !important; }   /* with open comments the Run button shows right under the box (owner, 2026-11-20): comments are typed one after another, the chat stays closed */
   body:not(.m-chat) #tab-ai #aiSugs { display: none !important; }   /* suggestions only show in the open chat */
   body:not(.m-chat) .peek { max-height: 34dvh; }
   body.m-typing #tab-ai #aiSugs, body.m-typing #tab-ai .ai-empty { display: none !important; }
@@ -605,7 +606,12 @@
 
 /* the time line under a message shows only after a tap on the message (the owner, 2026-11-14) */
 @media (max-width: 720px) {
-  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.me.tap-meta:not(.show-meta) > .msg-meta { display: none !important; }
+  /* hidden, not removed: the line keeps its height, so tapping a message to see its time never moves the others (the owner, 2026-11-20) */
+  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.me.tap-meta:not(.show-meta) > .msg-meta { visibility: hidden !important; }
+  /* "Used 1 credit" under an answer shows only after a tap on the answer and goes by itself after a few seconds (same: its space stays) */
+  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.ai > .ai-cost { opacity: 0 !important; transition: opacity 0.2s ease; }
+  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.ai.show-cost > .ai-cost { opacity: 1 !important; }
+  :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.ai .ai-card { cursor: pointer; }
   :not(#ui):not(#ui2):not(#ui3) #tab-ai .msg.me .bubble { cursor: pointer; }
 }
 
@@ -676,15 +682,15 @@
 
 /* owner 2026-11-19: the track + is smaller and the colour of the track lanes (white 3.5% over #040404 = #0d0d0d); the buttons are as tall as their lane and centred in it (flex) */
 @media (max-width: 820px) {
-  .tl-ctl { align-items: center !important; width: 28px !important; }   /* grip 10 + plus 18: the plus ends 3 px before the lane (app.js placeTlAdds) */
-  .tl-ctl .tl-add, .tl-newtrack { width: 18px !important; height: 18px !important; min-width: 18px !important; border-radius: 4px !important; background: #0d0d0d !important; }
-  .tl-ctl .tl-add svg, .tl-newtrack svg { width: 12px !important; height: 12px !important; stroke-width: 2.2; }
+  .tl-ctl { align-items: center !important; width: 32px !important; }   /* grip 10 + plus 22 (bigger, the owner 2026-11-20): the plus ends 3 px before the lane (app.js placeTlAdds) */
+  .tl-ctl .tl-add, .tl-newtrack { width: 22px !important; height: 22px !important; min-width: 22px !important; border-radius: 5px !important; background: #0d0d0d !important; }
+  .tl-ctl .tl-add svg, .tl-newtrack svg { width: 15px !important; height: 15px !important; stroke-width: 2.4; }
   .tl-ctl .tl-add:active, .tl-newtrack:active { background: #1a1a1a !important; }
 }
 
 /* the phone's playhead: a fixed white line with its grip, in the middle of the timeline box (app.js syncFixedHead) */
 #phFixed { position: absolute; width: 2px; margin-left: -1px; background: #fff; pointer-events: none; z-index: 6; }
-#phFixed::before { content: ""; position: absolute; top: 0; left: -5px; width: 12px; height: 15px; background: #fff; border-radius: 0 0 5px 5px; }
+#phFixed::before { content: ""; position: absolute; top: 0; left: -5.5px; width: 13px; height: 10px; background: #fff; clip-path: polygon(0 0, 100% 0, 50% 100%); }   /* the small triangle head, its tip on the line (the owner, 2026-11-21) */
 #phFixed[hidden] { display: none; }
 
 /* the phone's black is 98% black, #050505 (the owner, 2026-11-19, to try): the page, the video area and the timeline */
@@ -749,3 +755,46 @@
 @media (max-width: 820px) {
   html body:not(.m-edit) .player:has(.preview-note.show) > .m-fabs { bottom: auto !important; top: var(--fab-top, auto) !important; }
 }
+
+/* Phone (owner 2026-11-19): 1) while the video is made ready (transcript) the screen already looks like the editor: the picture with the AI animation, a greyed play bar,
+   a timeline with the same animation and the greyed tool row (app.js aiLook builds .an-m); 2) while the AI edits, the tool row is greyed out and can't be pressed;
+   3) the Projects button stays in the top bar while the AI edits, so another project can be opened (Edit mode used to hide it, and the row of buttons had no way out). */
+.an-m { display: none; }
+@media (max-width: 820px) {
+  .analyzing.as-ai { height: 100%; width: 100%; justify-content: flex-start; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top, 0px) + 54px) 0 0; box-sizing: border-box; }
+  .analyzing.as-ai .an-frame { flex: 1 1 0; min-height: 0; height: auto; width: auto; max-width: 100%; }
+  .analyzing.as-ai .an-m { display: flex; flex-direction: column; flex: none; width: 100%; gap: 8px; }
+  .an-m-bar { display: flex; align-items: center; justify-content: center; gap: 10px; height: 40px; color: #6a6a6a; font-size: 13px; }
+  .an-m-play { width: 36px; height: 36px; border-radius: 10px; background: #1b1b1b; }
+  .an-m-add { padding: 8px 12px; border-radius: 10px; background: #141414; }
+  .an-m-tl { position: relative; height: 26dvh; min-height: 150px; overflow: hidden; background: #050505; }
+  .an-m-tl .ai-working { display: block; animation: none; }
+  .an-m .m-tools { display: flex; gap: 2px; overflow: hidden; padding: 4px 8px max(8px, env(safe-area-inset-bottom)); background: var(--m-bg); opacity: 0.35; pointer-events: none; }
+  body.ai-busy .m-tools { opacity: 0.35; pointer-events: none; }
+  body.ai-busy .m-tools button { color: #6a6a6a; }
+  body.m-edit.ai-busy:not(.no-project) .topbar #mProjects { display: inline-grid !important; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,0.08); color: #f2f2f2; }
+}
+
+/* 2026-11-19: the playhead is under the AI's blur, not over it (it was drawn above the greyed timeline) */
+body.ai-busy #phFixed { z-index: 3; }
+body.ai-busy #timelineWrap .ai-working { z-index: 8; }
+
+/* 2026-11-19: the Styles picker covers the whole screen on a phone (nothing of the page shows behind it or moves) */
+@media (max-width: 820px) {
+  .cs.as-modal { left: 0 !important; top: 0 !important; right: 0; bottom: 0; width: 100% !important; height: 100dvh !important; max-height: none !important; transform: none !important; border-radius: 0 !important; box-sizing: border-box; padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 820px) {
+  /* 2026-11-20 (the owner, phone): the words box lines up with the cards below it (no double side padding), one line tall that grows with the text, a quiet lit state when typing */
+  #tab-captions:not(.hook-ctl) #capSay { display: block; padding: 4px 0 14px; }
+  #capSay textarea { display: block; width: 100%; box-sizing: border-box; min-height: 48px; max-height: 132px; padding: 13px 16px; border: 0; outline: 0; border-radius: 12px; background: var(--ui-fill, rgba(255,255,255,0.06)); color: var(--ui-text-strong, #f2f2f2); font-family: inherit; font-size: 16px; line-height: 22px; resize: none; field-sizing: content; user-select: text; -webkit-user-select: text; transition: background 0.15s; }
+  #capSay textarea::placeholder { color: rgba(255,255,255,0.38); }
+  #capSay textarea:focus { background: var(--ui-fill-hi, rgba(255,255,255,0.1)); }
+  #capSay textarea:disabled { opacity: 0.5; }
+}
+
+/* phone: the track buttons slide with the timeline by the browser's own scroll-driven animation, so they never lag behind the scroll (the owner, 2026-11-21: they jittered left / right) */
+.timeline-wrap { timeline-scope: --tlx; }
+#timelineScroll { scroll-timeline: --tlx x; }
+@keyframes tl-slide { from { transform: translateX(0); } to { transform: translateX(calc(var(--tlmax, 0px) * -1)); } }
+#tlCtls.tl-slide-native { animation: tl-slide linear both; animation-timeline: --tlx; }

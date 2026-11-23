@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /app-demo/
+
+Sitemap: https://cutlyai.app/sitemap.xml

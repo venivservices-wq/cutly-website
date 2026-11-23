@@ -15,7 +15,7 @@
           <span>Continue with Google</span>
         </a>
       </div>
-      <p class="auth-legal">By continuing, you accept our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+      <p class="auth-legal">By continuing, you accept our <a href="terms.html">Terms of Use</a> and <a href="#">Privacy Policy</a></p>
     </div>
   </div>
 </div>`);

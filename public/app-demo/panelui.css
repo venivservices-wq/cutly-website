@@ -1,0 +1,124 @@
+/* PanelUI look: every item popup (sound, zoom, picture...) is built from panelui.js and styled ONLY here, through the variables below.
+   Change a variable and EVERY panel changes. Grey and white, 16px padding, 16px between blocks, every text 13px (owner, 2026-11-13). */
+#pop.pui {
+  --pui-bg: var(--ui-panel);            /* the panel */
+  --pui-radius: var(--ui-radius);            /* the panel's corners */
+  --pui-pad: var(--ui-pad);              /* space on every side */
+  --pui-gap: 16px;              /* space between blocks */
+  --pui-gap-in: 14px;           /* label row to its slider */
+  --pui-ctl-radius: var(--ui-ctl-radius);        /* buttons, fields, bars */
+  --pui-ctl-h: var(--ui-ctl-h);            /* a control's height */
+  --pui-head-h: 36px;           /* the play / icon tile and the name row */
+  --pui-fill: var(--ui-fill);        /* a field or bar */
+  --pui-fill-2: var(--ui-fill-2);      /* the play / icon tile, a focused field */
+  --pui-hover: var(--ui-hover);       /* a control on hover */
+  --pui-hover-2: var(--ui-hover-2);     /* the play tile on hover */
+  --pui-text: var(--ui-text);          /* normal text */
+  --pui-text-strong: var(--ui-text-strong);   /* names and numbers */
+  --pui-text-dim: var(--ui-text-dim);      /* labels */
+  --pui-text-faint: var(--ui-text-faint);    /* sub text */
+  --pui-text-quiet: var(--ui-text-quiet);    /* units, Delete */
+  --pui-text-off: var(--ui-text-off);      /* a disabled button */
+  --pui-on: var(--ui-on);            /* the picked / playing control and the slider fill */
+  --pui-on-text: var(--ui-on-text);       /* text on --pui-on */
+  --pui-track: rgba(255,255,255,0.10);       /* the slider's empty part */
+  --pui-thumb: #f2f2f2;
+  --pui-danger: var(--ui-danger);        /* Delete on hover */
+  --pui-font: var(--ui-font);
+  --pui-width: 300px;
+  --pui-ctl-w: var(--ui-ctl-w);           /* every control on the right of a label has this width, so they line up */
+  --pui-menu-bg: var(--ui-menu-bg);       /* a dropdown's list */
+}
+#pop.pui { box-sizing: border-box; width: var(--pui-width) !important; padding: var(--pui-pad) !important; display: flex; flex-direction: column; gap: var(--pui-gap); border: 0 !important; border-radius: var(--pui-radius) !important; background: var(--pui-bg) !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; font-size: var(--pui-font); color: var(--pui-text); }
+#pop.pui > * { box-sizing: border-box; margin: 0 !important; padding: 0 !important; min-width: 0; }
+#pop.pui button { font: inherit; }
+
+/* head: play (or icon) + name */
+#pop.pui .pui-head { display: flex; align-items: center; gap: 12px; }
+#pop.pui .pui-play { flex: none; width: var(--pui-head-h); height: var(--pui-head-h); min-height: 0; padding: 0; border: 0; border-radius: var(--pui-ctl-radius); display: grid; place-items: center; background: var(--pui-fill-2); color: var(--pui-text-strong); cursor: pointer; }
+#pop.pui .pui-play:hover { background: var(--pui-hover-2); }
+#pop.pui .pui-play svg { width: 14px; height: 14px; fill: currentColor; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+#pop.pui .pui-play .i-play { margin-left: 1px; }
+#pop.pui .pui-play .i-stop, #pop.pui .pui-play.on .i-play { display: none; }
+#pop.pui .pui-play.on .i-stop { display: block; }
+#pop.pui .pui-play.on { background: var(--pui-on); color: var(--pui-on-text); }
+#pop.pui .pui-icon { flex: none; width: var(--pui-head-h); height: var(--pui-head-h); display: grid; place-items: center; border-radius: var(--pui-ctl-radius); background: var(--pui-fill-2); color: var(--pui-text-strong); }
+#pop.pui .pui-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+#pop.pui .pui-title { flex: 1; min-width: 0; height: var(--pui-head-h); min-height: 0; display: flex; align-items: center; gap: 10px; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
+#pop.pui .pui-t { min-width: 0; font-size: var(--pui-font); font-weight: 600; color: var(--pui-text-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#pop.pui .pui-s { margin-left: auto; font-size: var(--pui-font); font-weight: 500; color: var(--pui-text-faint); }
+#pop.pui .pui-title:hover .pui-s { color: var(--pui-text); }
+
+/* a block = a label row (label left, number right) and, for a slider, the slider under it */
+#pop.pui .pui-block { display: flex; flex-direction: column; gap: var(--pui-gap-in); }
+#pop.pui .pui-row { display: flex; align-items: center; justify-content: space-between; height: var(--pui-ctl-h); }
+#pop.pui .pui-label { font-size: var(--pui-font); font-weight: 500; color: var(--pui-text-dim); }
+#pop.pui .pui-step { display: flex; align-items: center; border-radius: var(--pui-ctl-radius); background: var(--pui-fill); overflow: hidden; }
+#pop.pui .pui-m, #pop.pui .pui-p { width: var(--pui-ctl-h); height: var(--pui-ctl-h); min-height: 0; padding: 0; border: 0; background: transparent; color: var(--pui-text); font-size: 15px; line-height: 1; cursor: pointer; }
+#pop.pui .pui-m:hover:not(:disabled), #pop.pui .pui-p:hover:not(:disabled) { background: var(--pui-hover); }
+#pop.pui .pui-m:disabled, #pop.pui .pui-p:disabled { color: var(--pui-text-off); cursor: default; }
+#pop.pui .pui-num { display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 70px; height: var(--pui-ctl-h); padding: 0 6px; box-sizing: border-box; font-size: var(--pui-font); color: var(--pui-text-quiet); }
+#pop.pui .pui-step.solo .pui-num { min-width: 64px; }
+#pop.pui .pui-num input { width: var(--pui-head-h); height: var(--pui-ctl-h); padding: 0; border: 0; outline: 0; background: transparent; text-align: right; font: inherit; font-weight: 600; color: var(--pui-text-strong); -moz-appearance: textfield; appearance: textfield; }
+#pop.pui .pui-num input::-webkit-outer-spin-button, #pop.pui .pui-num input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#pop.pui .pui-num:focus-within { background: var(--pui-fill-2); }
+#pop.pui input[type=range] { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 14px; margin: 0; padding: 0; background: transparent; cursor: pointer; --p: 50%; }
+#pop.pui input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--pui-on) var(--p), var(--pui-track) var(--p)); }
+#pop.pui input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border: 0; border-radius: 50%; background: var(--pui-text-strong); }
+
+/* a choice of a few: one joined bar, the picked one is light */
+#pop.pui .pui-seg { display: flex; gap: 2px; padding: 3px; border-radius: var(--pui-ctl-radius); background: var(--pui-fill); }
+#pop.pui .pui-seg button { flex: 1; height: 30px; min-height: 0; padding: 0 8px; border: 0; border-radius: 4px; background: transparent; font-size: var(--pui-font); font-weight: 500; color: var(--pui-text-dim); cursor: pointer; }
+#pop.pui .pui-seg button:hover { color: var(--pui-text-strong); }
+#pop.pui .pui-seg button.on { background: var(--pui-on); color: var(--pui-on-text); }
+
+/* foot: Delete at the right, red only on hover */
+#pop.pui .pui-foot { display: flex; justify-content: flex-end; }
+#pop.pui .pui-del { height: var(--pui-ctl-h); min-height: 0; padding: 0; border: 0; background: transparent; font-size: var(--pui-font); font-weight: 500; color: var(--pui-text-quiet); cursor: pointer; }
+#pop.pui .pui-del:hover { color: var(--pui-danger); background: transparent; }
+#pop.pui .pui-foot:empty { display: none; }
+
+/* one column of controls on the right: same width for the stepper, the typed number and the dropdown */
+#pop.pui .pui-step, #pop.pui .pui-select, #pop.pui .pui-sel-btn { width: var(--pui-ctl-w); box-sizing: border-box; }
+#pop.pui .pui-step .pui-num { flex: 1; min-width: 0; }
+#pop.pui .pui-head.plain .pui-title { height: var(--pui-ctl-h); }
+#pop.pui .pui-select { position: relative; }
+#pop.pui .pui-sel-btn { display: flex; align-items: center; justify-content: space-between; height: var(--pui-ctl-h); min-height: 0; padding: 0 8px 0 12px; border: 0; border-radius: var(--pui-ctl-radius); background: var(--pui-fill); color: var(--pui-text-strong); font-size: var(--pui-font); font-weight: 600; cursor: pointer; }
+#pop.pui .pui-sel-btn:hover { background: var(--pui-hover); }
+#pop.pui .pui-chev svg { display: block; width: 14px; height: 14px; fill: none; stroke: var(--pui-text-quiet); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+#pop.pui .pui-menu { display: none; position: absolute; z-index: 5; right: 0; top: calc(100% + 4px); width: 100%; padding: 4px; box-sizing: border-box; border-radius: var(--pui-ctl-radius); background: var(--pui-menu-bg); }
+#pop.pui .pui-menu.open { display: flex; flex-direction: column; gap: 2px; }
+#pop.pui .pui-opt { display: block; width: 100%; height: var(--pui-ctl-h); min-height: 0; padding: 0 8px; border: 0; border-radius: 4px; background: transparent; text-align: left; font-size: var(--pui-font); font-weight: 500; color: var(--pui-text-dim); cursor: pointer; }
+#pop.pui .pui-opt:hover { background: var(--pui-fill); color: var(--pui-text-strong); }
+#pop.pui .pui-opt.on { color: var(--pui-text-strong); background: var(--pui-fill-2); }
+#pop.pui .pui-num input { cursor: ew-resize; }
+#pop.pui .pui-num input:focus { cursor: text; }
+#pop.pui .pui-step, #pop.pui .pui-step button { cursor: ew-resize; }
+#pop.pui .pui-num input:focus { cursor: text; }
+
+/* alignment grid: sits in the same right-hand column as the other controls */
+#pop.pui .pui-row.tall { height: auto; align-items: flex-start; }
+#pop.pui .pui-row.tall .pui-label { line-height: var(--pui-ctl-h); }
+#pop.pui .pui-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: var(--pui-ctl-w); box-sizing: border-box; padding: 3px; border-radius: var(--pui-ctl-radius); background: var(--pui-fill); }
+#pop.pui .pui-grid button { height: 24px; min-height: 0; padding: 0; border: 0; border-radius: 4px; background: transparent; display: grid; place-items: center; cursor: pointer; }
+#pop.pui .pui-grid button i { width: 5px; height: 5px; border-radius: 50%; background: var(--pui-text-off); }
+#pop.pui .pui-grid button:hover { background: var(--pui-hover); }
+#pop.pui .pui-grid button:hover i { background: var(--pui-text-dim); }
+#pop.pui .pui-grid button.on { background: var(--pui-on); }
+#pop.pui .pui-grid button.on i { background: var(--pui-on-text); }
+/* a row of plain buttons */
+#pop.pui .pui-btns { display: flex; gap: 6px; }
+#pop.pui .pui-btns button { flex: 1; height: var(--pui-ctl-h); min-height: 0; padding: 0 8px; border: 0; border-radius: var(--pui-ctl-radius); background: var(--pui-fill); font-size: var(--pui-font); font-weight: 500; color: var(--pui-text-dim); cursor: pointer; }
+#pop.pui .pui-btns button:hover { background: var(--pui-hover); color: var(--pui-text-strong); }
+/* alignment fixes (owner, 2026-11-13): the Align label centres on its grid, the grid is slimmer, Fit width / Fill sit right under Width, buttons line up with the labels' left edge and the controls' right edge */
+#pop.pui .pui-row.tall { align-items: center; }
+#pop.pui .pui-row.tall .pui-label { line-height: normal; }
+#pop.pui .pui-grid button { height: 22px; }
+#pop.pui .pui-btns.inrow { width: var(--pui-ctl-w); gap: 2px; padding: 3px; box-sizing: border-box; border-radius: var(--pui-ctl-radius); background: var(--pui-fill); }
+#pop.pui .pui-btns.inrow button { height: 26px; padding: 0; border-radius: 4px; background: transparent; }
+#pop.pui .pui-btns.inrow button:hover { background: var(--pui-hover); }
+/* alignment grid, calmer: even padding, small round dots, the picked cell a light tile */
+#pop.pui .pui-grid { gap: 4px; padding: 5px; }
+#pop.pui .pui-grid button { height: 20px; border-radius: 5px; }
+#pop.pui .pui-grid button i { width: 4px; height: 4px; background: rgba(255,255,255,0.28); }
+#pop.pui .pui-grid button:hover i { background: rgba(255,255,255,0.7); }

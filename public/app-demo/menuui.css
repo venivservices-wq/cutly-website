@@ -1,0 +1,50 @@
+/* MenuUI: the ONE look of every menu panel (class "mui"): the chat's + menu, the right-click menus on the timeline and the video,
+   the selection menu, the track menus, the Add menu on a track, the project menu, Re-edit with a style and the top bar ⋯ menu.
+   (Item popups with settings, like the sound or zoom panel, are the other kind: panelui.css.)
+   The whole look is the variables below: change one and every menu changes. No X, no borders, flat (owner, 2026-11-13). */
+.mui {
+  --mui-bg: var(--ui-panel);            /* the panel */
+  --mui-radius: var(--ui-radius);            /* the panel's corners */
+  --mui-pad: 6px;               /* space on every side of the rows */
+  --mui-width: 236px;
+  --mui-row-h: 34px;
+  --mui-row-radius: 6px;
+  --mui-row-pad: 8px;           /* inside a row, left and right */
+  --mui-gap: 12px;              /* icon to label */
+  --mui-font: 13.5px;
+  --mui-head-h: 28px;           /* the quiet head line ("At 0:10.6") */
+  --mui-text: var(--ui-text);
+  --mui-head: var(--ui-text-faint);
+  --mui-icon: #b4b4b4;          /* plain thin icons */
+  --mui-icon-hover: #ffffff;
+  --mui-hover: var(--ui-hover);
+  --mui-sep: var(--ui-sep);
+  --mui-danger: var(--ui-danger);        /* Cut, Delete */
+  --mui-violet: #c3a6ff;        /* overlay / picture rows */
+  --mui-green: #6ee7a0;         /* sound rows */
+}
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui { box-sizing: border-box; width: var(--mui-width) !important; min-width: 0 !important; padding: var(--mui-pad) !important; border: 0 !important; border-radius: var(--mui-radius) !important; background: var(--mui-bg) !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; color: var(--mui-text); }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui .panel-x { display: none !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui .sm-head { display: flex; align-items: center; height: var(--mui-head-h) !important; min-height: var(--mui-head-h) !important; margin: 0 0 4px !important; padding: 0 var(--mui-row-pad) !important; box-sizing: border-box; font-size: 12px; font-weight: 500; line-height: 1; letter-spacing: 0; color: var(--mui-head) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button:not(.panel-x) { display: flex; align-items: center; gap: var(--mui-gap) !important; width: 100%; height: var(--mui-row-h) !important; min-height: 0; margin: 0 !important; padding: 0 var(--mui-row-pad) !important; border: 0 !important; border-radius: var(--mui-row-radius) !important; background: transparent !important; font-size: var(--mui-font) !important; font-weight: 400 !important; color: var(--mui-text) !important; text-align: left; cursor: pointer; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button:not(.panel-x) > span:not(.add-ico) { flex: 1; min-width: 0; font-size: inherit; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button:not(.panel-x):hover { background: var(--mui-hover) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui .add-ico { flex: none; display: grid; place-items: center; width: 18px; height: 18px; background: none !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button .sm-ico, .mui button .add-ico svg { flex: none; width: 17px !important; height: 17px !important; fill: none !important; stroke: var(--mui-icon) !important; stroke-width: 1.4 !important; stroke-linecap: round; stroke-linejoin: round; color: var(--mui-icon) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button .sm-ico .dot, .mui button .add-ico svg .dot { fill: var(--mui-icon) !important; stroke: none !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button:hover .sm-ico, .mui button:hover .add-ico svg { stroke: var(--mui-icon-hover) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button .sm-ico.ovl, .mui button:hover .sm-ico.ovl { stroke: var(--mui-violet) !important; color: var(--mui-violet) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button .sm-ico.snd, .mui button:hover .sm-ico.snd { stroke: var(--mui-green) !important; color: var(--mui-green) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button.danger, .mui button.danger .sm-ico, .mui button[data-c="cutclip"], .mui button[data-sm="cut"] { color: var(--mui-danger) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button.danger .sm-ico, .mui button.danger:hover .sm-ico, .mui button[data-c="cutclip"] .sm-ico, .mui button[data-sm="cut"] .sm-ico, .mui button[data-c="cutclip"]:hover .sm-ico, .mui button[data-sm="cut"]:hover .sm-ico { stroke: var(--mui-danger) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui .sm-chev, .mui .add-chev { flex: none; width: 13px !important; height: 13px !important; fill: none; stroke: #666 !important; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui kbd { flex: none; padding: 2px 6px; border: 0 !important; border-radius: 4px; background: var(--mui-hover); font-size: 11px; color: var(--mui-head); }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui .sm-sep, .mui .add-sep { height: 1px; margin: 5px 4px !important; border: 0; background: var(--mui-sep) !important; }
+/* danger rows (Cut, Delete track, Delete empty track): red text and thin red icon, a faint red wash on hover */
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button.danger:hover:not(:disabled) { background: rgba(242,116,120,0.12) !important; }
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button:disabled { opacity: 0.35; cursor: default; }
+:is(#trackMenu).mui { --mui-width: 220px; }
+/* the ⋯ menu's section title ("Testing (delete later)") is the quiet head line every menu uses (owner, 2026-11-13) */
+#moreMenu.mui .menu-label { display: flex; align-items: center; height: var(--mui-head-h); margin: 0 0 2px; padding: 0 var(--mui-row-pad); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--mui-head) !important; }
+/* one icon size in every menu: the + menu's 17 px (the project menu's icons were 18) */
+:is(#aiAddMenu, #ctxMenu, #selMenu, #presetPick, #trackMenu, #projMenu, #newTrackMenu, #moreMenu).mui button > svg { flex: none; width: 17px !important; height: 17px !important; min-width: 17px !important; max-width: 17px !important; }

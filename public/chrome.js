@@ -67,10 +67,10 @@
   <div class="page footer-grid"><div class="footer-brand">
       <a class="logo" href="${BASE ? BASE + 'index.html' : '#top'}" aria-label="Cutly AI home"><img src="${BASE}assets/cutly-logo.png?v=3" alt="" width="28" height="28"><span>Cutly AI</span></a>
       ${S.tagline ? `<p>${S.tagline}</p>` : ''}
-      <div class="socials"><a href="#" aria-label="Cutly AI on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></a></div>
+      <div class="socials"><a href="https://www.instagram.com/appcutly/" target="_blank" rel="noopener" aria-label="Cutly AI on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg></a></div>
     </div>${S.footer.map((c) =>
       `<div><h4>${c.title}</h4><ul>${c.links.map(([label, href]) => `<li><a href="${fix(href)}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${label}</a></li>`).join('')}</ul></div>`).join('')}</div>
-  <div class="page legal"><span>&copy; ${new Date().getFullYear()} Cutly AI</span><nav>${S.legal.map((l) => `<a href="#">${l}</a>`).join('')}</nav></div>
+  <div class="page legal"><span>&copy; ${new Date().getFullYear()} Cutly AI</span><nav>${S.legal.map((l) => `<a href="${l === 'Terms of Use' ? BASE + 'terms.html' : l === 'Privacy Policy' ? BASE + 'privacy.html' : l === 'Cookie Policy' ? BASE + 'cookies.html' : '#'}">${l}</a>`).join('')}</nav></div>
   <div class="wordmark" aria-hidden="true">Cutly AI</div>`;
   }
 

@@ -4,14 +4,14 @@ window.SITE = {
     { label: 'Features', href: '#tools', side: [
       { label: 'Guides', href: 'blog/upload-your-video-and-get-your-first-edit.html', img: 'assets/features/blog-upload.webp?v=3', text: 'How to upload your video to Cutly and get your first edit' }
     ], columns: [
-      { title: 'Cut', links: [['Cut Mistakes', '#tools'], ['Edit with Comments', '#tools'], ['Edit with Text', '#tools'], ['Edit Using the Timeline', '#tools']] },
-      { title: 'Style', links: [['Auto Captions', '#tools'], ['Caption Styles', '#tools'], ['Custom Styles', '#tools']] },
-      { title: 'Polish', links: [['Zooms and Sound Effects', '#tools'], ['Overlays and B-roll', '#tools'], ['Sound Improvements', '#tools'], ['Color Correction', '#tools']] }
+      { title: 'Cut', links: [['Cut Mistakes', 'features/cut-mistakes.html'], ['Edit with Comments', 'features/edit-with-comments.html'], ['Edit with Text', 'features/edit-with-text.html'], ['Edit Using the Timeline', 'features/edit-using-the-timeline.html']] },
+      { title: 'Style', links: [['Auto Captions', 'features/auto-captions.html'], ['Custom Styles', 'features/custom-styles.html']] },
+      { title: 'Polish', links: [['Zooms and Sound Effects', 'features/zooms-and-sound-effects.html'], ['Overlays and B-roll', 'features/overlays-and-b-roll.html']] }
     ] },
     { label: 'Resources', href: 'blog/index.html', side: [
       { label: 'Guides', href: 'blog/edit-your-video-with-comments.html', img: 'assets/features/blog-comments.webp?v=3', text: 'How to edit your video with comments' }
     ], columns: [
-      { title: 'Blog', links: [['Blog home', 'blog/index.html'], ['How to edit your video with comments', 'blog/edit-your-video-with-comments.html'], ['How to help Cutly find duplicate takes', 'blog/help-cutly-find-duplicate-takes.html']] }
+      { title: 'Blog', links: [['Blog home', 'blog/index.html'], ['How to get better results with Cutly', 'blog/how-to-get-better-results-with-cutly.html'], ['How to edit your video with comments', 'blog/edit-your-video-with-comments.html'], ['How to help Cutly find duplicate takes', 'blog/help-cutly-find-duplicate-takes.html']] }
     ] },
     { label: 'Pricing', href: '#pricing' }
   ],
@@ -23,7 +23,6 @@ window.SITE = {
     { title: 'Zooms and Sound Effects', ui: 'zoomsfx', text: 'AI understands your video and automatically adds zooms and sound effects to keep viewers engaged.' },
     { title: 'Overlays and B-roll', ui: 'overlays', text: 'Add images and B-roll over your footage, and let AI find the perfect moments to place them.' },
     { title: 'Custom Styles', ui: 'presets', text: 'Style your own captions and set your own preferences for cuts, custom sound effects and more.' },
-    { title: 'Sound Improvements and Color Correction', ui: 'enhance', text: 'Get clearer audio and more vibrant colors with automatic enhancements.' },
     { title: 'Edit with Comments', ui: 'ai', text: 'Leave a comment at any moment, and let AI make the changes.' },
     { title: 'Edit with Text', ui: 'transcript', text: 'Delete or bring back words in your transcript, and the changes are automatically reflected in your video.' },
     { title: 'Edit Using the Timeline', ui: 'cuts', text: 'Take full control of your edits. Drag, trim, and fine-tune every clip exactly how you want.' }
@@ -76,23 +75,21 @@ window.SITE = {
   // The monthly price is aboutVideos x perVideo. Every card lists ALL of planFeatures (the owner: show what you do and do not get);
   // level: how many of them the plan includes, counted from the top (the rest show greyed with a dash).
   plans: [
-    { name: 'Start', credits: 200, aboutVideos: 100, perVideo: 0.25, level: 5 },
+    { name: 'Start', credits: 200, aboutVideos: 100, perVideo: 0.25, level: 6 },
     { name: 'Pro', credits: 400, aboutVideos: 200, perVideo: 0.30, level: 9, popular: true },
-    { name: 'Ultra', credits: 600, aboutVideos: 300, perVideo: 0.35, level: 12 }
+    { name: 'Ultra', credits: 600, aboutVideos: 300, perVideo: 0.35, level: 10 }
   ],
   planFeatures: ['Cut mistakes automatically', 'Remove retakes and silences','Auto captions', 'Zooms and sound effects', 'Edit by text, comments or timeline',
-    'Overlays and B-roll', 'Queue unlimited videos', 'Presets for your style', 'Caption presets',
-    'Custom sound effects', 'Studio Sound', 'Color grading'],
+    'Overlays and B-roll', 'Queue unlimited videos', 'Presets for your style', 'Caption presets', 'Color grading'],
 
   faq: [
     ['Can Cutly automatically remove duplicate takes?', 'Yes! Cutly automatically finds and removes duplicate takes. You can also remove anything else with a simple comment.'],
     ['How many credits does a video use?', 'Credits are used whenever you ask Cutly’s AI to perform a task. A first edit usually costs 2 credits, while comments can cost anywhere from 0 to 1 credit.'],
-    ['How many videos can I upload?', 'You can add as many videos to the queue as your available credits allow. Cutly will process them in batches until they’re all finished.'],
-    ['Can I customize my videos?', 'Yes! You can create your own caption styles, save custom cut presets, upload your own sound effects, and much more.'],
+    ['How many videos can I upload?', 'You can add unlimited videos to the queue. Cutly will process them in batches until they’re all finished.'],
+    ['Can I customize my videos?', 'Yes! You can create your own caption styles, save custom cut presets, and much more.'],
     ['Do I need video editing experience to use Cutly?', 'Not at all! Cutly does the hard work for you. Just tell it what you want, and let AI handle the rest.'],
     ['Can I make manual edits to my videos?', 'Yes! You can use comments or the timeline, depending on how much control you want.'],
-    ['Can Cutly make mistakes?', 'Yes, Cutly can make mistakes, but it’s very easy to fix them using comments or the built-in timeline.'],
-    ['Can Cutly replace my video editor?', 'Cutly helps you or your editor work 6x faster, but it can still make mistakes, so a person should review the final edit.']
+    ['Can Cutly make mistakes?', 'Cutly helps you or your editor work 6x faster, but it can still make mistakes, so a person should review the final edit. You can reduce the number of mistakes by reading <a href="blog/how-to-get-better-results-with-cutly.html" style="text-decoration:underline">How to get better results with Cutly</a>.']
   ],
 
   // Real reviews, given by the owner (2026-11-14), shown as written. text: the review, mark: the words highlighted,
@@ -110,5 +107,5 @@ window.SITE = {
     { title: 'Company', links: [['Resources', 'blog/index.html'], ['Help Center', '#'], ['Contact', 'contact.html']] }
   ],
   tagline: 'The AI Powered Video Editor That Does the Hard Work for You.',
-  legal: ['Terms of Service', 'Privacy Policy', 'Cookie Policy']
+  legal: ['Terms of Use', 'Privacy Policy', 'Cookie Policy']
 };
